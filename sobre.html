@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quem é o Scout Renato — RENATO SCOUT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="about">
+  <div id="site-header"></div>
+  <main>
+    <section class="about-hero">
+      <div class="wrap about-hero-grid">
+        <div>
+          <p class="hero-kicker" data-i18n="aboutPage.kicker"></p>
+          <h1 data-i18n="aboutPage.title"></h1>
+          <p class="about-role" data-i18n="aboutPage.role"></p>
+          <p class="about-intro" data-i18n="aboutPage.intro"></p>
+          <ul class="stats">
+            <li><strong>230+</strong><span data-i18n="aboutPage.statHours"></span></li>
+            <li><strong>12</strong><span data-i18n="aboutPage.statCourses"></span></li>
+            <li><strong>2015</strong><span data-i18n="aboutPage.statSince"></span></li>
+          </ul>
+        </div>
+        <img class="about-photo" src="img/sobre/renato.jpg" alt="Renato da Costa Jardim">
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <h2 data-i18n="aboutPage.coursesTitle"></h2>
+        <ul class="courses" id="course-list"></ul>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <h2 data-i18n="aboutPage.certsTitle"></h2>
+          <p class="muted" data-i18n="aboutPage.certsHint"></p>
+        </div>
+        <div class="certs certs-full" id="cert-grid"></div>
+      </div>
+    </section>
+  </main>
+  <div id="site-footer"></div>
+  <script src="js/config.js"></script>
+  <script src="js/translations.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/sobre.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
