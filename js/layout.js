@@ -2,6 +2,10 @@ const WA_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A
 
 const MAIL_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm9 7.2L4 7.3V17h16V7.3zM5.2 7l6.8 4.1L18.8 7z"/></svg>`;
 
+const YT_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12a31 31 0 0 0 .5 4.8 3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15.1V8.9l5.8 3.1z"/></svg>`;
+
+const IG_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 8.2a3.2 3.2 0 1 1 0-6.4 3.2 3.2 0 0 1 0 6.4zM17.3 5.5a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4zM12 2c-2.7 0-3.1 0-4.1.1-4.4.2-5.6 2.6-5.8 5.8C2 8.9 2 9.3 2 12s0 3.1.1 4.1c.2 3.2 1.4 5.6 5.8 5.8 1 .1 1.4.1 4.1.1s3.1 0 4.1-.1c3.2-.2 5.6-1.4 5.8-5.8.1-1 .1-1.4.1-4.1s0-3.1-.1-4.1c-.2-3.2-1.4-5.6-5.8-5.8C15.1 2 14.7 2 12 2zm0 1.8c2.7 0 3 0 4 .1 2.7.1 4 1.4 4.1 4.1.1 1 .1 1.3.1 4s0 3-.1 4c-.1 2.7-1.4 4-4.1 4.1-1 .1-1.3.1-4 .1s-3 0-4-.1c-2.7-.1-4-1.4-4.1-4.1-.1-1-.1-1.3-.1-4s0-3 .1-4C3.9 5.3 5.3 3.9 8 3.9c1-.1 1.3-.1 4-.1z"/></svg>`;
+
 function waLink() {
   const text = encodeURIComponent(I18N.t("wa.message"));
   return `https://wa.me/${SITE.whatsapp}?text=${text}`;
@@ -65,6 +69,8 @@ function renderLayout() {
       </nav>
       <div class="footer-contact">
         <a id="footer-wa" class="footer-pill is-wa" target="_blank" rel="noopener">${WA_ICON}<span>WhatsApp</span></a>
+        <a class="footer-pill is-ig" href="${SITE.instagram}" target="_blank" rel="noopener">${IG_ICON}<span>Instagram</span></a>
+        <a class="footer-pill is-yt" href="${SITE.youtube}" target="_blank" rel="noopener">${YT_ICON}<span>YouTube</span></a>
         <a class="footer-pill" href="mailto:${SITE.email}">${MAIL_ICON}<span>${SITE.email}</span></a>
       </div>
     </div>

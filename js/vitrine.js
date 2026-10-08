@@ -33,17 +33,29 @@ function renderVitrine() {
       .map((v) => {
         const name = v.name || I18N.t("showcasePage.unnamed");
         const posLabel = I18N.t("positions." + v.position);
-        return `
-          <article class="video-card">
-            <iframe
-              src="https://www.youtube.com/embed/${encodeURIComponent(v.youtubeId)}"
+        const id = encodeURIComponent(v.youtubeId);
+        const start = Number(v.start) || 0;
+        const badge = v.inactive
+          ? `<span class="video-badge">${I18N.t("showcasePage.inactive")}</span>`
+          : "";
+        const player = v.external
+          ? `<a class="video-thumb" href="https://www.youtube.com/watch?v=${id}${start ? `&t=${start}s` : ""}" target="_blank" rel="noopener" aria-label="${name}">
+              <img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="" loading="lazy">
+              <span class="video-play"></span>
+            </a>`
+          : `<iframe
+              src="https://www.youtube.com/embed/${id}${start ? `?start=${start}` : ""}"
               title="${name}"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowfullscreen
-              loading="lazy"></iframe>
+              loading="lazy"></iframe>`;
+        return `
+          <article class="video-card">
+            ${player}
             <div class="video-meta">
               <div class="pos">${posLabel}</div>
               <strong>${name}</strong>
+              ${badge}
             </div>
           </article>`;
       })

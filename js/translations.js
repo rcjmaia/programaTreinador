@@ -87,11 +87,11 @@ const TRANSLATIONS = {
     showcasePage: {
       kicker: "Parceiros e empresários",
       title: "Vitrine de atletas",
-      intro:
-        "Somente jogadores cujo vídeo foi analisado e aprovado. Filtre por posição. O padrão é ver todas.",
+      intro: "Atletas analisados e aprovados, separados por posição.",
       empty:
         "Em breve os atletas aprovados aparecem aqui. Cada espaço de vídeo é incluído ou removido na edição do site.",
       unnamed: "Atleta",
+      inactive: "Exemplo · atleta inativo",
     },
     positions: {
       all: "Todas posições",
@@ -238,11 +238,11 @@ const TRANSLATIONS = {
     showcasePage: {
       kicker: "Partners and intermediaries",
       title: "Player showcase",
-      intro:
-        "Only players whose video was analysed and approved. Filter by position. The default view is all positions.",
+      intro: "Analysed and approved players, grouped by position.",
       empty:
         "Approved players will appear here soon. Each video slot is added or removed by editing the site.",
       unnamed: "Player",
+      inactive: "Example · inactive player",
     },
     positions: {
       all: "All positions",
@@ -389,11 +389,11 @@ const TRANSLATIONS = {
     showcasePage: {
       kicker: "Socios y representantes",
       title: "Vitrina de atletas",
-      intro:
-        "Solo jugadores cuyo video fue analizado y aprobado. Filtra por posición. La vista inicial es todas las posiciones.",
+      intro: "Atletas analizados y aprobados, separados por posición.",
       empty:
         "Pronto aparecerán aquí los atletas aprobados. Cada espacio de video se incluye o se quita editando el sitio.",
       unnamed: "Atleta",
+      inactive: "Ejemplo · atleta inactivo",
     },
     positions: {
       all: "Todas las posiciones",

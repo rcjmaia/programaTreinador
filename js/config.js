@@ -6,6 +6,8 @@ const SITE = {
   brand: "RENATO SCOUT",
   whatsapp: "5519994282263",
   email: "rcjmaia@gmail.com",
+  youtube: "https://www.youtube.com/@renatoanalistascoutfutebol",
+  instagram: "https://www.instagram.com/renato_scout_futebol/",
   /* Cole o link de cada produto da Hotmart quando estiver no ar */
   hotmart: {
     goleiros: "",

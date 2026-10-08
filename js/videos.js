@@ -5,6 +5,10 @@
       Exemplo: https://www.youtube.com/watch?v=abc123xyz → abc123xyz
    2. Adicione um bloco { ... } na lista abaixo.
    3. Para remover, apague o bloco inteiro daquele atleta.
+   Opcional: start = segundo em que o vídeo começa;
+             inactive: true = mostra a etiqueta "Exemplo · atleta inativo";
+             external: true = mostra a capa e abre no YouTube (para vídeos
+             que o YouTube não deixa tocar dentro de outros sites).
 
    Posições (use exatamente estes códigos):
      gk  = Goleiro
@@ -20,10 +24,19 @@
    ============================================================ */
 
 const VITRINE_VIDEOS = [
-  // Exemplo (apague as barras // das 5 linhas abaixo para testar):
-  // {
-  //   youtubeId: "dQw4w9WgXcQ",
-  //   position: "st",
-  //   name: "Nome do atleta",
-  // },
+  {
+    youtubeId: "cjJ5JYocJU4",
+    start: 84,
+    position: "lb",
+    name: "Danilo",
+    inactive: true,
+    external: true,
+  },
+  {
+    youtubeId: "wijWYdInC7M",
+    start: 52,
+    position: "cb",
+    name: "João",
+    inactive: true,
+  },
 ];
