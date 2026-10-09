@@ -13,7 +13,7 @@ function waLink() {
 
 function renderLayout() {
   const page = document.body.dataset.page || "home";
-  const trainingPages = ["gk", "school", "adult", "physical", "tactical", "studies", "mind"];
+  const trainingPages = ["gk", "school", "adult", "physical", "nutrition", "tactical", "studies", "mind"];
   const trainActive = trainingPages.includes(page);
 
   const header = document.getElementById("site-header");
@@ -42,6 +42,7 @@ function renderLayout() {
             <a href="escolinha.html" class="${page === "school" ? "is-active" : ""}" data-i18n="nav.school"></a>
             <a href="adulto.html" class="${page === "adult" ? "is-active" : ""}" data-i18n="nav.adult"></a>
             <a href="fisico.html" class="${page === "physical" ? "is-active" : ""}" data-i18n="nav.physical"></a>
+            <a href="nutricao.html" class="${page === "nutrition" ? "is-active" : ""}" data-i18n="nav.nutrition"></a>
             <a href="tatico.html" class="${page === "tactical" ? "is-active" : ""}" data-i18n="nav.tactical"></a>
             <a href="estudos.html" class="${page === "studies" ? "is-active" : ""}" data-i18n="nav.studies"></a>
             <a href="mente.html" class="${page === "mind" ? "is-active" : ""}" data-i18n="nav.mind"></a>

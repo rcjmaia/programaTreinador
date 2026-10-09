@@ -6,6 +6,10 @@ if (document.body.dataset.page === "showcase") {
   renderVitrine();
 }
 
+if (document.body.dataset.page === "nutrition") {
+  renderNutrition();
+}
+
 if (document.body.dataset.page === "about") {
   renderCourses();
   renderCertificates();

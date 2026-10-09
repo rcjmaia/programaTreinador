@@ -1013,9 +1013,183 @@ section {
   fill: currentColor;
 }
 
+/* Nutrition page */
+.hero.nutri-hero {
+  min-height: 480px;
+  padding: 72px 0 80px;
+  background:
+    linear-gradient(90deg, rgba(5, 7, 11, 0.95) 0%, rgba(5, 7, 11, 0.7) 40%, rgba(5, 7, 11, 0.05) 75%),
+    linear-gradient(0deg, var(--bg) 0%, transparent 30%),
+    url("../img/nutricao/nutricao-hero.jpg") center right / cover no-repeat;
+}
+
+.nutri-hero h1 {
+  max-width: 12ch;
+}
+
+.nutri-pillars,
+.nutri-game {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.nutri-pillar {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--hero-gold);
+  border-radius: var(--radius);
+  padding: 22px;
+}
+
+.nutri-pillar.p2 {
+  border-top-color: #4fb3a9;
+}
+
+.nutri-pillar.p3 {
+  border-top-color: #8fbf5a;
+}
+
+.nutri-pillar h3,
+.nutri-age h3,
+.nutri-game h3 {
+  font-family: Oswald, sans-serif;
+  font-size: 1.3rem;
+  margin: 0 0 8px;
+}
+
+.nutri-pillar p {
+  margin: 0 0 12px;
+}
+
+.nutri-pillar small {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.nutri-ages,
+.nutri-meals {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.nutri-meal h3 {
+  font-family: Oswald, sans-serif;
+  font-size: 1.3rem;
+  margin: 0 0 8px;
+}
+
+.nutri-meal p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.nutri-age,
+.nutri-meal {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px;
+}
+
+.nutri-range {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--hero-gold);
+  margin-bottom: 6px;
+}
+
+.nutri-age ul,
+.nutri-game ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.nutri-age li + li,
+.nutri-game li + li {
+  margin-top: 8px;
+}
+
+.nutri-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.nutri-box {
+  border-radius: var(--radius);
+  padding: 26px;
+  border: 1px solid var(--line);
+}
+
+.nutri-box h2 {
+  margin-top: 0;
+}
+
+.nutri-box.is-good {
+  background: linear-gradient(160deg, rgba(143, 191, 90, 0.12), var(--panel) 60%);
+  border-color: rgba(143, 191, 90, 0.35);
+}
+
+.nutri-box.is-bad {
+  background: linear-gradient(160deg, rgba(220, 80, 70, 0.12), var(--panel) 60%);
+  border-color: rgba(220, 80, 70, 0.35);
+}
+
+.nutri-box dl {
+  margin: 18px 0 0;
+}
+
+.nutri-box dt {
+  font-weight: 700;
+  color: #a9d47a;
+}
+
+.nutri-box dd {
+  margin: 2px 0 12px;
+}
+
+.nutri-avoid {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.nutri-avoid li {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(220, 80, 70, 0.5);
+  color: #f0a39b;
+  font-size: 0.9rem;
+  text-decoration: line-through;
+  text-decoration-color: rgba(240, 163, 155, 0.6);
+}
+
+.nutri-note {
+  margin-top: 28px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  text-align: center;
+}
+
 @media (max-width: 980px) {
   .split {
     grid-template-columns: 1fr;
+  }
+
+  .nutri-ages,
+  .nutri-meals {
+    grid-template-columns: 1fr 1fr;
   }
 
   .steps,
@@ -1128,6 +1302,14 @@ section {
     line-height: 1.35;
   }
 
+  .hero.nutri-hero {
+    min-height: 460px;
+    padding: 48px 0 40px;
+    background:
+      linear-gradient(0deg, var(--bg) 0%, rgba(5, 7, 11, 0.8) 45%, rgba(5, 7, 11, 0.3) 100%),
+      url("../img/nutricao/nutricao-hero.jpg") 70% center / cover no-repeat;
+  }
+
   .about-home {
     padding: 64px 0 48px;
   }
@@ -1173,7 +1355,12 @@ section {
     font-size: 0.75rem;
   }
 
-  .courses {
+  .courses,
+  .nutri-pillars,
+  .nutri-game,
+  .nutri-ages,
+  .nutri-meals,
+  .nutri-split {
     grid-template-columns: 1fr;
   }
 
