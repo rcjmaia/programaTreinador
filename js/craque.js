@@ -1640,13 +1640,19 @@ function renderCraque() {
     }
   });
 
+  // On the result screen every way out must redraw the home, or newly unlocked missions stay hidden.
+  const dismiss = () => {
+    const back = dialog.querySelector("[data-back]");
+    if (back) back.click();
+    else closeModal();
+  };
   modal.addEventListener("click", (e) => {
-    if (e.target === modal || e.target.closest(".cq-close")) closeModal();
+    if (e.target === modal || e.target.closest(".cq-close")) return dismiss();
     const ms = e.target.closest(".cq-missions [data-mission]");
     if (ms) openMission(ms.dataset.mission);
   });
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !modal.hidden) closeModal();
+    if (e.key === "Escape" && !modal.hidden) dismiss();
   });
   document.addEventListener("rs:lang", () => {
     closeModal();
