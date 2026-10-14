@@ -1,7 +1,10 @@
-// Untrained attributes sit at CQ_BASE; each mission's best medal moves its attributes
-// from the bottom (Bronze) to the top (Legend) of CQ_MEDAL_RANGE.
+// Untrained attributes sit at CQ_BASE. Each medal adds points to its attributes
+// (Bronze 1 ... Legend 4) and the attribute climbs towards CQ_CURVE.max with
+// diminishing returns, so adding new missions never lowers anyone's card.
 const CQ_BASE = 40;
-const CQ_MEDAL_RANGE = [55, 92];
+const CQ_CURVE = { max: 92, k: 3 };
+// Without Bronze, this many logged tries also open the next phase.
+const CQ_TRIES_TO_PASS = 3;
 const CQ_XP = { normal: 10, daily: 20, perLevel: 100, dailyCap: 3 };
 
 // The first six follow the FIFA card; "int" and "cab" are the academy's own groups.
@@ -38,10 +41,14 @@ const CQ_TEXT = {
     daily: "Missões do dia",
     dailyHint: "XP em dobro",
     trails: "Trilhas",
-    trailsHint: "Ganhe Bronze em todas as missões de uma fase para liberar a próxima.",
+    trailsHint: "Ganhe Bronze (ou faça 3 tentativas) para liberar a próxima fase.",
+    triesHint: "Sem Bronze ainda? Com 3 tentativas a próxima fase abre do mesmo jeito ({n}/{max}).",
+    triesDone: "Próxima fase liberada pelo seu esforço! Continue buscando o Bronze.",
+    lowerHint: "Aqui, quanto menor o número, melhor.",
+    helper: "👥 Precisa de outra pessoa",
     freeTraining: "Treino livre",
     phase: "Fase {n}",
-    lockedHint: "Bloqueada: ganhe Bronze na fase anterior.",
+    lockedHint: "Bloqueada: ganhe Bronze ou faça 3 tentativas na fase anterior.",
     pickMission: "Escolha a missão",
     go: "Vai!",
     sound: "Som ligado/desligado",
@@ -115,10 +122,14 @@ const CQ_TEXT = {
     daily: "Today's missions",
     dailyHint: "Double XP",
     trails: "Trails",
-    trailsHint: "Earn Bronze in every mission of a stage to unlock the next one.",
+    trailsHint: "Earn Bronze (or make 3 tries) to unlock the next stage.",
+    triesHint: "No Bronze yet? After 3 tries the next stage opens anyway ({n}/{max}).",
+    triesDone: "Next stage unlocked by your effort! Keep going for Bronze.",
+    lowerHint: "Here, the lower the number, the better.",
+    helper: "👥 Needs another person",
     freeTraining: "Free training",
     phase: "Stage {n}",
-    lockedHint: "Locked: earn Bronze in the previous stage.",
+    lockedHint: "Locked: earn Bronze or make 3 tries in the previous stage.",
     pickMission: "Pick a mission",
     go: "Go!",
     sound: "Sound on/off",
@@ -192,10 +203,14 @@ const CQ_TEXT = {
     daily: "Misiones del día",
     dailyHint: "XP doble",
     trails: "Caminos",
-    trailsHint: "Gana Bronce en todas las misiones de una fase para desbloquear la siguiente.",
+    trailsHint: "Gana Bronce (o haz 3 intentos) para desbloquear la siguiente fase.",
+    triesHint: "¿Todavía sin Bronce? Con 3 intentos la siguiente fase se abre igual ({n}/{max}).",
+    triesDone: "¡Siguiente fase desbloqueada por tu esfuerzo! Sigue buscando el Bronce.",
+    lowerHint: "Aquí, cuanto menor el número, mejor.",
+    helper: "👥 Necesita otra persona",
     freeTraining: "Entrenamiento libre",
     phase: "Fase {n}",
-    lockedHint: "Bloqueada: gana Bronce en la fase anterior.",
+    lockedHint: "Bloqueada: gana Bronce o haz 3 intentos en la fase anterior.",
     pickMission: "Elige la misión",
     go: "¡Ya!",
     sound: "Sonido sí/no",
@@ -326,7 +341,7 @@ function renderCraque() {
   let audio = null;
 
   function emptyState() {
-    return { player: null, records: {}, xp: 0, streak: { last: "", count: 0, best: 0 }, today: { date: "", counts: {} } };
+    return { player: null, records: {}, tries: {}, xp: 0, streak: { last: "", count: 0, best: 0 }, today: { date: "", counts: {} } };
   }
 
   function save() {
@@ -432,26 +447,23 @@ function renderCraque() {
     });
   }
 
+  // "lower" missions (e.g. steps away from the target) have descending tiers.
+  const beats = (m, a, b) => (m.lower ? a <= b : a >= b);
+
   function medalIndex(m, value) {
     if (value == null) return -1;
     let idx = -1;
-    m.tiers.forEach((tier, i) => { if (value >= tier) idx = i; });
+    m.tiers.forEach((tier, i) => { if (beats(m, value, tier)) idx = i; });
     return idx;
-  }
-
-  function missionValue(m) {
-    const idx = medalIndex(m, state.records[m.id]);
-    if (idx < 0) return CQ_BASE;
-    const [low, high] = CQ_MEDAL_RANGE;
-    return Math.round(low + (high - low) * idx / (m.tiers.length - 1));
   }
 
   const isUnlocked = (sub) => CQ_MISSIONS.some((m) => m.subs.includes(sub));
 
   function subValue(sub) {
-    const ms = CQ_MISSIONS.filter((m) => m.subs.includes(sub));
-    if (!ms.length) return CQ_BASE;
-    return Math.round(ms.reduce((a, m) => a + missionValue(m), 0) / ms.length);
+    const points = CQ_MISSIONS
+      .filter((m) => m.subs.includes(sub))
+      .reduce((a, m) => a + medalIndex(m, state.records[m.id]) + 1, 0);
+    return Math.round(CQ_BASE + (CQ_CURVE.max - CQ_BASE) * (1 - Math.exp(-points / CQ_CURVE.k)));
   }
 
   function groupValue(group) {
@@ -471,7 +483,11 @@ function renderCraque() {
 
   const level = () => Math.floor(state.xp / CQ_XP.perLevel) + 1;
 
-  const phaseDone = (phase) => phase.every((id) => medalIndex(mission(id), state.records[id]) >= 0);
+  // Results saved before tries were counted still count as one try.
+  const triesOf = (id) => state.tries?.[id] ?? (state.records[id] != null ? 1 : 0);
+  const hasMedal = (id) => medalIndex(mission(id), state.records[id]) >= 0;
+  const passed = (id) => hasMedal(id) || triesOf(id) >= CQ_TRIES_TO_PASS;
+  const phaseDone = (phase) => phase.every(passed);
   const phaseOpen = (trail, i) => i === 0 || phaseDone(trail.phases[i - 1]);
   const missionOpen = (id) => CQ_TRAILS.some((tl) => tl.phases.some((ph, i) => ph.includes(id) && phaseOpen(tl, i)));
   const openMissions = () => CQ_MISSIONS.filter((m) => m.type !== "auto" && missionOpen(m.id));
@@ -587,7 +603,7 @@ function renderCraque() {
       <button type="button" class="cq-mission type-${m.type}" data-mission="${m.id}">
         <span class="cq-mission-icon">${m.icon}</span>
         <span class="cq-mission-body">
-          <span class="cq-mission-tag">${tx.types[m.type]}${daily ? ` · <i>${tx.dailyHint}</i>` : ""}</span>
+          <span class="cq-mission-tag">${tx.types[m.type]}${m.helper ? " · 👥" : ""}${daily ? ` · <i>${tx.dailyHint}</i>` : ""}</span>
           <strong>${tr(m.title)}</strong>
           <small>${m.subs.map((s) => tr(CQ_SUBS[s])).join(" · ")}</small>
         </span>
@@ -682,28 +698,35 @@ function renderCraque() {
           <button type="button" class="cq-reset">${tx.reset}</button>
         </div>
       </div>`;
+    // Long trails scroll sideways; start each one at the phase being played.
+    app.querySelectorAll(".cq-trail-nodes").forEach((row) => {
+      const current = row.querySelector(".is-current");
+      if (current) row.scrollLeft = current.offsetLeft - 48;
+    });
   }
 
   function trailRow(tl) {
     const tx = t();
     const group = CQ_ATTRS.find((g) => g.id === tl.id);
+    const done = tl.phases.filter((ph, i) => phaseOpen(tl, i) && phaseDone(ph)).length;
     const nodes = tl.phases.map((ph, i) => {
       const open = phaseOpen(tl, i);
-      const done = open && phaseDone(ph);
-      const cls = done ? "is-done" : open ? "is-current" : "is-locked";
+      const cls = open && phaseDone(ph) ? "is-done" : open ? "is-current" : "is-locked";
       const icons = ph.map((id) => {
         const m = mission(id);
         return `<span class="cq-node-m"><span>${m.icon}</span><span class="cq-medal m-${medalIndex(m, state.records[id])}"></span></span>`;
       }).join("");
+      const name = ph.map((id) => tr(mission(id).title)).join(" · ");
       return `
-        <button type="button" class="cq-node ${cls}" data-phase="${tl.id}:${i}" ${open ? "" : `disabled title="${tx.lockedHint}"`}>
-          <small>${fill(tx.phase, { n: i + 1 })}</small>
-          <span class="cq-node-icons">${open ? icons : "🔒"}</span>
+        <button type="button" class="cq-node ${cls}" data-phase="${tl.id}:${i}" title="${esc(open ? name : `${name} · ${tx.lockedHint}`)}" ${open ? "" : "disabled"}>
+          <small>${i + 1}</small>
+          <span class="cq-node-icons">${icons}</span>
+          ${open ? "" : `<span class="cq-node-lock" aria-hidden="true">🔒</span>`}
         </button>`;
     }).join(`<span class="cq-node-link" aria-hidden="true"></span>`);
     return `
       <div class="cq-trail">
-        <span class="cq-trail-name"><b>${groupValue(group)}</b> ${tx.attrs[tl.id][1]}</span>
+        <span class="cq-trail-name"><b>${groupValue(group)}</b> ${tx.attrs[tl.id][1]}<small>${done}/${tl.phases.length}</small></span>
         <div class="cq-trail-nodes">${nodes}</div>
       </div>`;
   }
@@ -760,12 +783,12 @@ function renderCraque() {
       return;
     }
     btn.disabled = true;
-    cqLoadAnim(m.id).then((scene) => {
+    cqLoadAnim(typeof m.anim === "string" ? m.anim : m.id).then((scene) => {
       btn.disabled = false;
       if (!box.isConnected) return;
       box.hidden = false;
       btn.textContent = t().hideAnim;
-      stopAnim = scene(box, { unit: tr(m.unit), steps: t().steps, label: tr(m.title), pick: tr });
+      stopAnim = scene(box, { unit: tr(m.unit), steps: t().steps, label: tr(m.title), pick: tr, args: m.animArgs || {} });
     }).catch((err) => {
       console.warn("Craque:", err);
       btn.hidden = true;
@@ -775,13 +798,19 @@ function renderCraque() {
   function missionHeader(m) {
     const tx = t();
     const idx = medalIndex(m, state.records[m.id]);
+    const tries = triesOf(m.id);
+    const triesNote = idx < 0 && m.type !== "auto"
+      ? `<p class="cq-note">${tries >= CQ_TRIES_TO_PASS ? tx.triesDone : fill(tx.triesHint, { n: tries, max: CQ_TRIES_TO_PASS })}</p>`
+      : "";
     return `
-      <span class="cq-mission-tag">${tx.types[m.type]}</span>
+      <span class="cq-mission-tag">${tx.types[m.type]}${m.helper ? ` · ${tx.helper}` : ""}</span>
       <h3>${m.icon} ${tr(m.title)}</h3>
       <p>${tr(m.desc)}</p>
       <div class="cq-tiers">
-        ${m.tiers.map((v, i) => `<span class="${i <= idx ? "is-done" : ""}"><span class="cq-medal m-${i}"></span>${v}</span>`).join("")}
-      </div>`;
+        ${m.tiers.map((v, i) => `<span class="${i <= idx ? "is-done" : ""}"><span class="cq-medal m-${i}"></span>${m.lower ? "≤" : ""}${v}</span>`).join("")}
+      </div>
+      ${m.lower ? `<p class="cq-note">${tx.lowerHint}</p>` : ""}
+      ${triesNote}`;
   }
 
   function openMission(id) {
@@ -1005,7 +1034,8 @@ function renderCraque() {
     const streakSub = mission("streak").subs;
 
     const prev = state.records[m.id];
-    const isRecord = prev == null || value > prev;
+    const isRecord = prev == null || (beats(m, value, prev) && value !== prev);
+    state.tries = { ...state.tries, [m.id]: triesOf(m.id) + 1 };
     if (isRecord) state.records[m.id] = value;
 
     const today = dayKey();

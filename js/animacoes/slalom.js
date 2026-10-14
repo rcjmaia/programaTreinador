@@ -1,4 +1,5 @@
-/* Slalom dos chinelos (vista de cima): conduz a bola passando entre os 5 chinelos, ida e volta. */
+/* Slalom dos chinelos (vista de cima): conduz a bola passando entre os 5 chinelos, ida e volta.
+   args.weak: mesma cena, marcando que é só com o pé fraco. */
 
 cqRegisterAnim("slalom", (box, opts) => {
   const marks = [90, 125, 160, 195, 230];
@@ -17,7 +18,7 @@ cqRegisterAnim("slalom", (box, opts) => {
 
   box.innerHTML = cqTopSceneSvg(opts.label, `
     ${marks.map((x) => flip(x, midY)).join("")}
-    ${cqNoteSvg(160, 160, `↔ 1 ${opts.steps}`)}
+    ${cqNoteSvg(160, 160, `↔ 1 ${opts.steps}${opts.args?.weak ? ` · ${opts.pick(["pé fraco", "weak foot", "pierna débil"])}` : ""}`)}
     <g class="a-ball-pos">${cqBallSvg(5)}</g>
     ${cqTopPlayerSvg()}
     ${cqCountSvg(opts.unit)}`);

@@ -4,20 +4,28 @@
    uma ficha, troque o "id" e coloque-a numa fase de CQ_TRAILS.
    type: ball (com bola), move (movimento), quiz (perguntas),
          mind (cabeça), auto (sobe sozinha).
-   tiers: metas de Bronze, Prata, Ouro e Lenda.
-   anim: true quando existe js/animacoes/<id>.js.
+   tiers: metas de Bronze, Prata, Ouro e Lenda. O Bronze deve ser
+          fácil: é ele que abre a próxima fase.
+   lower: true quando quanto menor, melhor (tiers decrescentes).
+   anim: true quando existe js/animacoes/<id>.js, ou o nome de uma
+         cena compartilhada ("medida") com parâmetros em animArgs.
+   Missões que pedem outra pessoa (👥 na descrição) nunca ficam em
+   fases seguidas, para ninguém travar sem ajuda em casa.
+   As missões da segunda leva ficam em js/missoes-extra.js.
    ============================================================ */
 
-const CQ_TRAILS = [
-  { id: "rit", phases: [["shuttle"], ["flipflops"], ["sprintball"]] },
-  { id: "fin", phases: [["target"], ["penalty", "header"], ["volley", "longshot", "freekick"]] },
-  { id: "pas", phases: [["weak"], ["longpass"], ["cross"]] },
-  { id: "con", phases: [["keepy"], ["slalom", "dribble"], ["zigzag", "skills"]] },
-  { id: "def", phases: [["bote"], ["steal"], ["heading", "sliding"]] },
-  { id: "fis", phases: [["hops"], ["jacks"], ["jump", "shield"]] },
-  { id: "int", phases: [["quiz"], ["voltou"], ["leitura"]] },
-  { id: "cab", phases: [["statue"], ["breath"], ["mindquiz", "streak"]] },
-];
+// One mission per phase: each phase is one link of the chain.
+const CQ_CHAIN = {
+  rit: ["shuttle", "flipflops", "skipping", "sprintball", "conemove", "treasure", "star", "ladder", "sprint20"],
+  fin: ["target", "weakshot", "penalty", "placed", "stepshot", "volley", "firsttime", "header", "controlshot", "longshot", "chip", "freekick"],
+  pas: ["weak", "measure10", "twofeet", "bucket3", "orient", "measure15", "longpass", "bucket5", "altinha", "measure20", "cross", "bucket8", "measure25"],
+  con: ["keepy", "trap", "slalom", "keepyalt", "chest", "zigzag", "walk5", "dribble", "trapweak", "slalomweak", "skills", "elastico", "walk10", "walkalt", "roleta", "headkeepy", "chapeu", "walkhead"],
+  def: ["bote", "sidestep", "steal", "backrun", "heading", "intercept", "sliding", "shadow", "clearance"],
+  fis: ["hops", "jacks", "squats", "jump", "plank", "shield", "rope", "stepup", "onefoot", "situps", "lunges"],
+  int: ["quiz", "voltou", "leitura", "contra", "setpiece", "offball", "rules", "poscb", "posfb", "posmid", "posst"],
+  cab: ["statue", "breath", "mindquiz", "blindstatue", "aftermiss", "countdown", "pressure", "streak"],
+};
+const CQ_TRAILS = Object.entries(CQ_CHAIN).map(([id, ids]) => ({ id, phases: ids.map((m) => [m]) }));
 
 const CQ_STEPS_ROUND_TRIP = ["Ida e volta vale 1.", "There and back counts as 1.", "Ida y vuelta cuenta 1."];
 const CQ_UNIT_HITS = ["acertos", "hits", "aciertos"];
@@ -198,7 +206,7 @@ const CQ_MISSIONS = [
   },
 
   {
-    id: "dribble", type: "ball", icon: "🕺", subs: ["dribble", "agility"], tiers: [2, 4, 6, 8], timer: { mode: "down", s: 60 }, anim: true,
+    id: "dribble", type: "ball", icon: "🕺", subs: ["dribble", "agility"], tiers: [2, 4, 6, 8], timer: { mode: "down", s: 60 }, helper: true, anim: true,
     title: ["Drible 1 contra 1", "1v1 dribble", "Regate 1 contra 1"],
     desc: ["Em 1 minuto, quantas vezes você dribla alguém da família e cruza a linha dele com a bola?", "In 1 minute, how many times can you beat a family member and cross their line with the ball?", "En 1 minuto, ¿cuántas veces regateas a alguien de tu familia y cruzas su línea con el balón?"],
     steps: [
@@ -228,7 +236,7 @@ const CQ_MISSIONS = [
     unit: CQ_UNIT_HITS,
   },
   {
-    id: "steal", type: "ball", icon: "🧲", subs: ["interceptions", "awareness"], tiers: [1, 3, 5, 7], timer: { mode: "down", s: 60 }, anim: true,
+    id: "steal", type: "ball", icon: "🧲", subs: ["interceptions", "awareness"], tiers: [1, 3, 5, 7], timer: { mode: "down", s: 60 }, helper: true, anim: true,
     title: ["Rouba-bola", "Ball thief", "Roba balón"],
     desc: ["Em 1 minuto, quantas vezes você rouba a bola de alguém da família?", "In 1 minute, how many times can you win the ball from a family member?", "En 1 minuto, ¿cuántas veces le robas el balón a alguien de tu familia?"],
     steps: [
@@ -296,7 +304,7 @@ const CQ_MISSIONS = [
     unit: ["pés", "foot-lengths", "pies"],
   },
   {
-    id: "shield", type: "ball", icon: "🛡️", subs: ["strength", "combat"], tiers: [10, 20, 30, 45], timer: { mode: "up" }, anim: true,
+    id: "shield", type: "ball", icon: "🛡️", subs: ["strength", "combat"], tiers: [10, 20, 30, 45], timer: { mode: "up" }, helper: true, anim: true,
     title: ["Protege a bola", "Shield the ball", "Protege el balón"],
     desc: ["Quanto tempo você protege a bola de alguém da família sem perder?", "How long can you shield the ball from a family member?", "¿Cuánto tiempo proteges el balón de alguien de tu familia?"],
     steps: [

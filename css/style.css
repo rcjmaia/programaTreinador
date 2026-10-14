@@ -2348,18 +2348,32 @@ section {
   color: #facc15;
 }
 
+.cq-trail-name small {
+  display: block;
+  font-family: Inter, sans-serif;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
 .cq-trail-nodes {
+  position: relative;
   display: flex;
   align-items: center;
+  min-width: 0;
+  overflow-x: auto;
+  padding: 8px 8px 8px 2px;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
 }
 
 .cq-node {
+  position: relative;
   display: grid;
   justify-items: center;
-  gap: 4px;
+  gap: 2px;
   flex: 0 0 auto;
-  min-width: 78px;
-  padding: 8px 10px;
+  min-width: 52px;
+  padding: 6px 8px;
   border-radius: 12px;
   border: 2px solid var(--line);
   background: rgba(255, 255, 255, 0.03);
@@ -2378,7 +2392,14 @@ section {
 
 .cq-node.is-done { border-color: #22c55e; }
 .cq-node.is-current { border-color: #facc15; box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.15); }
-.cq-node.is-locked { opacity: 0.45; cursor: not-allowed; }
+.cq-node.is-locked { opacity: 0.4; cursor: not-allowed; filter: grayscale(1); }
+
+.cq-node-lock {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  font-size: 0.7rem;
+}
 .cq-node:not([disabled]):hover { transform: translateY(-2px); }
 
 .cq-node-icons {
@@ -2400,8 +2421,7 @@ section {
 }
 
 .cq-node-link {
-  flex: 1 1 12px;
-  min-width: 8px;
+  flex: 0 0 10px;
   height: 3px;
   background: var(--line);
 }
@@ -2816,8 +2836,8 @@ body.cq-lock {
   }
 
   .cq-node {
-    min-width: 64px;
-    padding: 6px;
+    min-width: 46px;
+    padding: 5px 6px;
   }
 
   .cq-mission-body strong {

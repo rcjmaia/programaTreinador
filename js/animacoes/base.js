@@ -74,6 +74,25 @@ const cqEase = (u) => (u < 0.5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2);
 const cqLerp = (a, b, k) => a + (b - a) * k;
 const cqClamp01 = (u) => Math.max(0, Math.min(1, u));
 
+// Sequence of segments [{ dur, ... }] played in a loop, with `pad` seconds of rest at the end.
+// at(seconds) returns the current segment, its progress u (0..1) and the loop time t.
+function cqTimeline(segs, pad = 0) {
+  let total = 0;
+  for (const s of segs) {
+    s.start = total;
+    total += s.dur;
+  }
+  total += pad;
+  return {
+    total,
+    at(seconds) {
+      const t = seconds % total;
+      const seg = segs.find((s) => t < s.start + s.dur) || segs[segs.length - 1];
+      return { seg, u: cqClamp01((t - seg.start) / seg.dur), t, round: Math.floor(seconds / total) };
+    },
+  };
+}
+
 // Position along a jump/shot arc from (x0,y0) to (x1,y1) peaking h above the straight line.
 function cqArc(x0, y0, x1, y1, h, u) {
   return { x: cqLerp(x0, x1, u), y: cqLerp(y0, y1, u) - 4 * h * u * (1 - u) };
@@ -296,6 +315,14 @@ const CQ_POSE = {
   slide: { hipY: CQ_GROUND - 7, lean: -62, legF: [-84, 2], legB: [-50, 100], armF: [-30, -20], armB: [80, 10] },
   shield: { hipY: CQ_GROUND - 31, lean: -4, legF: [-18, 28], legB: [22, 26], armF: [-35, -40], armB: [80, -5] },
   bend: { hipY: CQ_GROUND - 14, lean: 60, legF: [-75, 120], legB: [30, 60], armF: [-60, 0], armB: [60, -40] },
+  squat: { hipY: CQ_GROUND - 21, lean: 30, legF: [-70, 100], legB: [-62, 96], armF: [-110, 0], armB: [-105, 0] },
+  knee: { hipY: CQ_GROUND - 35, lean: 4, legF: [-90, 90], legB: [6, 6], armF: [40, -80], armB: [-45, -80] },
+  chest: { hipY: CQ_GROUND - 34, lean: -20, legF: [-8, 16], legB: [14, 16], armF: [-60, -20], armB: [70, -20] },
+  // Lying and floor poses: the torso turns by "lean" around the hip.
+  plank: { hipY: CQ_GROUND - 16, lean: 90, legF: [78, 0], legB: [80, 0], armF: [-90, -90], armB: [-90, -90] },
+  lieBack: { hipY: CQ_GROUND - 6, lean: -88, legF: [-143, 113], legB: [-140, 110], armF: [-30, -130], armB: [-30, -130] },
+  sitUp: { hipY: CQ_GROUND - 6, lean: 18, legF: [-143, 113], legB: [-140, 110], armF: [-30, -130], armB: [-30, -130] },
+  lunge: { hipY: CQ_GROUND - 24, lean: 0, legF: [-75, 75], legB: [20, 70], armF: [10, -20], armB: [-10, -20] },
 };
 
 function cqRunPose(s) {
@@ -341,13 +368,18 @@ function cqKeys(frames, t) {
      scenery     svg drawn behind the player (goal, chair...)
      flight(u)   ball position {x, y} for u from 0 to 1 after the kick
      flightT     seconds the ball takes to arrive
-     flash       selector of the element that flashes when the ball arrives */
+     flash       selector of the element that flashes when the ball arrives
+   Optional:
+     runUp       false = the player waits in place (ball coming to him)
+     before(t)   ball position {x, y} before the kick (t from 0 to 1 s)
+     note        extra svg drawn over the scenery (labels)
+     helper      svg drawn behind the player; onFrame(svg, t) animates it */
 function cqKickScene(box, opts, cfg) {
   const runT = 0.7;
   const hitAt = 1.0;
   const cycle = Math.max(hitAt + cfg.flightT + 0.7, 2.2);
   const contactX = cfg.ballX - 22;
-  const startX = contactX - 50;
+  const startX = cfg.runUp === false ? contactX - 4 : contactX - 50;
   const frames = [
     { t: runT, x: contactX - 4, pose: CQ_POSE.ready },
     { t: 0.88, x: contactX - 2, pose: CQ_POSE.kickBack },
@@ -359,12 +391,13 @@ function cqKickScene(box, opts, cfg) {
   box.innerHTML = cqSceneSvg(opts.label, `
     ${cfg.scenery}
     ${cfg.note || ""}
-    ${cqPlayerSvg()}
+    ${cfg.helper || ""}
+    <g class="a-me">${cqPlayerSvg()}</g>
     <g class="a-ball-pos">${cqBallSvg(6)}</g>
     ${cqCountSvg(opts.unit)}`);
 
   const svg = box.querySelector("svg");
-  const rig = cqPlayerRig(svg);
+  const rig = cqPlayerRig(svg.querySelector(".a-me"));
   const ball = cqMovableBall(svg);
   const count = cqCounter(svg, opts.unit);
   const flashEl = cfg.flash ? svg.querySelector(cfg.flash) : null;
@@ -372,15 +405,19 @@ function cqKickScene(box, opts, cfg) {
   return cqLoop((seconds) => {
     const round = Math.floor(seconds / cycle);
     const t = seconds - round * cycle;
-    if (t < runT) {
+    if (t < runT && cfg.runUp !== false) {
       const x = cqLerp(startX, contactX - 4, t / runT);
       rig.pose(x, 1, cqMixPose(cqRunPose(x / 8), CQ_POSE.ready, cqClamp01((t - runT + 0.2) / 0.2)));
-    } else {
+    } else if (t < runT) rig.pose(startX, 1, CQ_POSE.ready);
+    else {
       const st = cqKeys(frames, t);
       rig.pose(st.x, 1, st.pose);
     }
-    if (t < hitAt) ball(cfg.ballX, CQ_GROUND - 6, 0);
-    else {
+    if (cfg.onFrame) cfg.onFrame(svg, t);
+    if (t < hitAt) {
+      const p = cfg.before ? cfg.before(t) : { x: cfg.ballX, y: CQ_GROUND - 6 };
+      ball(p.x, p.y, p.x * 9.5);
+    } else {
       const u = cqClamp01((t - hitAt) / cfg.flightT);
       const p = cfg.flight(u);
       ball(p.x, p.y, u * 720);
