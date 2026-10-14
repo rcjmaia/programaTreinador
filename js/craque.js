@@ -1041,11 +1041,11 @@ function renderCraque() {
   }
 
   // Floating "+n" where a hit happened, shown when a hit is worth more than 1 point.
-  function popPoints(area, x, y, n) {
+  function popPoints(area, x, y, n, label = "") {
     if (n < 2) return;
     const el = document.createElement("span");
     el.className = "cq-pop";
-    el.textContent = `+${n}`;
+    el.textContent = label ? `+${n} ${label}` : `+${n}`;
     el.style.left = `${x}px`;
     el.style.top = `${y}px`;
     area.appendChild(el);
@@ -1572,8 +1572,27 @@ function renderCraque() {
     dialog.querySelector("[data-back]").addEventListener("click", () => {
       closeModal();
       draw(up);
-      if (up.size) app.querySelector(".cq-card")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      animateXp(state.xp - xp);
+      app.querySelector(up.size ? ".cq-card" : ".cq-status")?.scrollIntoView({ behavior: "smooth", block: "center" });
     });
+  }
+
+  // The bar starts where it was before the mission and then fills up to the new XP.
+  function animateXp(from) {
+    const bar = app.querySelector(".cq-xpbar i");
+    const box = app.querySelector(".cq-level");
+    if (!bar || from >= state.xp) return;
+    const target = bar.style.width;
+    const sameLevel = Math.floor(from / CQ_XP.perLevel) === Math.floor(state.xp / CQ_XP.perLevel);
+    bar.style.transition = "none";
+    bar.style.width = sameLevel ? `${(from % CQ_XP.perLevel) / CQ_XP.perLevel * 100}%` : "0%";
+    void bar.offsetWidth;
+    bar.style.transition = "";
+    setTimeout(() => {
+      bar.style.width = target;
+      popPoints(box, box.clientWidth / 2, 0, state.xp - from, "XP");
+    }, 350);
+    box.querySelectorAll(":scope > span:first-child, :scope > small").forEach((el) => el.classList.add("is-up"));
   }
 
   root.innerHTML = `
