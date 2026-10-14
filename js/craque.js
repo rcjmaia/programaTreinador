@@ -865,11 +865,11 @@ function renderCraque() {
       <div class="cq-timer"><b>0</b><span class="cq-grid-next"></span><button type="button" class="cq-btn is-ghost" data-grid>${tx.start}</button></div>
       <div class="cq-grid" style="--n:${m.grid.size}"></div>`;
     if (m.rain) tool = `<div class="cq-play">
-      <div class="cq-timer"><b>0</b><span class="cq-rain-score">🏆 0 · ${tx.record} ${state.records[m.id] ?? 0}</span><button type="button" class="cq-btn is-ghost" data-rain>${tx.start}</button></div>
-      <div class="cq-rain-wrap${m.rain.sides ? " is-duo" : ""}">${(m.rain.sides || [0]).map(() => `<div class="cq-rain"><div class="cq-rain-rule"></div></div>`).join("")}</div></div>`;
+      <div class="cq-timer"><span class="cq-rain-score">🏆 0 · ${tx.record} ${state.records[m.id] ?? 0}</span><button type="button" class="cq-btn is-ghost" data-rain>${tx.start}</button></div>
+      <div class="cq-rain-wrap${m.rain.sides ? " is-duo" : ""}"><span class="cq-game-count is-faint">0</span>${(m.rain.sides || [0]).map(() => `<div class="cq-rain"><div class="cq-rain-rule"></div></div>`).join("")}</div></div>`;
     if (m.dodge) tool = `<div class="cq-play">
       <div class="cq-timer"><span class="cq-rain-score">🏆 0 · ${tx.record} ${state.records[m.id] ?? 0}</span><button type="button" class="cq-btn is-ghost" data-dodge>${tx.start}</button></div>
-      <div class="cq-rain-wrap is-duo"><span class="cq-dodge-count" aria-live="off">0</span>${[0, 1].map(() => `<div class="cq-rain cq-dodge"><div class="cq-rain-rule">${tx.dodgeHint}</div><span class="cq-dodge-ball">⚽</span></div>`).join("")}</div></div>`;
+      <div class="cq-rain-wrap is-duo"><span class="cq-game-count" aria-live="off">0</span>${[0, 1].map(() => `<div class="cq-rain cq-dodge"><div class="cq-rain-rule">${tx.dodgeHint}</div><span class="cq-dodge-ball">⚽</span></div>`).join("")}</div></div>`;
 
     openModal(`
       ${missionHeader(m)}
@@ -968,8 +968,7 @@ function renderCraque() {
   };
 
   /* Concentration grid: tap the cells in order as fast as possible; the time in seconds is the result.
-     m.grid: { size, order: "up" | "down" | "duo" }
-       duo alternates blue 1, red 1, blue 2, red 2... */
+     m.grid: { size } */
   function startGrid(m, btn, input) {
     stopTimer();
     gameResult(input);
@@ -978,19 +977,8 @@ function renderCraque() {
     const grid = dialog.querySelector(".cq-grid");
     const out = btn.closest(".cq-timer").querySelector("b");
     const nextEl = btn.closest(".cq-timer").querySelector(".cq-grid-next");
-    let seq;
-    if (g.order === "duo") {
-      const blue = Math.ceil(n / 2);
-      seq = [];
-      for (let i = 1; i <= blue; i++) {
-        seq.push(`b${i}`);
-        if (i <= n - blue) seq.push(`r${i}`);
-      }
-    } else {
-      seq = Array.from({ length: n }, (_, i) => `n${g.order === "down" ? n - i : i + 1}`);
-    }
-    const cell = (k) => ({ num: k.slice(1), cls: k[0] === "b" ? "is-blue" : k[0] === "r" ? "is-red" : "" });
-    grid.innerHTML = shuffle([...seq]).map((k) => `<button type="button" data-k="${k}" class="${cell(k).cls}">${cell(k).num}</button>`).join("");
+    const seq = Array.from({ length: n }, (_, i) => String(i + 1));
+    grid.innerHTML = shuffle([...seq]).map((k) => `<button type="button" data-k="${k}">${k}</button>`).join("");
     btn.textContent = t().restart;
     let step = 0;
     const showNext = () => {
@@ -998,8 +986,7 @@ function renderCraque() {
         nextEl.textContent = "";
         return;
       }
-      const c = cell(seq[step]);
-      nextEl.innerHTML = `→ <span class="${c.cls}">${c.num}</span>`;
+      nextEl.textContent = `→ ${seq[step]}`;
     };
     showNext();
     const startAt = Date.now();
@@ -1029,25 +1016,67 @@ function renderCraque() {
     }));
   }
 
-  /* Colour rain: balls fall and the rule colour keeps changing. Every right tap adds to the streak and
-     speeds the game up (TURBO after m.rain.turboAt); a wrong tap or a right ball let through resets it.
-     There is no clock: the match runs until Stop, and the result is the best streak of the match.
-     m.rain: { turboAt, mode: "only" | "avoid" | "stroop", sides: [mode, mode] }
+  /* Speed levels shared by the rain and the dodge: they go up with the match time and never come down,
+     and every level makes each hit worth one more point (1, 2, 3, 4). */
+  const CQ_SPEED = [
+    { from: 0, banner: "" },
+    { from: 10, banner: "⚡ TURBO! ⚡" },
+    { from: 70, banner: "⚡⚡ TURBO x2 ⚡⚡" },
+    { from: 130, banner: "⚡⚡⚡ TURBO x3 ⚡⚡⚡" },
+  ];
+
+  // cross[i]: seconds an item takes to cross the pitch at level i; gap[i]: ms between items.
+  // Each level change eases in over 1.5 s.
+  function gameSpeed(elapsed, cross, gap) {
+    const li = CQ_SPEED.reduce((acc, l, i) => (elapsed >= l.from ? i : acc), 0);
+    const ease = cqClamp01((elapsed - CQ_SPEED[li].from) / 1.5);
+    const p = Math.max(0, li - 1);
+    return { li, points: li + 1, cross: cqLerp(cross[p], cross[li], ease), gap: cqLerp(gap[p], gap[li], ease) };
+  }
+
+  function showSpeedLevel(wrap, li) {
+    wrap.classList.remove("is-turbo");
+    void wrap.offsetWidth;
+    wrap.classList.add("is-turbo");
+    wrap.dataset.turbo = CQ_SPEED[li].banner;
+    sound.go();
+    if (navigator.vibrate) navigator.vibrate([100, 60, 100]);
+  }
+
+  // Floating "+n" where a hit happened, shown when a hit is worth more than 1 point.
+  function popPoints(area, x, y, n) {
+    if (n < 2) return;
+    const el = document.createElement("span");
+    el.className = "cq-pop";
+    el.textContent = `+${n}`;
+    el.style.left = `${x}px`;
+    el.style.top = `${y}px`;
+    area.appendChild(el);
+    setTimeout(() => el.remove(), 700);
+  }
+
+  /* Colour rain: balls fall and the rule colour keeps changing. Every right tap adds points (more at each
+     speed level); a wrong tap or a right ball let through resets them.
+     The match runs until Stop, and the result is the best score of the match.
+     m.rain: { mode: "only" | "avoid" | "stroop", sides: [mode, mode] }
        only: tap the rule colour; avoid: tap every colour except it;
        stroop: like only, but the colour name is printed in a different ink and the word is what counts.
        sides splits the screen in two lanes, each with its own rule. */
   const CQ_RAIN_COLORS = { red: "#ef4444", blue: "#3b82f6", yellow: "#facc15", green: "#22c55e" };
+  const CQ_RAIN_CROSS = [3.6, 2.0, 1.6, 1.3];
+  const CQ_RAIN_GAP = [950, 520, 400, 320];
 
   function startRain(m, btn, input) {
     if (btn.cqStop) return btn.cqStop();
     stopTimer();
     gameResult(input);
     const tx = t();
-    const turboAt = m.rain.turboAt;
     const modes = m.rain.sides || [m.rain.mode];
     const duo = modes.length > 1;
     const wrap = dialog.querySelector(".cq-rain-wrap");
-    const out = btn.closest(".cq-timer").querySelector("b");
+    const out = wrap.querySelector(".cq-game-count");
+    const TAP_R = duo ? 32 : 36;
+    const RULE_GRACE = 900;
     const scoreEl = btn.closest(".cq-timer").querySelector(".cq-rain-score");
     wrap.querySelectorAll(".cq-rain-ball").forEach((el) => el.remove());
     wrap.classList.remove("is-turbo");
@@ -1059,6 +1088,7 @@ function renderCraque() {
     const startAt = Date.now();
     let streak = 0;
     let best = 0;
+    let speed = gameSpeed(0, CQ_RAIN_CROSS, CQ_RAIN_GAP);
 
     const lanes = [...wrap.querySelectorAll(".cq-rain")].map((area, i) => ({
       area,
@@ -1066,6 +1096,8 @@ function renderCraque() {
       mode: modes[i],
       target: pick(colors),
       rule: 0,
+      prevTarget: null,
+      changedAt: 0,
       balls: [],
       ruleAt: startAt + 5000 + Math.random() * 2000 + i * 1800,
       spawnAt: startAt + 400 + i * 300,
@@ -1077,7 +1109,10 @@ function renderCraque() {
       const ink = lane.mode === "stroop" ? other(lane.target) : lane.target;
       const word = `<b style="color:${CQ_RAIN_COLORS[ink]}">${tx.rainColors[lane.target]}</b>`;
       const text = lane.mode === "avoid" ? (duo ? tx.rainAvoidShort : tx.rainAvoid) : (duo ? tx.rainOnlyShort : tx.rainOnly);
-      lane.ruleEl.innerHTML = fill(text, { c: word });
+      lane.ruleEl.innerHTML = `${lane.mode === "avoid" ? "🚫" : "✅"} ${fill(text, { c: word })}`;
+      lane.ruleEl.classList.toggle("is-avoid", lane.mode === "avoid");
+      lane.area.classList.toggle("is-avoid", lane.mode === "avoid");
+      lane.area.classList.toggle("is-only", lane.mode !== "avoid");
       lane.ruleEl.classList.remove("is-new");
       void lane.ruleEl.offsetWidth;
       lane.ruleEl.classList.add("is-new");
@@ -1112,7 +1147,6 @@ function renderCraque() {
     const miss = (lane) => {
       streak = 0;
       showScore();
-      wrap.classList.remove("is-turbo");
       lane.area.classList.remove("is-crash");
       void lane.area.offsetWidth;
       lane.area.classList.add("is-crash");
@@ -1122,15 +1156,30 @@ function renderCraque() {
 
     lanes.forEach((lane) => {
       lane.area.onpointerdown = (e) => {
-        const el = e.target.closest(".cq-rain-ball");
-        if (!el) return;
-        const ball = lane.balls.find((b) => b.el === el);
-        if (!ball || ball.done) return;
+        // The tap goes to the ball whose centre is closest to the finger, not to whichever element is on top.
+        const box = lane.area.getBoundingClientRect();
+        const px = e.clientX - box.left;
+        const py = e.clientY - box.top;
+        let ball = null;
+        let bestD = TAP_R;
+        lane.balls.forEach((b) => {
+          const d = Math.hypot(b.x - px, b.y - py);
+          if (!b.done && d < bestD) {
+            bestD = d;
+            ball = b;
+          }
+        });
+        if (!ball) return;
+        e.preventDefault();
         ball.done = true;
-        if (isGood(lane, ball.color)) {
-          streak++;
+        const el = ball.el;
+        // Right after a rule change, a ball that was right under the old rule still counts as right.
+        const justChanged = Date.now() - lane.changedAt < RULE_GRACE;
+        if (isGood(lane, ball.color) || (justChanged && isGood({ ...lane, target: lane.prevTarget }, ball.color))) {
+          streak += speed.points;
           if (streak > best) best = streak;
           showScore();
+          popPoints(lane.area, ball.x, ball.y, speed.points);
           el.classList.add("is-hit");
           sound.tick();
         } else {
@@ -1147,16 +1196,14 @@ function renderCraque() {
       const now = Date.now();
       const dt = (now - last) / 1000;
       last = now;
-      const turbo = streak >= turboAt;
-      const k = turbo ? cqClamp01((streak - turboAt) / turboAt) : cqClamp01(streak / turboAt);
-      if (turbo && !wrap.classList.contains("is-turbo")) {
-        wrap.classList.add("is-turbo");
-        wrap.dataset.turbo = "⚡ TURBO! ⚡";
-        sound.go();
-        if (navigator.vibrate) navigator.vibrate([100, 60, 100]);
-      }
+      const next = gameSpeed((now - startAt) / 1000, CQ_RAIN_CROSS, CQ_RAIN_GAP);
+      if (next.li !== speed.li) showSpeedLevel(wrap, next.li);
+      speed = next;
+      const turbo = speed.li > 0;
       lanes.forEach((lane) => {
         if (now >= lane.ruleAt) {
+          lane.prevTarget = lane.target;
+          lane.changedAt = now;
           lane.target = other(lane.target);
           lane.rule++;
           lane.ruleAt = now + (turbo ? 3000 + Math.random() * 1500 : 4500 + Math.random() * 2500);
@@ -1166,16 +1213,18 @@ function renderCraque() {
         const w = lane.area.clientWidth;
         const h = lane.area.clientHeight;
         if (now >= lane.spawnAt) {
-          lane.spawnAt = now + slow * (turbo ? cqLerp(420, 260, k) : cqLerp(950, 480, k));
+          lane.spawnAt = now + slow * speed.gap;
           const right = Math.random() < (lane.mode === "avoid" ? 0.3 : 0.4);
           const color = right ? lane.target : other(lane.target);
           const el = document.createElement("span");
           el.className = "cq-rain-ball";
           el.style.background = CQ_RAIN_COLORS[color];
+          const x = 26 + Math.random() * (w - 52);
+          el.style.transform = `translate(${x.toFixed(1)}px, -24px)`;
           lane.area.appendChild(el);
-          lane.balls.push({ el, color, rule: lane.rule, x: 26 + Math.random() * (w - 52), y: -24 });
+          lane.balls.push({ el, color, rule: lane.rule, x, y: -24 });
         }
-        const v = h / (turbo ? cqLerp(1.8, 1.15, k) : cqLerp(3.6, 2.1, k));
+        const v = h / speed.cross;
         lane.balls = lane.balls.filter((b) => {
           if (b.done) return false;
           b.y += v * dt;
@@ -1192,26 +1241,15 @@ function renderCraque() {
     }, 30);
   }
 
-  const CQ_DODGE_KITS = ["#dc2626", "#1d4ed8", "#111827", "#7c3aed", "#ea580c"];
-  const CQ_DODGE_SKINS = ["#f1c27d", "#c68642", "#8d5524"];
-  const CQ_DODGE_OBS = [
-    () => `<svg viewBox="0 0 40 40"><path d="M20 3 L32 34 H8 Z" fill="#f97316"/><path d="M14.5 19 H25.5 L27.5 25 H12.5 Z" fill="#fff"/><rect x="5" y="33" width="30" height="4" rx="2" fill="#c2410c"/></svg>`,
-    (kit, skin) => `<svg viewBox="0 0 40 40"><g stroke-linecap="round"><path d="M16 30 L15 38 M24 30 L25 38" stroke="${skin}" stroke-width="3.5"/><path d="M14 16 L5 22 M26 16 L35 22" stroke="${kit}" stroke-width="4"/></g><rect x="13" y="13" width="14" height="13" rx="3" fill="${kit}"/><rect x="14" y="25" width="12" height="6" rx="1.5" fill="#f8fafc"/><circle cx="20" cy="8" r="5" fill="${skin}"/><path d="M15 7 Q15 2 20 2 Q25 2 25 7 Q20 4.5 15 7 Z" fill="#1f1610"/></svg>`,
-    (kit, skin) => `<svg viewBox="0 0 40 40"><ellipse cx="29" cy="35" rx="10" ry="3" fill="rgba(255,255,255,0.4)"/><g stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M21 23 L37 28" stroke="${skin}" stroke-width="5"/><path d="M21 23 L26 31 L32 33" stroke="${skin}" stroke-width="5"/><path d="M11 17 L4 25" stroke="${kit}" stroke-width="5"/><path d="M10 14 L20 22" stroke="${kit}" stroke-width="12"/></g><circle cx="21" cy="23" r="5.5" fill="#f8fafc"/><circle cx="7" cy="9" r="6" fill="${skin}"/><path d="M1.5 8 Q2 2 7 2.5 Q12 3 12.5 8 Q7 5.5 1.5 8 Z" fill="#1f1610"/></svg>`,
-  ];
+  const CQ_DODGE_CONE = `<svg viewBox="0 0 40 40"><path d="M20 3 L32 34 H8 Z" fill="#f97316"/><path d="M14.5 19 H25.5 L27.5 25 H12.5 Z" fill="#fff"/><rect x="5" y="33" width="30" height="4" rx="2" fill="#c2410c"/></svg>`;
   const pick = (list) => list[Math.floor(Math.random() * list.length)];
 
   /* Double dodge: one ball at the top of each half, obstacles rise from the bottom.
-     Tapping a half moves its ball to the other column. Every obstacle passed adds to the streak and a
-     crash resets it. The speed goes up with the match time (CQ_DODGE_LEVELS) and stays at the last level.
-     The match runs until Stop, and the result is the best streak of the match. */
-  // from: seconds into the match; cross: seconds an obstacle takes to climb the lane; gap: ms between obstacles.
-  const CQ_DODGE_LEVELS = [
-    { from: 0, cross: 2.8, gap: 1400, banner: "" },
-    { from: 10, cross: 1.6, gap: 780, banner: "⚡ TURBO! ⚡" },
-    { from: 70, cross: 1.35, gap: 660, banner: "⚡⚡ TURBO x2 ⚡⚡" },
-    { from: 130, cross: 1.15, gap: 560, banner: "⚡⚡⚡ TURBO x3 ⚡⚡⚡" },
-  ];
+     Tapping a half moves its ball to the other column. Every obstacle passed adds points (more at each
+     speed level, see CQ_SPEED) and a crash resets them.
+     The match runs until Stop, and the result is the best score of the match. */
+  const CQ_DODGE_CROSS = [2.8, 1.6, 1.35, 1.15];
+  const CQ_DODGE_GAP = [1400, 780, 660, 560];
 
   function startDodge(m, btn, input) {
     if (btn.cqStop) return btn.cqStop();
@@ -1219,7 +1257,7 @@ function renderCraque() {
     gameResult(input);
     const tx = t();
     const wrap = dialog.querySelector(".cq-rain-wrap");
-    const out = wrap.querySelector(".cq-dodge-count");
+    const out = wrap.querySelector(".cq-game-count");
     const scoreEl = btn.closest(".cq-timer").querySelector(".cq-rain-score");
     wrap.querySelectorAll(".cq-dodge-obs").forEach((el) => el.remove());
     wrap.classList.remove("is-turbo");
@@ -1231,7 +1269,7 @@ function renderCraque() {
     const startAt = Date.now();
     let streak = 0;
     let best = 0;
-    let level = 0;
+    let speed = gameSpeed(0, CQ_DODGE_CROSS, CQ_DODGE_GAP);
 
     const lanes = [...wrap.querySelectorAll(".cq-dodge")].map((area, i) => {
       area.querySelector(".cq-rain-rule").textContent = "";
@@ -1291,35 +1329,21 @@ function renderCraque() {
       const now = Date.now();
       const dt = (now - last) / 1000;
       last = now;
-      const elapsed = (now - startAt) / 1000;
-      const li = CQ_DODGE_LEVELS.reduce((acc, l, i) => (elapsed >= l.from ? i : acc), 0);
-      const lv = CQ_DODGE_LEVELS[li];
-      // Each level change eases in over 1.5 s.
-      const prev = CQ_DODGE_LEVELS[Math.max(0, li - 1)];
-      const ease = cqClamp01((elapsed - lv.from) / 1.5);
-      const cross = cqLerp(prev.cross, lv.cross, ease);
-      const gap = cqLerp(prev.gap, lv.gap, ease);
-      if (li !== level) {
-        level = li;
-        wrap.classList.remove("is-turbo");
-        void wrap.offsetWidth;
-        wrap.classList.add("is-turbo");
-        wrap.dataset.turbo = lv.banner;
-        sound.go();
-        if (navigator.vibrate) navigator.vibrate([100, 60, 100]);
-      }
+      const next = gameSpeed((now - startAt) / 1000, CQ_DODGE_CROSS, CQ_DODGE_GAP);
+      if (next.li !== speed.li) showSpeedLevel(wrap, next.li);
+      speed = next;
       lanes.forEach((lane) => {
         const h = lane.area.clientHeight;
-        const v = h / cross;
+        const v = h / speed.cross;
         // The pitch scrolls with the obstacles.
         lane.bg = (lane.bg - v * dt) % 68;
         lane.area.style.backgroundPositionY = `${lane.bg.toFixed(1)}px`;
         if (now >= lane.spawnAt) {
-          lane.spawnAt = now + gap * (0.85 + Math.random() * 0.3);
+          lane.spawnAt = now + speed.gap * (0.85 + Math.random() * 0.3);
           const col = Math.random() < 0.5 ? 0 : 1;
           const el = document.createElement("span");
           el.className = "cq-dodge-obs";
-          el.innerHTML = pick(CQ_DODGE_OBS)(pick(CQ_DODGE_KITS), pick(CQ_DODGE_SKINS));
+          el.innerHTML = CQ_DODGE_CONE;
           el.style.left = col ? "75%" : "25%";
           lane.area.appendChild(el);
           lane.obs.push({ el, col, y: h + 30 });
@@ -1335,9 +1359,10 @@ function renderCraque() {
           }
           if (!o.done && o.y < BALL_Y - HIT) {
             o.done = true;
-            streak++;
+            streak += speed.points;
             if (streak > best) best = streak;
             showScore();
+            popPoints(lane.area, lane.area.clientWidth * (lane.col ? 0.75 : 0.25), BALL_Y + 34, speed.points);
           }
           if (o.y < -30) {
             o.el.remove();

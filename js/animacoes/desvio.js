@@ -27,8 +27,6 @@ cqRegisterAnim("desvio", (box, opts) => {
   const crashAt = events.find((e) => e.crash).tp;
 
   const cone = `<path d="M20 3 L32 34 H8 Z" fill="#f97316"/><path d="M14.5 19 H25.5 L27.5 25 H12.5 Z" fill="#fff"/><rect x="5" y="33" width="30" height="4" rx="2" fill="#c2410c"/>`;
-  const defender = (kit) => `<g stroke-linecap="round"><path d="M16 30 L15 38 M24 30 L25 38" stroke="#c68642" stroke-width="3.5"/><path d="M14 16 L5 22 M26 16 L35 22" stroke="${kit}" stroke-width="4"/></g><rect x="13" y="13" width="14" height="13" rx="3" fill="${kit}"/><rect x="14" y="25" width="12" height="6" rx="1.5" fill="#f8fafc"/><circle cx="20" cy="8" r="5" fill="#c68642"/><path d="M15 7 Q15 2 20 2 Q25 2 25 7 Q20 4.5 15 7 Z" fill="#1f1610"/>`;
-  const looks = [cone, defender("#dc2626"), defender("#1d4ed8"), cone];
 
   box.innerHTML = `
     <svg class="cq-anim-svg" viewBox="0 0 ${CQ_W} 170" role="img" aria-label="${opts.label}">
@@ -40,7 +38,7 @@ cqRegisterAnim("desvio", (box, opts) => {
         <g clip-path="url(#dg-clip${i})">
           <rect x="${l.x}" y="${TOP}" width="130" height="${H}" fill="url(#dg-grass)"/>
           <rect class="dg-flash" x="${l.x}" y="${TOP}" width="130" height="${H}" fill="#ef4444" opacity="0"/>
-          ${l.obs.map((o, j) => `<g class="dg-obs">${looks[(j + i) % looks.length]}</g>`).join("")}
+          ${l.obs.map((o, j) => `<g class="dg-obs">${cone}</g>`).join("")}
           <g class="dg-ball">${cqBallSvg(11)}</g>
           <circle class="dg-ring" cx="${l.x + 65}" cy="${TOP + H - 26}" r="10" fill="none" stroke="#fff" stroke-width="2.5" opacity="0"/>
           <text class="dg-finger" x="${l.x + 65}" y="${TOP + H - 18}" text-anchor="middle" font-size="22" opacity="0">👆</text>
