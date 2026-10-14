@@ -20,6 +20,14 @@ const SITE = {
   },
 };
 
+/* Supabase (login e banco do Craque Inteligente).
+   Cole a "Project URL" e a "anon public key" (Project Settings > API).
+   Sem isso a página não funciona: todos os dados ficam no banco. */
+const SUPABASE = {
+  url: "https://ovisjuzmkmfcismusaws.supabase.co",
+  anonKey: "sb_publishable_nDTwyAxKGWmXtfpk3yTDlA_8kr9cVcM",
+};
+
 /* Cursos listados na página "Quem é o Scout" (nome, instituição, carga horária) */
 const COURSES = [
   ["Análise de Desempenho e Scouting", "Vivendo de Análise", 60],

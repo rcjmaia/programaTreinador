@@ -13,7 +13,7 @@ function waLink() {
 
 function renderLayout() {
   const page = document.body.dataset.page || "home";
-  const trainingPages = ["gk", "school", "adult", "physical", "nutrition", "tactical", "studies", "mind"];
+  const trainingPages = ["gk", "school", "adult", "physical", "nutrition", "tactical", "lab", "studies", "mind"];
   const trainActive = trainingPages.includes(page);
 
   const header = document.getElementById("site-header");
@@ -35,16 +35,17 @@ function renderLayout() {
         <a href="index.html" class="${page === "home" ? "is-active" : ""}" data-i18n="nav.home"></a>
         <a href="vitrine.html" class="${page === "showcase" ? "is-active" : ""}" data-i18n="nav.showcase"></a>
         <a href="sobre.html" class="${page === "about" ? "is-active" : ""}" data-i18n="nav.about"></a>
+        <a href="craque.html" class="nav-craque ${page === "craque" ? "is-active" : ""}" data-i18n="nav.craque"></a>
         <div class="nav-drop ${trainActive ? "has-active" : ""}" id="train-drop">
           <button type="button" data-i18n="nav.trainings"></button>
           <div class="nav-drop-menu">
             <a href="goleiros.html" class="${page === "gk" ? "is-active" : ""}" data-i18n="nav.gk"></a>
             <a href="escolinha.html" class="${page === "school" ? "is-active" : ""}" data-i18n="nav.school"></a>
+            <a href="formacoes.html" class="nav-sub ${page === "lab" ? "is-active" : ""}" data-i18n="nav.lab"></a>
             <a href="adulto.html" class="${page === "adult" ? "is-active" : ""}" data-i18n="nav.adult"></a>
             <a href="fisico.html" class="${page === "physical" ? "is-active" : ""}" data-i18n="nav.physical"></a>
             <a href="nutricao.html" class="${page === "nutrition" ? "is-active" : ""}" data-i18n="nav.nutrition"></a>
-            <a href="tatico.html" class="${page === "tactical" ? "is-active" : ""}" data-i18n="nav.tactical"></a>
-            <a href="estudos.html" class="${page === "studies" ? "is-active" : ""}" data-i18n="nav.studies"></a>
+            <a href="tatico.html" class="${page === "tactical" ? "is-active" : ""}" data-i18n="nav.tactical"></a>            <a href="estudos.html" class="${page === "studies" ? "is-active" : ""}" data-i18n="nav.studies"></a>
             <a href="mente.html" class="${page === "mind" ? "is-active" : ""}" data-i18n="nav.mind"></a>
           </div>
         </div>
@@ -67,6 +68,7 @@ function renderLayout() {
         <a href="index.html" data-i18n="nav.home"></a>
         <a href="vitrine.html" data-i18n="nav.showcase"></a>
         <a href="sobre.html" data-i18n="nav.about"></a>
+        <a href="craque.html" data-i18n="nav.craque"></a>
       </nav>
       <div class="footer-contact">
         <a id="footer-wa" class="footer-pill is-wa" target="_blank" rel="noopener">${WA_ICON}<span>WhatsApp</span></a>

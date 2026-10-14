@@ -6,6 +6,14 @@ if (document.body.dataset.page === "showcase") {
   renderVitrine();
 }
 
+if (document.body.dataset.page === "lab") {
+  renderTacticsLab();
+}
+
+if (document.body.dataset.page === "craque") {
+  renderCraque();
+}
+
 if (document.body.dataset.page === "nutrition") {
   renderNutrition();
 }
