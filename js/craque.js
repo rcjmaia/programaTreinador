@@ -65,7 +65,6 @@ const CQ_TEXT = {
     start: "Iniciar",
     stop: "Parar",
     restart: "Recomeçar",
-    gridNoise: ["Rápido!", "Cadê?!", "Olha o placar!", "Tá demorando!", "E se errar?", "Vai, vai!", "Tá todo mundo olhando!"],
     rainOnly: "Toque só nas bolas {c}",
     rainAvoid: "Toque em todas, menos nas {c}",
     rainOnlyShort: "Só {c}",
@@ -150,7 +149,6 @@ const CQ_TEXT = {
     start: "Start",
     stop: "Stop",
     restart: "Restart",
-    gridNoise: ["Hurry!", "Where is it?!", "Check the score!", "Too slow!", "What if you miss?", "Go, go!", "Everyone's watching!"],
     rainOnly: "Tap only the {c} balls",
     rainAvoid: "Tap every ball except {c}",
     rainOnlyShort: "Only {c}",
@@ -235,7 +233,6 @@ const CQ_TEXT = {
     start: "Iniciar",
     stop: "Parar",
     restart: "Reiniciar",
-    gridNoise: ["¡Rápido!", "¿¡Dónde está!?", "¡Mira el marcador!", "¡Muy lento!", "¿Y si fallas?", "¡Vamos, vamos!", "¡Todos te miran!"],
     rainOnly: "Toca solo los balones {c}",
     rainAvoid: "Toca todos, menos los {c}",
     rainOnlyShort: "Solo {c}",
@@ -532,7 +529,7 @@ function renderCraque() {
   function dailyIds() {
     const today = dayKey();
     if (state.today.date !== today) state.today = { date: today, counts: {} };
-    if (!state.today.daily) {
+    if (!state.today.daily || state.today.daily.some((id) => !mission(id))) {
       state.today.daily = pickDaily();
       if (state.player) save();
     }
@@ -867,12 +864,12 @@ function renderCraque() {
     if (m.grid) tool = `
       <div class="cq-timer"><b>0</b><span class="cq-grid-next"></span><button type="button" class="cq-btn is-ghost" data-grid>${tx.start}</button></div>
       <div class="cq-grid" style="--n:${m.grid.size}"></div>`;
-    if (m.rain) tool = `
+    if (m.rain) tool = `<div class="cq-play">
       <div class="cq-timer"><b>0</b><span class="cq-rain-score">🏆 0 · ${tx.record} ${state.records[m.id] ?? 0}</span><button type="button" class="cq-btn is-ghost" data-rain>${tx.start}</button></div>
-      <div class="cq-rain-wrap${m.rain.sides ? " is-duo" : ""}">${(m.rain.sides || [0]).map(() => `<div class="cq-rain"><div class="cq-rain-rule"></div></div>`).join("")}</div>`;
-    if (m.dodge) tool = `
+      <div class="cq-rain-wrap${m.rain.sides ? " is-duo" : ""}">${(m.rain.sides || [0]).map(() => `<div class="cq-rain"><div class="cq-rain-rule"></div></div>`).join("")}</div></div>`;
+    if (m.dodge) tool = `<div class="cq-play">
       <div class="cq-timer"><b>0</b><span class="cq-rain-score">🏆 0 · ${tx.record} ${state.records[m.id] ?? 0}</span><button type="button" class="cq-btn is-ghost" data-dodge>${tx.start}</button></div>
-      <div class="cq-rain-wrap is-duo">${[0, 1].map(() => `<div class="cq-rain cq-dodge"><div class="cq-rain-rule">${tx.dodgeHint}</div><span class="cq-dodge-ball">⚽</span></div>`).join("")}</div>`;
+      <div class="cq-rain-wrap is-duo">${[0, 1].map(() => `<div class="cq-rain cq-dodge"><div class="cq-rain-rule">${tx.dodgeHint}</div><span class="cq-dodge-ball">⚽</span></div>`).join("")}</div></div>`;
 
     openModal(`
       ${missionHeader(m)}
@@ -971,8 +968,8 @@ function renderCraque() {
   };
 
   /* Concentration grid: tap the cells in order as fast as possible; the time in seconds is the result.
-     m.grid: { size, order: "up" | "down" | "duo", noise }
-       duo alternates blue 1, red 1, blue 2, red 2...; noise pops distracting phrases over the grid. */
+     m.grid: { size, order: "up" | "down" | "duo" }
+       duo alternates blue 1, red 1, blue 2, red 2... */
   function startGrid(m, btn, input) {
     stopTimer();
     gameResult(input);
@@ -993,9 +990,7 @@ function renderCraque() {
       seq = Array.from({ length: n }, (_, i) => `n${g.order === "down" ? n - i : i + 1}`);
     }
     const cell = (k) => ({ num: k.slice(1), cls: k[0] === "b" ? "is-blue" : k[0] === "r" ? "is-red" : "" });
-    grid.innerHTML = shuffle([...seq]).map((k) => `<button type="button" data-k="${k}" class="${cell(k).cls}">${cell(k).num}</button>`).join("")
-      + (g.noise ? `<span class="cq-grid-noise" aria-hidden="true"></span>` : "");
-    const noiseEl = grid.querySelector(".cq-grid-noise");
+    grid.innerHTML = shuffle([...seq]).map((k) => `<button type="button" data-k="${k}" class="${cell(k).cls}">${cell(k).num}</button>`).join("");
     btn.textContent = t().restart;
     let step = 0;
     const showNext = () => {
@@ -1008,21 +1003,9 @@ function renderCraque() {
     };
     showNext();
     const startAt = Date.now();
-    let noiseAt = startAt + 1500;
     sound.go();
     timer = setInterval(() => {
-      const now = Date.now();
-      out.textContent = Math.floor((now - startAt) / 1000);
-      if (noiseEl && now >= noiseAt) {
-        noiseAt = now + 1100 + Math.random() * 900;
-        const phrases = t().gridNoise;
-        noiseEl.textContent = `🐝 ${phrases[Math.floor(Math.random() * phrases.length)]}`;
-        noiseEl.style.left = `${10 + Math.random() * 50}%`;
-        noiseEl.style.top = `${10 + Math.random() * 75}%`;
-        noiseEl.classList.remove("is-on");
-        void noiseEl.offsetWidth;
-        noiseEl.classList.add("is-on");
-      }
+      out.textContent = Math.floor((Date.now() - startAt) / 1000);
     }, 100);
     grid.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
       if (b.dataset.k !== seq[step]) {
@@ -1038,7 +1021,6 @@ function renderCraque() {
       showNext();
       if (step >= seq.length) {
         stopTimer();
-        if (noiseEl) noiseEl.remove();
         const secs = Math.max(1, Math.round((Date.now() - startAt) / 1000));
         out.textContent = secs;
         sound.whistle();
@@ -1070,6 +1052,7 @@ function renderCraque() {
     wrap.querySelectorAll(".cq-rain-ball").forEach((el) => el.remove());
     wrap.classList.remove("is-turbo");
     btn.textContent = tx.stop;
+    btn.closest(".cq-play").classList.add("is-full");
     const colors = Object.keys(CQ_RAIN_COLORS);
     const other = (c) => pick(colors.filter((x) => x !== c));
     const record = state.records[m.id] ?? 0;
@@ -1111,6 +1094,7 @@ function renderCraque() {
     const finish = () => {
       btn.cqStop = null;
       btn.textContent = tx.restart;
+      btn.closest(".cq-play").classList.remove("is-full");
       stopTimer();
       wrap.classList.remove("is-turbo");
       lanes.forEach((lane) => {
@@ -1233,6 +1217,7 @@ function renderCraque() {
     wrap.querySelectorAll(".cq-dodge-obs").forEach((el) => el.remove());
     wrap.classList.remove("is-turbo");
     btn.textContent = tx.stop;
+    btn.closest(".cq-play").classList.add("is-full");
     const BALL_Y = 44;
     const HIT = 36;
     const record = state.records[m.id] ?? 0;
@@ -1261,6 +1246,7 @@ function renderCraque() {
     const finish = () => {
       btn.cqStop = null;
       btn.textContent = tx.restart;
+      btn.closest(".cq-play").classList.remove("is-full");
       stopTimer();
       wrap.classList.remove("is-turbo");
       lanes.forEach((lane) => {

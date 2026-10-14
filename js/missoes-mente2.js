@@ -94,17 +94,6 @@ CQ_MISSIONS.push(
     unit: ["segundos", "seconds", "segundos"],
   },
   {
-    id: "gradezum", type: "mind", icon: "🐝", subs: ["concentration", "composure"], tiers: [90, 60, 45, 35], lower: true, max: 600, grid: { size: 5, noise: true },
-    title: ["Grade com o Zum-Zum", "Grid with Buzz", "Cuadrícula con Zum-Zum"],
-    desc: ["De 1 a 25, mas o Zum-Zum fica gritando na tela para te distrair. Quanto menos segundos, melhor!", "From 1 to 25, but Buzz keeps shouting on screen to distract you. The fewer seconds, the better!", "Del 1 al 25, pero Zum-Zum grita en la pantalla para distraerte. ¡Cuantos menos segundos, mejor!"],
-    steps: [
-      ["Aperte Iniciar e ache os números em ordem.", "Press Start and find the numbers in order.", "Pulsa Iniciar y encuentra los números en orden."],
-      ["Vão aparecer frases tipo 'Rápido!' e 'Olha o placar!'. Deixe passar, como nuvens.", "Phrases like 'Hurry!' and 'Check the score!' will pop up. Let them pass, like clouds.", "Aparecerán frases como '¡Rápido!' y '¡Mira el marcador!'. Déjalas pasar, como nubes."],
-      ["É o treino de jogar com a torcida gritando.", "It's practice for playing with the crowd shouting.", "Es el entrenamiento para jugar con la hinchada gritando."],
-    ],
-    unit: ["segundos", "seconds", "segundos"],
-  },
-  {
     id: "grade6", type: "mind", icon: "🧠", subs: ["concentration"], tiers: [150, 110, 85, 70], lower: true, max: 900, grid: { size: 6 },
     title: ["Grade gigante", "Giant grid", "Cuadrícula gigante"],
     desc: ["Agora são 36 números: toque do 1 ao 36, em ordem. Quanto menos segundos, melhor!", "Now there are 36 numbers: tap from 1 to 36, in order. The fewer seconds, the better!", "Ahora son 36 números: toca del 1 al 36, en orden. ¡Cuantos menos segundos, mejor!"],
