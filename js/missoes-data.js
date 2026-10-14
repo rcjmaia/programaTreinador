@@ -39,20 +39,21 @@ const CQ_MISSIONS = [
   {
     id: "flipflops", type: "move", icon: "👟", subs: ["acceleration", "agility"], tiers: [4, 6, 8, 10], timer: { mode: "down", s: 30 }, anim: true,
     title: ["Busca-chinelos", "Flip-flop fetch", "Busca chanclas"],
-    desc: ["Em 30 segundos, quantos chinelos você busca e traz de volta, um por vez?", "In 30 seconds, how many flip-flops can you fetch and bring back, one at a time?", "En 30 segundos, ¿cuántas chanclas buscas y traes, una por vez?"],
+    desc: ["Em 30 segundos, quantos chinelos ou qualquer objeto você busca e traz de volta, um por vez?", "In 30 seconds, how many flip-flops or any other objects can you fetch and bring back, one at a time?", "En 30 segundos, ¿cuántas chanclas u otros objetos buscas y traes, uno por vez?"],
     steps: [
-      ["Espalhe chinelos a 5 passos de uma linha.", "Spread flip-flops 5 steps from a line.", "Reparte chanclas a 5 pasos de una línea."],
-      ["Corra, pegue um e traga até a linha.", "Run, grab one and bring it back to the line.", "Corre, agarra una y tráela a la línea."],
-      ["Cada chinelo trazido vale 1.", "Each flip-flop brought back counts as 1.", "Cada chancla traída cuenta 1."],
+      ["Espalhe chinelos ou qualquer objeto a 5 passos de uma linha.", "Spread flip-flops or any other objects 5 steps from a line.", "Reparte chanclas u otros objetos a 5 pasos de una línea."],
+      ["Corra, pegue um e traga até a linha.", "Run, grab one and bring it back to the line.", "Corre, agarra uno y tráelo a la línea."],
+      ["Cada objeto trazido vale 1.", "Each object brought back counts as 1.", "Cada objeto traído cuenta 1."],
     ],
-    unit: ["chinelos", "flip-flops", "chanclas"],
+    unit: ["objetos", "objects", "objetos"],
   },
   {
-    id: "sprintball", type: "ball", icon: "💨", subs: ["sprint", "carry"], tiers: [3, 5, 7, 9], timer: { mode: "down", s: 30 },
+    id: "sprintball", type: "ball", icon: "💨", subs: ["sprint", "carry"], tiers: [3, 5, 7, 9], timer: { mode: "down", s: 30 }, anim: true,
     title: ["Pique com bola", "Sprint with the ball", "Pique con balón"],
-    desc: ["Em 30 segundos, quantas idas e voltas conduzindo a bola entre duas linhas a 10 passos?", "In 30 seconds, how many round trips dribbling between two lines 10 steps apart?", "En 30 segundos, ¿cuántas idas y vueltas conduciendo entre dos líneas a 10 pasos?"],
+    desc: ["Em 30 segundos, quantas idas e voltas conduzindo a bola entre duas marcas a 10 passos?", "In 30 seconds, how many round trips dribbling between two markers 10 steps apart?", "En 30 segundos, ¿cuántas idas y vueltas conduciendo entre dos marcas a 10 pasos?"],
     steps: [
-      ["Marque duas linhas a 10 passos.", "Mark two lines 10 steps apart.", "Marca dos líneas a 10 pasos."],
+      ["Coloque duas marcas a 10 passos: cone, chinelo, garrafa ou qualquer objeto.", "Place two markers 10 steps apart: a cone, a flip-flop, a bottle or any object.", "Pon dos marcas a 10 pasos: un cono, una chancla, una botella o cualquier objeto."],
+      ["Conduza rápido, com toques curtos. Na marca, puxe a bola com a sola e vire.", "Dribble fast with short touches. At the marker, drag the ball back with your sole and turn.", "Conduce rápido con toques cortos. En la marca, arrastra el balón con la suela y gira."],
       ["Conduza rápido, com toques curtos.", "Dribble fast with short touches.", "Conduce rápido con toques cortos."],
       CQ_STEPS_ROUND_TRIP,
     ],
@@ -61,7 +62,7 @@ const CQ_MISSIONS = [
 
   // Finalização
   {
-    id: "target", type: "ball", icon: "🎯", subs: ["finishing", "power"], tiers: [3, 5, 7, 9], max: 10,
+    id: "target", type: "ball", icon: "🎯", subs: ["finishing", "power"], tiers: [3, 5, 7, 9], max: 10, anim: true,
     title: ["Chute no alvo", "Target shooting", "Tiro al blanco"],
     desc: ["Em 10 chutes, quantos acertam o alvo?", "Out of 10 shots, how many hit the target?", "De 10 tiros, ¿cuántos dan en el blanco?"],
     steps: [
@@ -72,7 +73,7 @@ const CQ_MISSIONS = [
     unit: CQ_UNIT_HITS,
   },
   {
-    id: "penalty", type: "ball", icon: "🥅", subs: ["penalties", "composure"], tiers: [3, 5, 7, 9], max: 10,
+    id: "penalty", type: "ball", icon: "🥅", subs: ["penalties", "composure"], tiers: [3, 5, 7, 9], max: 10, anim: true,
     title: ["Pênalti no cantinho", "Corner penalty", "Penalti al rincón"],
     desc: ["Em 10 cobranças, quantas entram no canto marcado?", "Out of 10 penalties, how many go into the marked corner?", "De 10 penaltis, ¿cuántos entran en el rincón marcado?"],
     steps: [
@@ -83,7 +84,7 @@ const CQ_MISSIONS = [
     unit: ["gols no canto", "corner goals", "goles al rincón"],
   },
   {
-    id: "header", type: "ball", icon: "💫", subs: ["headfin", "attpos"], tiers: [2, 4, 6, 8], max: 10,
+    id: "header", type: "ball", icon: "💫", subs: ["headfin", "attpos"], tiers: [2, 4, 6, 8], max: 10, anim: true,
     title: ["Cabeçada no gol", "Header on goal", "Cabezazo al arco"],
     desc: ["Em 10 tentativas, quantas cabeçadas para baixo acertam o canto do gol?", "Out of 10 tries, how many downward headers hit the corner of the goal?", "De 10 intentos, ¿cuántos cabezazos hacia abajo van al rincón del arco?"],
     steps: [
@@ -94,7 +95,7 @@ const CQ_MISSIONS = [
     unit: ["gols", "goals", "goles"],
   },
   {
-    id: "longshot", type: "ball", icon: "🚀", subs: ["longshots", "power"], tiers: [2, 4, 6, 8], max: 10,
+    id: "longshot", type: "ball", icon: "🚀", subs: ["longshots", "power"], tiers: [2, 4, 6, 8], max: 10, anim: true,
     title: ["Chute de longe", "Long shot", "Tiro lejano"],
     desc: ["Em 10 chutes de 15 passos, quantos acertam o gol?", "Out of 10 shots from 15 steps, how many are on target?", "De 10 tiros desde 15 pasos, ¿cuántos van al arco?"],
     steps: [
@@ -105,7 +106,7 @@ const CQ_MISSIONS = [
     unit: CQ_UNIT_HITS,
   },
   {
-    id: "volley", type: "ball", icon: "🦵", subs: ["volleys", "finishing"], tiers: [2, 4, 6, 8], max: 10,
+    id: "volley", type: "ball", icon: "🦵", subs: ["volleys", "finishing"], tiers: [2, 4, 6, 8], max: 10, anim: true,
     title: ["Bate-pronto", "Volley", "Volea"],
     desc: ["Em 10 tentativas, quantos chutes de bate-pronto acertam o alvo?", "Out of 10 tries, how many volleys hit the target?", "De 10 intentos, ¿cuántas voleas dan en el blanco?"],
     steps: [
@@ -118,7 +119,7 @@ const CQ_MISSIONS = [
 
   // Passes
   {
-    id: "weak", type: "ball", icon: "🦶", subs: ["short", "reactions"], tiers: [10, 20, 30, 40], timer: { mode: "down", s: 60 },
+    id: "weak", type: "ball", icon: "🦶", subs: ["short", "reactions"], tiers: [10, 20, 30, 40], timer: { mode: "down", s: 60 }, anim: true,
     title: ["Parede do pé fraco", "Weak-foot wall", "Pared de pierna débil"],
     desc: ["Em 1 minuto, quantos passes na parede só com o pé fraco?", "In 1 minute, how many wall passes with your weak foot only?", "En 1 minuto, ¿cuántos pases a la pared solo con la pierna débil?"],
     steps: [
@@ -129,7 +130,7 @@ const CQ_MISSIONS = [
     unit: ["passes", "passes", "pases"],
   },
   {
-    id: "longpass", type: "ball", icon: "🪣", subs: ["long"], tiers: [2, 4, 6, 8], max: 10,
+    id: "longpass", type: "ball", icon: "🪣", subs: ["long"], tiers: [2, 4, 6, 8], max: 10, anim: true,
     title: ["Lançamento no balde", "Bucket long pass", "Pase largo al balde"],
     desc: ["Em 10 lançamentos de 15 passos, quantos param perto do balde?", "Out of 10 long passes from 15 steps, how many stop near the bucket?", "De 10 pases largos desde 15 pasos, ¿cuántos quedan cerca del balde?"],
     steps: [
@@ -140,7 +141,7 @@ const CQ_MISSIONS = [
     unit: ["lançamentos certos", "good passes", "pases buenos"],
   },
   {
-    id: "cross", type: "ball", icon: "📦", subs: ["cross"], tiers: [2, 4, 6, 8], max: 10,
+    id: "cross", type: "ball", icon: "📦", subs: ["cross"], tiers: [2, 4, 6, 8], max: 10, anim: true,
     title: ["Cruzamento na caixa", "Cross into the box", "Centro al área"],
     desc: ["Em 10 cruzamentos, quantos caem dentro da área marcada?", "Out of 10 crosses, how many land inside the marked area?", "De 10 centros, ¿cuántos caen dentro del área marcada?"],
     steps: [
@@ -151,7 +152,7 @@ const CQ_MISSIONS = [
     unit: ["cruzamentos certos", "good crosses", "centros buenos"],
   },
   {
-    id: "freekick", type: "ball", icon: "🌀", subs: ["freekick", "curve"], tiers: [1, 3, 5, 7], max: 10,
+    id: "freekick", type: "ball", icon: "🌀", subs: ["freekick", "curve"], tiers: [1, 3, 5, 7], max: 10, anim: true,
     title: ["Falta com efeito", "Curled free kick", "Tiro libre con efecto"],
     desc: ["Em 10 cobranças, quantas passam pela barreira e acertam o gol?", "Out of 10 free kicks, how many get past the wall and hit the goal?", "De 10 tiros libres, ¿cuántos pasan la barrera y van al arco?"],
     steps: [
@@ -164,7 +165,7 @@ const CQ_MISSIONS = [
 
   // Condução
   {
-    id: "keepy", type: "ball", icon: "⚽", subs: ["control"], tiers: [5, 15, 30, 50],
+    id: "keepy", type: "ball", icon: "⚽", subs: ["control"], tiers: [5, 15, 30, 50], anim: true,
     title: ["Embaixadinhas", "Keep-ups", "Toques al aire"],
     desc: ["Quantas embaixadinhas seguidas sem deixar a bola cair?", "How many keep-ups in a row without dropping the ball?", "¿Cuántos toques seguidos sin que caiga el balón?"],
     steps: [
@@ -174,7 +175,7 @@ const CQ_MISSIONS = [
     unit: ["toques", "touches", "toques"],
   },
   {
-    id: "slalom", type: "ball", icon: "🩴", subs: ["carry", "balance"], tiers: [2, 4, 6, 8], timer: { mode: "down", s: 60 },
+    id: "slalom", type: "ball", icon: "🩴", subs: ["carry", "balance"], tiers: [2, 4, 6, 8], timer: { mode: "down", s: 60 }, anim: true,
     title: ["Slalom dos chinelos", "Flip-flop slalom", "Slalom de chanclas"],
     desc: ["Em 1 minuto, quantas idas e voltas conduzindo a bola entre 5 chinelos?", "In 1 minute, how many round trips dribbling through 5 flip-flops?", "En 1 minuto, ¿cuántas idas y vueltas conduciendo entre 5 chanclas?"],
     steps: [
@@ -185,7 +186,7 @@ const CQ_MISSIONS = [
     unit: CQ_UNIT_TRIPS,
   },
   {
-    id: "zigzag", type: "ball", icon: "〰️", subs: ["agility", "control"], tiers: [2, 4, 6, 8], timer: { mode: "down", s: 60 },
+    id: "zigzag", type: "ball", icon: "〰️", subs: ["agility", "control"], tiers: [2, 4, 6, 8], timer: { mode: "down", s: 60 }, anim: true,
     title: ["Zigue-zague", "Zigzag", "Zigzag"],
     desc: ["Em 1 minuto, quantas idas e voltas conduzindo em zigue-zague entre 6 chinelos?", "In 1 minute, how many zigzag round trips through 6 flip-flops?", "En 1 minuto, ¿cuántas idas y vueltas en zigzag entre 6 chanclas?"],
     steps: [
@@ -197,7 +198,7 @@ const CQ_MISSIONS = [
   },
 
   {
-    id: "dribble", type: "ball", icon: "🕺", subs: ["dribble", "agility"], tiers: [2, 4, 6, 8], timer: { mode: "down", s: 60 },
+    id: "dribble", type: "ball", icon: "🕺", subs: ["dribble", "agility"], tiers: [2, 4, 6, 8], timer: { mode: "down", s: 60 }, anim: true,
     title: ["Drible 1 contra 1", "1v1 dribble", "Regate 1 contra 1"],
     desc: ["Em 1 minuto, quantas vezes você dribla alguém da família e cruza a linha dele com a bola?", "In 1 minute, how many times can you beat a family member and cross their line with the ball?", "En 1 minuto, ¿cuántas veces regateas a alguien de tu familia y cruzas su línea con el balón?"],
     steps: [
@@ -208,7 +209,7 @@ const CQ_MISSIONS = [
     unit: ["dribles", "dribbles", "regates"],
   },
   {
-    id: "skills", type: "ball", icon: "✨", subs: ["dribble", "control"], tiers: [1, 2, 4, 6], max: 8,
+    id: "skills", type: "ball", icon: "✨", subs: ["dribble", "control"], tiers: [1, 2, 4, 6], max: 8, anim: true,
     title: ["Truques de craque", "Skill tricks", "Trucos de crack"],
     desc: ["Quantos truques diferentes você faz 3 vezes seguidas sem errar?", "How many different tricks can you do 3 times in a row without a mistake?", "¿Cuántos trucos distintos haces 3 veces seguidas sin fallar?"],
     steps: [
@@ -227,7 +228,7 @@ const CQ_MISSIONS = [
     unit: CQ_UNIT_HITS,
   },
   {
-    id: "steal", type: "ball", icon: "🧲", subs: ["interceptions", "awareness"], tiers: [1, 3, 5, 7], timer: { mode: "down", s: 60 },
+    id: "steal", type: "ball", icon: "🧲", subs: ["interceptions", "awareness"], tiers: [1, 3, 5, 7], timer: { mode: "down", s: 60 }, anim: true,
     title: ["Rouba-bola", "Ball thief", "Roba balón"],
     desc: ["Em 1 minuto, quantas vezes você rouba a bola de alguém da família?", "In 1 minute, how many times can you win the ball from a family member?", "En 1 minuto, ¿cuántas veces le robas el balón a alguien de tu familia?"],
     steps: [
@@ -238,7 +239,7 @@ const CQ_MISSIONS = [
     unit: ["roubadas", "steals", "robos"],
   },
   {
-    id: "heading", type: "ball", icon: "🎈", subs: ["heading"], tiers: [2, 4, 6, 8], max: 10,
+    id: "heading", type: "ball", icon: "🎈", subs: ["heading"], tiers: [2, 4, 6, 8], max: 10, anim: true,
     title: ["Cabeceio de defesa", "Defensive header", "Despeje de cabeza"],
     desc: ["Em 10 tentativas, quantos cabeceios acertam a parede acima de uma marca alta? Na defesa, a bola vai para cima e para longe.", "Out of 10 tries, how many headers hit the wall above a high mark? In defence, the ball goes high and far.", "De 10 intentos, ¿cuántos cabezazos dan en la pared sobre una marca alta? En defensa, el balón va arriba y lejos."],
     steps: [
@@ -249,7 +250,7 @@ const CQ_MISSIONS = [
     unit: CQ_UNIT_HITS,
   },
   {
-    id: "sliding", type: "ball", icon: "🌱", subs: ["sliding"], tiers: [1, 2, 3, 5], max: 5,
+    id: "sliding", type: "ball", icon: "🌱", subs: ["sliding"], tiers: [1, 2, 3, 5], max: 5, anim: true,
     title: ["Carrinho na grama", "Grass slide tackle", "Barrida en el pasto"],
     desc: ["Em 5 tentativas, quantas vezes o carrinho tira a bola parada de dentro do quadrado?", "Out of 5 tries, how many slide tackles knock the still ball out of the square?", "De 5 intentos, ¿cuántas barridas sacan el balón quieto del cuadrado?"],
     steps: [
@@ -262,7 +263,7 @@ const CQ_MISSIONS = [
 
   // Físico
   {
-    id: "hops", type: "move", icon: "⚡", subs: ["agility", "jumping"], tiers: [15, 25, 35, 45], timer: { mode: "down", s: 30 },
+    id: "hops", type: "move", icon: "⚡", subs: ["agility", "jumping"], tiers: [15, 25, 35, 45], timer: { mode: "down", s: 30 }, anim: true,
     title: ["Pula-linha", "Line hops", "Salta la línea"],
     desc: ["Em 30 segundos, quantos pulos de um lado para o outro de uma linha?", "In 30 seconds, how many side-to-side hops over a line?", "En 30 segundos, ¿cuántos saltos de lado a lado sobre una línea?"],
     steps: [
@@ -273,7 +274,7 @@ const CQ_MISSIONS = [
     unit: ["pulos", "hops", "saltos"],
   },
   {
-    id: "jacks", type: "move", icon: "🤸", subs: ["stamina"], tiers: [20, 35, 50, 65], timer: { mode: "down", s: 60 },
+    id: "jacks", type: "move", icon: "🤸", subs: ["stamina"], tiers: [20, 35, 50, 65], timer: { mode: "down", s: 60 }, anim: true,
     title: ["Polichinelos", "Jumping jacks", "Saltos de tijera"],
     desc: ["Em 1 minuto, quantos polichinelos você faz?", "In 1 minute, how many jumping jacks can you do?", "En 1 minuto, ¿cuántos saltos de tijera haces?"],
     steps: [
@@ -284,7 +285,7 @@ const CQ_MISSIONS = [
     unit: ["polichinelos", "jumping jacks", "saltos"],
   },
   {
-    id: "jump", type: "move", icon: "🦘", subs: ["jumping", "strength"], tiers: [4, 5, 6, 7], max: 15,
+    id: "jump", type: "move", icon: "🦘", subs: ["jumping", "strength"], tiers: [4, 5, 6, 7], max: 15, anim: true,
     title: ["Salto do canguru", "Kangaroo jump", "Salto del canguro"],
     desc: ["Saltando parado com os dois pés, quantos pés de distância você alcança?", "With a standing two-foot jump, how many foot-lengths do you cover?", "Saltando parado con los dos pies, ¿cuántos pies de distancia alcanzas?"],
     steps: [
@@ -295,7 +296,7 @@ const CQ_MISSIONS = [
     unit: ["pés", "foot-lengths", "pies"],
   },
   {
-    id: "shield", type: "ball", icon: "🛡️", subs: ["strength", "combat"], tiers: [10, 20, 30, 45], timer: { mode: "up" },
+    id: "shield", type: "ball", icon: "🛡️", subs: ["strength", "combat"], tiers: [10, 20, 30, 45], timer: { mode: "up" }, anim: true,
     title: ["Protege a bola", "Shield the ball", "Protege el balón"],
     desc: ["Quanto tempo você protege a bola de alguém da família sem perder?", "How long can you shield the ball from a family member?", "¿Cuánto tiempo proteges el balón de alguien de tu familia?"],
     steps: [
@@ -328,7 +329,7 @@ const CQ_MISSIONS = [
 
   // Cabeça
   {
-    id: "statue", type: "mind", icon: "🗿", subs: ["concentration", "balance"], tiers: [15, 30, 45, 60], timer: { mode: "up" },
+    id: "statue", type: "mind", icon: "🗿", subs: ["concentration", "balance"], tiers: [15, 30, 45, 60], timer: { mode: "up" }, anim: true,
     title: ["Estátua de campeão", "Champion statue", "Estatua de campeón"],
     desc: ["Quanto tempo você fica num pé só, parado e olhando um ponto fixo?", "How long can you stand on one foot, still, eyes on one spot?", "¿Cuánto aguantas en un pie, quieto y mirando un punto fijo?"],
     steps: [
@@ -339,7 +340,7 @@ const CQ_MISSIONS = [
     unit: ["segundos", "seconds", "segundos"],
   },
   {
-    id: "breath", type: "mind", icon: "🫁", subs: ["composure", "resilience"], tiers: [3, 5, 8, 10], timer: { mode: "breath" },
+    id: "breath", type: "mind", icon: "🫁", subs: ["composure", "resilience"], tiers: [3, 5, 8, 10], timer: { mode: "breath" }, anim: true,
     title: ["Respiração do goleador", "Striker's breathing", "Respiración del goleador"],
     desc: ["Respire junto com a bola: ela cresce quando o ar entra e diminui quando sai.", "Breathe with the ball: it grows as you breathe in and shrinks as you breathe out.", "Respira con el balón: crece cuando entra el aire y se achica cuando sale."],
     steps: [

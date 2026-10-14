@@ -765,7 +765,7 @@ function renderCraque() {
       if (!box.isConnected) return;
       box.hidden = false;
       btn.textContent = t().hideAnim;
-      stopAnim = scene(box, { unit: tr(m.unit), steps: t().steps, label: tr(m.title) });
+      stopAnim = scene(box, { unit: tr(m.unit), steps: t().steps, label: tr(m.title), pick: tr });
     }).catch((err) => {
       console.warn("Craque:", err);
       btn.hidden = true;
