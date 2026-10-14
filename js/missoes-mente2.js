@@ -171,6 +171,18 @@ CQ_MISSIONS.push(
     unit: ["pontos", "points", "puntos"],
   },
   {
+    id: "desvio", type: "mind", icon: "↕️", subs: ["decision", "reactions", "concentration"], tiers: [10, 25, 45, 70], max: 400, dodge: { turboAt: 40 },
+    title: ["Desvio duplo", "Double dodge", "Esquive doble"],
+    desc: ["Uma bola em cada lado da tela, e os obstáculos sobem. Desvie dos dois lados ao mesmo tempo! Vale a sua maior sequência sem bater.", "One ball on each side of the screen, and the obstacles rise. Dodge on both sides at once! Your best streak without crashing counts.", "Un balón en cada lado de la pantalla, y los obstáculos suben. ¡Esquiva en los dos lados a la vez! Vale tu mejor racha sin chocar."],
+    steps: [
+      ["Toque no lado esquerdo para mover a bola da esquerda, e no direito para a da direita.", "Tap the left side to move the left ball, and the right side for the right ball.", "Toca el lado izquierdo para mover el balón de la izquierda, y el derecho para el de la derecha."],
+      ["Cada obstáculo que passa soma +1. Bateu? A sequência volta a zero, mas o seu recorde 🏆 fica.", "Every obstacle you pass adds +1. Crashed? The streak goes back to zero, but your record 🏆 stays.", "Cada obstáculo que pasa suma +1. ¿Chocaste? La racha vuelve a cero, pero tu récord 🏆 queda."],
+      ["Não tem tempo: jogue à vontade! Quanto maior a sequência, mais rápido fica, até o TURBO. Aperte Parar para gravar.", "No clock: play as long as you like! The longer the streak, the faster it gets, up to TURBO. Press Stop to save.", "Sin reloj: ¡juega cuanto quieras! Cuanto más larga la racha, más rápido va, hasta el TURBO. Pulsa Parar para guardar."],
+      ["No celular, use um dedo de cada mão. Tente sempre bater o seu recorde!", "On a phone, use one finger from each hand. Always try to beat your record!", "En el móvil, usa un dedo de cada mano. ¡Intenta siempre superar tu récord!"],
+    ],
+    unit: ["seguidos", "in a row", "seguidos"],
+  },
+  {
     id: "minharotina", type: "mind", icon: "🔄", subs: ["composure", "resilience"], tiers: [1, 3, 5, 8], max: 30,
     title: ["Meu botão de reset", "My reset button", "Mi botón de reinicio"],
     desc: ["Crie seu botão de reset e use no treino ou no jogo depois de cada erro. Quantas vezes você usou?", "Create your reset button and use it in training or games after every mistake. How many times did you use it?", "Crea tu botón de reinicio y úsalo en el entrenamiento o el partido después de cada error. ¿Cuántas veces lo usaste?"],

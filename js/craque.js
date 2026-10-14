@@ -43,6 +43,7 @@ const CQ_TEXT = {
     trails: "Trilhas",
     lowerHint: "Aqui, quanto menor o número, melhor.",
     helper: "👥 Precisa de outra pessoa",
+    games: "Joguinhos",
     freeTraining: "Treino livre",
     phase: "Fase {n}",
     lockedHint: "Bloqueada: faça a missão da fase anterior.",
@@ -70,6 +71,7 @@ const CQ_TEXT = {
     rainOnlyShort: "Só {c}",
     rainAvoidShort: "Menos {c}",
     rainTurbo: "⚡ ÚLTIMO MINUTO: TURBO! ⚡",
+    dodgeHint: "👆 Toque p/ trocar",
     rainColors: { red: "VERMELHAS", blue: "AZUIS", yellow: "AMARELAS", green: "VERDES" },
     time: "Tempo!",
     newRecord: "Novo recorde!",
@@ -127,6 +129,7 @@ const CQ_TEXT = {
     trails: "Trails",
     lowerHint: "Here, the lower the number, the better.",
     helper: "👥 Needs another person",
+    games: "Mini-games",
     freeTraining: "Free training",
     phase: "Stage {n}",
     lockedHint: "Locked: do the mission of the previous stage.",
@@ -154,6 +157,7 @@ const CQ_TEXT = {
     rainOnlyShort: "Only {c}",
     rainAvoidShort: "Not {c}",
     rainTurbo: "⚡ LAST MINUTE: TURBO! ⚡",
+    dodgeHint: "👆 Tap to switch",
     rainColors: { red: "RED", blue: "BLUE", yellow: "YELLOW", green: "GREEN" },
     time: "Time!",
     newRecord: "New record!",
@@ -211,6 +215,7 @@ const CQ_TEXT = {
     trails: "Caminos",
     lowerHint: "Aquí, cuanto menor el número, mejor.",
     helper: "👥 Necesita otra persona",
+    games: "Minijuegos",
     freeTraining: "Entrenamiento libre",
     phase: "Fase {n}",
     lockedHint: "Bloqueada: haz la misión de la fase anterior.",
@@ -238,6 +243,7 @@ const CQ_TEXT = {
     rainOnlyShort: "Solo {c}",
     rainAvoidShort: "Menos {c}",
     rainTurbo: "⚡ ÚLTIMO MINUTO: ¡TURBO! ⚡",
+    dodgeHint: "👆 Toca p/ cambiar",
     rainColors: { red: "ROJOS", blue: "AZULES", yellow: "AMARILLOS", green: "VERDES" },
     time: "¡Tiempo!",
     newRecord: "¡Nuevo récord!",
@@ -726,8 +732,10 @@ function renderCraque() {
           <div class="cq-missions">${daily.map((id) => missionCard(mission(id), true)).join("")}</div>
           <h2 class="cq-h">${tx.trails}</h2>
           <div class="cq-trails">${CQ_TRAILS.map(trailRow).join("")}</div>
+          <h2 class="cq-h">${tx.games}</h2>
+          <div class="cq-missions is-compact">${CQ_MISSIONS.filter(isGame).map((m) => missionCard(m, false)).join("")}</div>
           <h2 class="cq-h">${tx.freeTraining}</h2>
-          <div class="cq-missions is-compact">${openMissions().filter((m) => !daily.includes(m.id)).map((m) => missionCard(m, false)).join("")}</div>
+          <div class="cq-missions is-compact">${openMissions().filter((m) => !daily.includes(m.id) && !isGame(m)).map((m) => missionCard(m, false)).join("")}</div>
           <button type="button" class="cq-reset">${tx.reset}</button>
         </div>
       </div>`;
@@ -865,6 +873,9 @@ function renderCraque() {
     if (m.rain) tool = `
       <div class="cq-timer"><b>${m.rain.secs}</b><span class="cq-rain-score">⚽ 0</span><button type="button" class="cq-btn is-ghost" data-rain>${tx.start}</button></div>
       <div class="cq-rain-wrap${m.rain.sides ? " is-duo" : ""}">${(m.rain.sides || [0]).map(() => `<div class="cq-rain"><div class="cq-rain-rule"></div></div>`).join("")}</div>`;
+    if (m.dodge) tool = `
+      <div class="cq-timer"><b>0</b><span class="cq-rain-score">🏆 0 · ${tx.record} ${state.records[m.id] ?? 0}</span><button type="button" class="cq-btn is-ghost" data-dodge>${tx.start}</button></div>
+      <div class="cq-rain-wrap is-duo">${[0, 1].map(() => `<div class="cq-rain cq-dodge"><div class="cq-rain-rule">${tx.dodgeHint}</div><span class="cq-dodge-ball">⚽</span></div>`).join("")}</div>`;
 
     openModal(`
       ${missionHeader(m)}
@@ -873,8 +884,8 @@ function renderCraque() {
       ${tool}
       <form class="cq-result-form">
         <label><span>${fill(tx.howMany, { unit: tr(m.unit) })}</span>
-          <input type="number" name="value" min="0" max="${m.max ?? 999}" inputmode="numeric" required></label>
-        <button type="submit" class="cq-btn">${tx.save}</button>
+          <input type="number" name="value" min="0" max="${m.max ?? 999}" inputmode="numeric" ${isGame(m) ? "readonly" : "required"}></label>
+        <button type="submit" class="cq-btn" ${isGame(m) ? "disabled" : ""}>${tx.save}</button>
       </form>`);
 
     const input = dialog.querySelector('input[name="value"]');
@@ -884,6 +895,8 @@ function renderCraque() {
     if (gridBtn) gridBtn.addEventListener("click", () => startGrid(m, gridBtn, input));
     const rainBtn = dialog.querySelector("[data-rain]");
     if (rainBtn) rainBtn.addEventListener("click", () => startRain(m, rainBtn, input));
+    const dodgeBtn = dialog.querySelector("[data-dodge]");
+    if (dodgeBtn) dodgeBtn.addEventListener("click", () => startDodge(m, dodgeBtn, input));
     const soundBtn = dialog.querySelector("[data-sound]");
     if (soundBtn) soundBtn.addEventListener("click", () => {
       state.mute = !state.mute;
@@ -943,6 +956,13 @@ function renderCraque() {
     breath: (inhale) => tone(inhale ? 392 : 294, 0.6, { type: "sine", vol: 0.1 }),
   };
 
+  // Game results come from the game itself: the field is read-only and Save opens only when a match ends.
+  const isGame = (m) => Boolean(m.grid || m.rain || m.dodge);
+  const gameResult = (input, v) => {
+    input.value = v ?? "";
+    input.form.querySelector("button").disabled = v == null;
+  };
+
   const shuffle = (list) => {
     for (let i = list.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -956,6 +976,7 @@ function renderCraque() {
        duo alternates blue 1, red 1, blue 2, red 2...; noise pops distracting phrases over the grid. */
   function startGrid(m, btn, input) {
     stopTimer();
+    gameResult(input);
     const g = m.grid;
     const n = g.size * g.size;
     const grid = dialog.querySelector(".cq-grid");
@@ -1021,9 +1042,8 @@ function renderCraque() {
         if (noiseEl) noiseEl.remove();
         const secs = Math.max(1, Math.round((Date.now() - startAt) / 1000));
         out.textContent = secs;
-        input.value = secs;
         sound.whistle();
-        input.focus();
+        gameResult(input, secs);
       }
     }));
   }
@@ -1038,6 +1058,7 @@ function renderCraque() {
 
   function startRain(m, btn, input) {
     stopTimer();
+    gameResult(input);
     const tx = t();
     const { secs, turbo: turboSecs } = m.rain;
     const modes = m.rain.sides || [m.rain.mode];
@@ -1090,9 +1111,8 @@ function renderCraque() {
         lane.balls = [];
       });
       out.textContent = tx.time;
-      input.value = Math.max(0, score);
       sound.whistle();
-      input.focus();
+      gameResult(input, Math.max(0, score));
     };
 
     lanes.forEach((lane) => {
@@ -1165,6 +1185,131 @@ function renderCraque() {
             return false;
           }
           b.el.style.transform = `translate(${b.x.toFixed(1)}px, ${b.y.toFixed(1)}px)`;
+          return true;
+        });
+      });
+    }, 30);
+  }
+
+  /* Double dodge: one ball at the top of each half, obstacles rise from the bottom.
+     Tapping a half moves its ball to the other column. Every obstacle passed adds to the streak and
+     speeds the game up (TURBO after m.dodge.turboAt); a crash resets the streak and the speed.
+     There is no clock: the match runs until Stop, and the result is the best streak of the match. */
+  function startDodge(m, btn, input) {
+    if (btn.cqStop) return btn.cqStop();
+    stopTimer();
+    gameResult(input);
+    const tx = t();
+    const turboAt = m.dodge.turboAt;
+    const wrap = dialog.querySelector(".cq-rain-wrap");
+    const out = btn.closest(".cq-timer").querySelector("b");
+    const scoreEl = btn.closest(".cq-timer").querySelector(".cq-rain-score");
+    wrap.querySelectorAll(".cq-dodge-obs").forEach((el) => el.remove());
+    wrap.classList.remove("is-turbo");
+    btn.textContent = tx.stop;
+    const BALL_Y = 44;
+    const HIT = 36;
+    const record = state.records[m.id] ?? 0;
+    const startAt = Date.now();
+    let streak = 0;
+    let best = 0;
+
+    const lanes = [...wrap.querySelectorAll(".cq-dodge")].map((area, i) => {
+      area.querySelector(".cq-rain-rule").textContent = "";
+      area.classList.remove("is-crash");
+      return { area, ballEl: area.querySelector(".cq-dodge-ball"), col: i, obs: [], spawnAt: startAt + 800 + i * 600 };
+    });
+    const placeBall = (lane) => {
+      lane.ballEl.style.left = lane.col ? "75%" : "25%";
+    };
+    lanes.forEach(placeBall);
+    const showScore = () => {
+      out.textContent = streak;
+      scoreEl.textContent = `🏆 ${best} · ${tx.record} ${Math.max(record, best)}`;
+    };
+    showScore();
+    let last = startAt;
+    sound.go();
+
+    const finish = () => {
+      btn.cqStop = null;
+      btn.textContent = tx.restart;
+      stopTimer();
+      wrap.classList.remove("is-turbo");
+      lanes.forEach((lane) => {
+        lane.area.onpointerdown = null;
+        lane.obs.forEach((o) => o.el.remove());
+        lane.obs = [];
+      });
+      out.textContent = best;
+      sound.whistle();
+      gameResult(input, best);
+    };
+    btn.cqStop = finish;
+
+    lanes.forEach((lane) => {
+      lane.area.onpointerdown = (e) => {
+        e.preventDefault();
+        lane.col = 1 - lane.col;
+        placeBall(lane);
+      };
+    });
+
+    const crash = (lane) => {
+      streak = 0;
+      showScore();
+      wrap.classList.remove("is-turbo");
+      lane.area.classList.remove("is-crash");
+      void lane.area.offsetWidth;
+      lane.area.classList.add("is-crash");
+      if (navigator.vibrate) navigator.vibrate(150);
+    };
+
+    timer = setInterval(() => {
+      const now = Date.now();
+      const dt = (now - last) / 1000;
+      last = now;
+      const turbo = streak >= turboAt;
+      const k = turbo ? cqClamp01((streak - turboAt) / turboAt) : cqClamp01(streak / turboAt);
+      if (turbo && !wrap.classList.contains("is-turbo")) {
+        wrap.classList.add("is-turbo");
+        wrap.dataset.turbo = "⚡ TURBO! ⚡";
+        sound.go();
+        if (navigator.vibrate) navigator.vibrate([100, 60, 100]);
+      }
+      lanes.forEach((lane) => {
+        const h = lane.area.clientHeight;
+        const v = h / (turbo ? cqLerp(1.6, 1.0, k) : cqLerp(2.8, 1.9, k));
+        if (now >= lane.spawnAt) {
+          lane.spawnAt = now + (turbo ? cqLerp(780, 500, k) : cqLerp(1400, 900, k)) * (0.85 + Math.random() * 0.3);
+          const col = Math.random() < 0.5 ? 0 : 1;
+          const el = document.createElement("span");
+          el.className = "cq-dodge-obs";
+          el.style.left = col ? "75%" : "25%";
+          lane.area.appendChild(el);
+          lane.obs.push({ el, col, y: h + 30 });
+        }
+        lane.obs = lane.obs.filter((o) => {
+          o.y -= v * dt;
+          if (!o.done && o.col === lane.col && Math.abs(o.y - BALL_Y) < HIT) {
+            o.done = true;
+            o.el.classList.add("is-hit");
+            crash(lane);
+            setTimeout(() => o.el.remove(), 300);
+            return false;
+          }
+          if (!o.done && o.y < BALL_Y - HIT) {
+            o.done = true;
+            streak++;
+            if (streak > best) best = streak;
+            showScore();
+            sound.tick();
+          }
+          if (o.y < -30) {
+            o.el.remove();
+            return false;
+          }
+          o.el.style.transform = `translateY(${o.y.toFixed(1)}px)`;
           return true;
         });
       });
