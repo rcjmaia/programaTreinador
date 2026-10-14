@@ -22,11 +22,14 @@ const CQ_CHAIN = {
   con: ["keepy", "trap", "slalom", "keepyalt", "chest", "zigzag", "walk5", "dribble", "trapweak", "slalomweak", "skills", "elastico", "walk10", "walkalt", "roleta", "headkeepy", "chapeu", "walkhead"],
   def: ["bote", "sidestep", "steal", "backrun", "heading", "intercept", "sliding", "shadow", "clearance"],
   fis: ["hops", "jacks", "squats", "jump", "plank", "shield", "rope", "stepup", "onefoot", "situps", "lunges"],
-  int: ["quiz", "voltou", "tecnica", "leitura", "esquemas", "offball", "contra", "espaco", "setpiece", "bloco", "rules", "impedimento", "tirometa", "lateralarea", "escanteio", "transicao", "funcoes", "poscb", "posfb", "posmid", "posst"],
+  int: [
+    "quiz", "voltou", "chuva", "tecnica", "leitura", "esquemas", "offball", "chuvanao", "contra", "espaco", "setpiece", "bloco",
+    "rules", "impedimento", "chuvaconfusa", "tirometa", "lateralarea", "escanteio", "transicao", "funcoes", "poscb", "posfb", "posmid", "posst",
+  ],
   cab: [
     "turma", "statue", "nuvens", "nuvemcount", "breath", "agora", "grade", "nomear", "termometro", "blindstatue",
-    "rotina", "minharotina", "estoico", "countdown", "lanterna", "sofa", "cincomin", "metas", "metasemana", "vigia",
-    "gratidao", "cinema", "pavao", "timeunido", "vozcampo", "porque", "descanso", "sono", "lesao", "melhor", "streak",
+    "rotina", "minharotina", "gradeinversa", "estoico", "countdown", "lanterna", "gradeduo", "sofa", "cincomin", "metas", "metasemana",
+    "vigia", "gradezum", "gratidao", "cinema", "pavao", "timeunido", "vozcampo", "grade6", "porque", "descanso", "sono", "lesao", "melhor", "streak",
   ],
   gol: ["gkcatch", "gkshuffle", "gkdive", "gktennis", "gkdrop", "gkthrow", "gkquiz", "gkhigh", "gkpunt", "gkpenalty", "gkgoalkick"],
 };

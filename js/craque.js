@@ -64,6 +64,11 @@ const CQ_TEXT = {
     start: "Iniciar",
     stop: "Parar",
     restart: "Recomeçar",
+    gridNoise: ["Rápido!", "Cadê?!", "Olha o placar!", "Tá demorando!", "E se errar?", "Vai, vai!", "Tá todo mundo olhando!"],
+    rainOnly: "Toque só nas bolas {c}",
+    rainAvoid: "Toque em todas, menos nas {c}",
+    rainTurbo: "⚡ ÚLTIMO MINUTO: TURBO! ⚡",
+    rainColors: { red: "VERMELHAS", blue: "AZUIS", yellow: "AMARELAS", green: "VERDES" },
     time: "Tempo!",
     newRecord: "Novo recorde!",
     keepGoing: "Seu recorde é {n}. Você consegue bater!",
@@ -141,6 +146,11 @@ const CQ_TEXT = {
     start: "Start",
     stop: "Stop",
     restart: "Restart",
+    gridNoise: ["Hurry!", "Where is it?!", "Check the score!", "Too slow!", "What if you miss?", "Go, go!", "Everyone's watching!"],
+    rainOnly: "Tap only the {c} balls",
+    rainAvoid: "Tap every ball except {c}",
+    rainTurbo: "⚡ LAST MINUTE: TURBO! ⚡",
+    rainColors: { red: "RED", blue: "BLUE", yellow: "YELLOW", green: "GREEN" },
     time: "Time!",
     newRecord: "New record!",
     keepGoing: "Your best is {n}. You can beat it!",
@@ -218,6 +228,11 @@ const CQ_TEXT = {
     start: "Iniciar",
     stop: "Parar",
     restart: "Reiniciar",
+    gridNoise: ["¡Rápido!", "¿¡Dónde está!?", "¡Mira el marcador!", "¡Muy lento!", "¿Y si fallas?", "¡Vamos, vamos!", "¡Todos te miran!"],
+    rainOnly: "Toca solo los balones {c}",
+    rainAvoid: "Toca todos, menos los {c}",
+    rainTurbo: "⚡ ÚLTIMO MINUTO: ¡TURBO! ⚡",
+    rainColors: { red: "ROJOS", blue: "AZULES", yellow: "AMARILLOS", green: "VERDES" },
     time: "¡Tiempo!",
     newRecord: "¡Nuevo récord!",
     keepGoing: "Tu récord es {n}. ¡Puedes superarlo!",
@@ -498,7 +513,9 @@ function renderCraque() {
   const hasMedal = (id) => medalIndex(mission(id), state.records[id]) >= 0;
   const passed = (id) => hasMedal(id) || triesOf(id) > 0;
   const phaseDone = (phase) => phase.every(passed);
-  const phaseOpen = (trail, i) => i === 0 || phaseDone(trail.phases[i - 1]);
+  // TEMPORÁRIO: craque.html?teste=1 abre todas as fases para testar. Remover depois.
+  const testMode = new URLSearchParams(location.search).has("teste");
+  const phaseOpen = (trail, i) => testMode || i === 0 || phaseDone(trail.phases[i - 1]);
   const missionOpen = (id) => CQ_TRAILS.some((tl) => tl.phases.some((ph, i) => ph.includes(id) && phaseOpen(tl, i)));
   const openMissions = () => CQ_MISSIONS.filter((m) => m.type !== "auto" && missionOpen(m.id));
   const openPhaseCount = () => CQ_TRAILS.reduce((a, tl) => a + tl.phases.filter((_, i) => phaseOpen(tl, i)).length, 0);
@@ -838,7 +855,10 @@ function renderCraque() {
     if (m.timer?.mode === "breath") tool = `<div class="cq-timer is-breath"><span class="cq-ball"></span><em></em><b>0</b>${controls}</div>`;
     if (m.grid) tool = `
       <div class="cq-timer"><b>0</b><span class="cq-grid-next"></span><button type="button" class="cq-btn is-ghost" data-grid>${tx.start}</button></div>
-      <div class="cq-grid" style="--n:${Math.sqrt(m.grid)}"></div>`;
+      <div class="cq-grid" style="--n:${m.grid.size}"></div>`;
+    if (m.rain) tool = `
+      <div class="cq-timer"><b>${m.rain.secs}</b><span class="cq-rain-score">⚽ 0</span><button type="button" class="cq-btn is-ghost" data-rain>${tx.start}</button></div>
+      <div class="cq-rain"><div class="cq-rain-rule"></div></div>`;
 
     openModal(`
       ${missionHeader(m)}
@@ -856,6 +876,8 @@ function renderCraque() {
     if (timerBtn) timerBtn.addEventListener("click", () => toggleTimer(m, timerBtn, input));
     const gridBtn = dialog.querySelector("[data-grid]");
     if (gridBtn) gridBtn.addEventListener("click", () => startGrid(m, gridBtn, input));
+    const rainBtn = dialog.querySelector("[data-rain]");
+    if (rainBtn) rainBtn.addEventListener("click", () => startRain(m, rainBtn, input));
     const soundBtn = dialog.querySelector("[data-sound]");
     if (soundBtn) soundBtn.addEventListener("click", () => {
       state.mute = !state.mute;
@@ -915,26 +937,69 @@ function renderCraque() {
     breath: (inhale) => tone(inhale ? 392 : 294, 0.6, { type: "sine", vol: 0.1 }),
   };
 
-  // Concentration grid: tap 1..n in order as fast as possible; the time in seconds is the result.
+  const shuffle = (list) => {
+    for (let i = list.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [list[i], list[j]] = [list[j], list[i]];
+    }
+    return list;
+  };
+
+  /* Concentration grid: tap the cells in order as fast as possible; the time in seconds is the result.
+     m.grid: { size, order: "up" | "down" | "duo", noise }
+       duo alternates blue 1, red 1, blue 2, red 2...; noise pops distracting phrases over the grid. */
   function startGrid(m, btn, input) {
     stopTimer();
+    const g = m.grid;
+    const n = g.size * g.size;
     const grid = dialog.querySelector(".cq-grid");
     const out = btn.closest(".cq-timer").querySelector("b");
     const nextEl = btn.closest(".cq-timer").querySelector(".cq-grid-next");
-    const nums = Array.from({ length: m.grid }, (_, i) => i + 1);
-    for (let i = nums.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [nums[i], nums[j]] = [nums[j], nums[i]];
+    let seq;
+    if (g.order === "duo") {
+      const blue = Math.ceil(n / 2);
+      seq = [];
+      for (let i = 1; i <= blue; i++) {
+        seq.push(`b${i}`);
+        if (i <= n - blue) seq.push(`r${i}`);
+      }
+    } else {
+      seq = Array.from({ length: n }, (_, i) => `n${g.order === "down" ? n - i : i + 1}`);
     }
-    grid.innerHTML = nums.map((n) => `<button type="button" data-n="${n}">${n}</button>`).join("");
+    const cell = (k) => ({ num: k.slice(1), cls: k[0] === "b" ? "is-blue" : k[0] === "r" ? "is-red" : "" });
+    grid.innerHTML = shuffle([...seq]).map((k) => `<button type="button" data-k="${k}" class="${cell(k).cls}">${cell(k).num}</button>`).join("")
+      + (g.noise ? `<span class="cq-grid-noise" aria-hidden="true"></span>` : "");
+    const noiseEl = grid.querySelector(".cq-grid-noise");
     btn.textContent = t().restart;
-    let next = 1;
-    nextEl.textContent = "→ 1";
+    let step = 0;
+    const showNext = () => {
+      if (step >= seq.length) {
+        nextEl.textContent = "";
+        return;
+      }
+      const c = cell(seq[step]);
+      nextEl.innerHTML = `→ <span class="${c.cls}">${c.num}</span>`;
+    };
+    showNext();
     const startAt = Date.now();
+    let noiseAt = startAt + 1500;
     sound.go();
-    timer = setInterval(() => { out.textContent = Math.floor((Date.now() - startAt) / 1000); }, 200);
+    timer = setInterval(() => {
+      const now = Date.now();
+      out.textContent = Math.floor((now - startAt) / 1000);
+      if (noiseEl && now >= noiseAt) {
+        noiseAt = now + 1100 + Math.random() * 900;
+        const phrases = t().gridNoise;
+        noiseEl.textContent = `🐝 ${phrases[Math.floor(Math.random() * phrases.length)]}`;
+        noiseEl.style.left = `${10 + Math.random() * 50}%`;
+        noiseEl.style.top = `${10 + Math.random() * 75}%`;
+        noiseEl.classList.remove("is-on");
+        void noiseEl.offsetWidth;
+        noiseEl.classList.add("is-on");
+      }
+    }, 100);
     grid.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
-      if (+b.dataset.n !== next) {
+      if (b.dataset.k !== seq[step]) {
         b.classList.remove("is-wrong");
         void b.offsetWidth;
         b.classList.add("is-wrong");
@@ -943,10 +1008,11 @@ function renderCraque() {
       b.classList.add("is-done");
       b.disabled = true;
       sound.tick();
-      next++;
-      nextEl.textContent = next <= m.grid ? `→ ${next}` : "";
-      if (next > m.grid) {
+      step++;
+      showNext();
+      if (step >= seq.length) {
         stopTimer();
+        if (noiseEl) noiseEl.remove();
         const secs = Math.max(1, Math.round((Date.now() - startAt) / 1000));
         out.textContent = secs;
         input.value = secs;
@@ -954,6 +1020,133 @@ function renderCraque() {
         input.focus();
       }
     }));
+  }
+
+  /* Colour rain: balls fall and the rule colour keeps changing. The score is right taps minus wrong taps.
+     m.rain: { secs, turbo, mode: "only" | "avoid" | "stroop" }   turbo: seconds of the very fast final stretch
+       only: tap the rule colour; avoid: tap every colour except it;
+       stroop: like only, but the colour name is printed in a different ink and the word is what counts. */
+  const CQ_RAIN_COLORS = { red: "#ef4444", blue: "#3b82f6", yellow: "#facc15", green: "#22c55e" };
+
+  function startRain(m, btn, input) {
+    stopTimer();
+    const tx = t();
+    const { secs, mode } = m.rain;
+    const area = dialog.querySelector(".cq-rain");
+    const ruleEl = area.querySelector(".cq-rain-rule");
+    const out = btn.closest(".cq-timer").querySelector("b");
+    const scoreEl = btn.closest(".cq-timer").querySelector(".cq-rain-score");
+    area.querySelectorAll(".cq-rain-ball").forEach((el) => el.remove());
+    area.classList.remove("is-turbo");
+    btn.textContent = tx.restart;
+    const colors = Object.keys(CQ_RAIN_COLORS);
+    const other = (c) => {
+      const list = colors.filter((x) => x !== c);
+      return list[Math.floor(Math.random() * list.length)];
+    };
+    const good = (c) => (mode === "avoid" ? c !== target : c === target);
+    let target = colors[Math.floor(Math.random() * colors.length)];
+    let score = 0;
+    let balls = [];
+    let running = true;
+
+    const setRule = () => {
+      const ink = mode === "stroop" ? other(target) : target;
+      const word = `<b style="color:${CQ_RAIN_COLORS[ink]}">${tx.rainColors[target]}</b>`;
+      ruleEl.innerHTML = fill(mode === "avoid" ? tx.rainAvoid : tx.rainOnly, { c: word });
+      ruleEl.classList.remove("is-new");
+      void ruleEl.offsetWidth;
+      ruleEl.classList.add("is-new");
+    };
+    setRule();
+    scoreEl.textContent = "⚽ 0";
+
+    const startAt = Date.now();
+    let last = startAt;
+    let ruleAt = startAt + 5000 + Math.random() * 2000;
+    let spawnAt = startAt + 400;
+    sound.go();
+
+    const finish = () => {
+      running = false;
+      stopTimer();
+      ruleEl.textContent = "";
+      area.classList.remove("is-turbo");
+      balls.forEach((b) => b.el.remove());
+      balls = [];
+      out.textContent = tx.time;
+      input.value = Math.max(0, score);
+      sound.whistle();
+      input.focus();
+    };
+
+    area.onpointerdown = (e) => {
+      const el = e.target.closest(".cq-rain-ball");
+      if (!el || !running) return;
+      const ball = balls.find((b) => b.el === el);
+      if (!ball || ball.done) return;
+      ball.done = true;
+      if (good(ball.color)) {
+        score++;
+        el.classList.add("is-hit");
+        sound.tick();
+      } else {
+        score--;
+        el.classList.add("is-miss");
+        if (navigator.vibrate) navigator.vibrate(120);
+      }
+      scoreEl.textContent = `⚽ ${score}`;
+      setTimeout(() => el.remove(), 300);
+    };
+
+    timer = setInterval(() => {
+      const now = Date.now();
+      const dt = (now - last) / 1000;
+      last = now;
+      const elapsed = (now - startAt) / 1000;
+      // Two stages: speeding up until the turbo, then a much faster final stretch.
+      const turbo = elapsed >= secs - m.rain.turbo;
+      const k = turbo ? cqClamp01((elapsed - (secs - m.rain.turbo)) / m.rain.turbo) : cqClamp01(elapsed / (secs - m.rain.turbo));
+      out.textContent = Math.max(0, Math.ceil(secs - elapsed));
+      if (elapsed >= secs) {
+        finish();
+        return;
+      }
+      if (turbo && !area.classList.contains("is-turbo")) {
+        area.classList.add("is-turbo");
+        area.dataset.turbo = tx.rainTurbo;
+        sound.go();
+        if (navigator.vibrate) navigator.vibrate([100, 60, 100]);
+      }
+      if (now >= ruleAt) {
+        target = other(target);
+        ruleAt = now + (turbo ? 3000 + Math.random() * 1500 : 4500 + Math.random() * 2500);
+        setRule();
+        sound.tick();
+      }
+      const w = area.clientWidth;
+      const h = area.clientHeight;
+      if (now >= spawnAt) {
+        spawnAt = now + (turbo ? cqLerp(360, 200, k) : cqLerp(700, 420, k));
+        const rule = Math.random() < (mode === "avoid" ? 0.3 : 0.4);
+        const color = rule ? target : other(target);
+        const el = document.createElement("span");
+        el.className = "cq-rain-ball";
+        el.style.background = CQ_RAIN_COLORS[color];
+        area.appendChild(el);
+        balls.push({ el, color, x: 28 + Math.random() * (w - 56), y: -24, v: h / (turbo ? cqLerp(1.7, 1.05, k) : cqLerp(3.2, 2, k)) });
+      }
+      balls = balls.filter((b) => {
+        if (b.done) return false;
+        b.y += b.v * dt;
+        if (b.y > h + 30) {
+          b.el.remove();
+          return false;
+        }
+        b.el.style.transform = `translate(${b.x.toFixed(1)}px, ${b.y.toFixed(1)}px)`;
+        return true;
+      });
+    }, 30);
   }
 
   function toggleTimer(m, btn, input) {

@@ -2700,6 +2700,147 @@ body.cq-lock {
   animation: cq-wrong 0.35s;
 }
 
+.cq-grid {
+  position: relative;
+}
+
+.cq-grid .is-blue {
+  color: #60a5fa;
+}
+
+.cq-grid .is-red,
+.cq-grid-next .is-red {
+  color: #f87171;
+}
+
+.cq-grid-next .is-blue {
+  color: #60a5fa;
+}
+
+.cq-grid-noise {
+  position: absolute;
+  z-index: 2;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #fb923c;
+  color: #111;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.cq-grid-noise.is-on {
+  animation: cq-noise 1s ease-out;
+}
+
+@keyframes cq-noise {
+  0% { opacity: 0; scale: 0.6; }
+  15% { opacity: 1; scale: 1.1; }
+  70% { opacity: 1; scale: 1; }
+  100% { opacity: 0; scale: 1; }
+}
+
+.cq-rain-score {
+  font-family: Oswald, sans-serif;
+  font-size: 1.4rem;
+}
+
+.cq-rain {
+  position: relative;
+  height: 340px;
+  margin-bottom: 14px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: repeating-linear-gradient(180deg, #166534 0 34px, #15803d 34px 68px);
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.cq-rain.is-turbo {
+  background: repeating-linear-gradient(180deg, #1e1b4b 0 34px, #312e81 34px 68px);
+}
+
+.cq-rain.is-turbo::after {
+  content: attr(data-turbo);
+  position: absolute;
+  z-index: 3;
+  top: 45%;
+  left: 50%;
+  translate: -50% -50%;
+  color: #fde047;
+  font: 700 1.5rem Oswald, sans-serif;
+  white-space: nowrap;
+  text-shadow: 0 2px 6px #000;
+  pointer-events: none;
+  animation: cq-turbo 1.8s forwards;
+}
+
+@keyframes cq-turbo {
+  0% { opacity: 0; scale: 0.5; }
+  15% { opacity: 1; scale: 1.15; }
+  75% { opacity: 1; scale: 1; }
+  100% { opacity: 0; scale: 1; }
+}
+
+.cq-rain-rule {
+  position: absolute;
+  z-index: 2;
+  top: 8px;
+  left: 50%;
+  translate: -50% 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.cq-rain-rule:empty {
+  display: none;
+}
+
+.cq-rain-rule b {
+  font-size: 1.1em;
+  letter-spacing: 0.04em;
+}
+
+.cq-rain-rule.is-new {
+  animation: cq-rule 0.6s;
+}
+
+@keyframes cq-rule {
+  0% { scale: 1.35; }
+  100% { scale: 1; }
+}
+
+.cq-rain-ball {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 46px;
+  height: 46px;
+  margin: -23px 0 0 -23px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.35);
+  box-shadow: inset -6px -6px 0 rgba(0, 0, 0, 0.2), inset 5px 5px 0 rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition: scale 0.25s, opacity 0.25s;
+}
+
+.cq-rain-ball.is-hit {
+  scale: 1.6;
+  opacity: 0;
+}
+
+.cq-rain-ball.is-miss {
+  outline: 4px solid #fff;
+  opacity: 0.4;
+}
+
 @keyframes cq-wrong {
   0%, 100% { transform: none; background: var(--panel); }
   30% { transform: translateX(-4px); background: #b91c1c; }

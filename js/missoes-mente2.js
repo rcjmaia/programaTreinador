@@ -53,7 +53,7 @@ CQ_MISSIONS.push(
 
   // Práticas
   {
-    id: "grade", type: "mind", icon: "🧩", subs: ["concentration"], tiers: [90, 60, 45, 35], lower: true, max: 600, grid: 25,
+    id: "grade", type: "mind", icon: "🧩", subs: ["concentration"], tiers: [90, 60, 45, 35], lower: true, max: 600, grid: { size: 5 },
     title: ["Grade de concentração", "Concentration grid", "Cuadrícula de concentración"],
     desc: ["Toque os números de 1 a 25, em ordem, o mais rápido que conseguir. Quanto menos segundos, melhor!", "Tap the numbers from 1 to 25, in order, as fast as you can. The fewer seconds, the better!", "Toca los números del 1 al 25, en orden, lo más rápido que puedas. ¡Cuantos menos segundos, mejor!"],
     steps: [
@@ -70,6 +70,83 @@ CQ_MISSIONS.push(
         { d: 2.6, mood: { zumzum: "small" }, say: ["capitao", ["Calma: lanterna aberta... achei o 7!", "Easy: torch wide... found 7!", "Calma: linterna abierta... ¡encontré el 7!"]], cloud: ["1, 2, 3...", "1, 2, 3...", "1, 2, 3..."], text: ["Foco calmo é foco rápido", "Calm focus is fast focus", "Foco tranquilo es foco rápido"] },
       ],
     },
+  },
+  {
+    id: "gradeinversa", type: "mind", icon: "🔽", subs: ["concentration"], tiers: [90, 60, 45, 35], lower: true, max: 600, grid: { size: 5, order: "down" },
+    title: ["Grade de trás para frente", "Backwards grid", "Cuadrícula al revés"],
+    desc: ["Agora ao contrário: toque do 25 até o 1, em ordem. Quanto menos segundos, melhor!", "Now the other way round: tap from 25 down to 1, in order. The fewer seconds, the better!", "Ahora al revés: toca del 25 al 1, en orden. ¡Cuantos menos segundos, mejor!"],
+    steps: [
+      ["Aperte Iniciar: os números aparecem embaralhados.", "Press Start: the numbers appear shuffled.", "Pulsa Iniciar: los números aparecen mezclados."],
+      ["Ache o 25, depois o 24, o 23... até o 1.", "Find 25, then 24, 23... down to 1.", "Encuentra el 25, después el 24, el 23... hasta el 1."],
+      ["A cabeça quer ir no automático: segure e confira cada número.", "Your head wants to go on autopilot: hold back and check each number.", "La cabeza quiere ir en automático: frénala y revisa cada número."],
+    ],
+    unit: ["segundos", "seconds", "segundos"],
+  },
+  {
+    id: "gradeduo", type: "mind", icon: "🔵", subs: ["concentration", "reading"], tiers: [120, 90, 70, 55], lower: true, max: 600, grid: { size: 5, order: "duo" },
+    title: ["Grade de duas cores", "Two-colour grid", "Cuadrícula de dos colores"],
+    desc: ["Alterne as cores: azul 1, vermelho 1, azul 2, vermelho 2... até o fim. Quanto menos segundos, melhor!", "Alternate colours: blue 1, red 1, blue 2, red 2... to the end. The fewer seconds, the better!", "Alterna colores: azul 1, rojo 1, azul 2, rojo 2... hasta el final. ¡Cuantos menos segundos, mejor!"],
+    steps: [
+      ["Os números azuis vão de 1 a 13; os vermelhos, de 1 a 12.", "Blue numbers go from 1 to 13; red ones from 1 to 12.", "Los números azules van del 1 al 13; los rojos, del 1 al 12."],
+      ["Sempre alternando: azul, vermelho, azul, vermelho...", "Always alternating: blue, red, blue, red...", "Siempre alternando: azul, rojo, azul, rojo..."],
+      ["No jogo é igual: trocar o foco rápido entre a bola, o colega e o adversário.", "It's like the game: switching focus fast between the ball, a teammate and an opponent.", "Es como en el partido: cambiar el foco rápido entre el balón, el compañero y el rival."],
+    ],
+    unit: ["segundos", "seconds", "segundos"],
+  },
+  {
+    id: "gradezum", type: "mind", icon: "🐝", subs: ["concentration", "composure"], tiers: [90, 60, 45, 35], lower: true, max: 600, grid: { size: 5, noise: true },
+    title: ["Grade com o Zum-Zum", "Grid with Buzz", "Cuadrícula con Zum-Zum"],
+    desc: ["De 1 a 25, mas o Zum-Zum fica gritando na tela para te distrair. Quanto menos segundos, melhor!", "From 1 to 25, but Buzz keeps shouting on screen to distract you. The fewer seconds, the better!", "Del 1 al 25, pero Zum-Zum grita en la pantalla para distraerte. ¡Cuantos menos segundos, mejor!"],
+    steps: [
+      ["Aperte Iniciar e ache os números em ordem.", "Press Start and find the numbers in order.", "Pulsa Iniciar y encuentra los números en orden."],
+      ["Vão aparecer frases tipo 'Rápido!' e 'Olha o placar!'. Deixe passar, como nuvens.", "Phrases like 'Hurry!' and 'Check the score!' will pop up. Let them pass, like clouds.", "Aparecerán frases como '¡Rápido!' y '¡Mira el marcador!'. Déjalas pasar, como nubes."],
+      ["É o treino de jogar com a torcida gritando.", "It's practice for playing with the crowd shouting.", "Es el entrenamiento para jugar con la hinchada gritando."],
+    ],
+    unit: ["segundos", "seconds", "segundos"],
+  },
+  {
+    id: "grade6", type: "mind", icon: "🧠", subs: ["concentration"], tiers: [150, 110, 85, 70], lower: true, max: 900, grid: { size: 6 },
+    title: ["Grade gigante", "Giant grid", "Cuadrícula gigante"],
+    desc: ["Agora são 36 números: toque do 1 ao 36, em ordem. Quanto menos segundos, melhor!", "Now there are 36 numbers: tap from 1 to 36, in order. The fewer seconds, the better!", "Ahora son 36 números: toca del 1 al 36, en orden. ¡Cuantos menos segundos, mejor!"],
+    steps: [
+      ["Aperte Iniciar: 36 números embaralhados.", "Press Start: 36 shuffled numbers.", "Pulsa Iniciar: 36 números mezclados."],
+      ["Use a lanterna aberta: olhe a grade toda, não só um cantinho.", "Use a wide torch: scan the whole grid, not just one corner.", "Usa la linterna abierta: mira toda la cuadrícula, no solo una esquina."],
+      ["Ao terminar, o tempo vai direto para o resultado.", "When you finish, the time goes straight into the result.", "Al terminar, el tiempo pasa directo al resultado."],
+    ],
+    unit: ["segundos", "seconds", "segundos"],
+  },
+  {
+    id: "chuva", type: "mind", icon: "🌈", subs: ["decision", "reactions", "concentration"], tiers: [20, 40, 60, 80], max: 400, rain: { secs: 120, turbo: 60, mode: "only" },
+    title: ["Chuva de cores", "Colour rain", "Lluvia de colores"],
+    desc: ["Bolas caem do céu: toque só nas da cor que aparece em cima. A cor muda toda hora! Acerto vale +1, erro vale -1.", "Balls fall from the sky: tap only the ones in the colour shown at the top. The colour keeps changing! Right is +1, wrong is -1.", "Caen balones del cielo: toca solo los del color que aparece arriba. ¡El color cambia todo el tiempo! Acierto +1, error -1."],
+    steps: [
+      ["Aperte Iniciar: são 2 minutos, e o último é TURBO, bem mais rápido!", "Press Start: it lasts 2 minutes, and the last one is TURBO, much faster!", "Pulsa Iniciar: son 2 minutos, ¡y el último es TURBO, mucho más rápido!"],
+      ["Olhe a regra em cima. Quando ela piscar, a cor mudou!", "Watch the rule at the top. When it flashes, the colour changed!", "Mira la regla arriba. ¡Cuando parpadea, cambió el color!"],
+      ["Bola errada tira ponto: pense rápido, mas pense.", "A wrong ball costs a point: think fast, but think.", "Un balón equivocado resta: piensa rápido, pero piensa."],
+    ],
+    unit: ["pontos", "points", "puntos"],
+  },
+  {
+    id: "chuvanao", type: "mind", icon: "🚫", subs: ["decision", "reactions", "concentration"], tiers: [30, 60, 90, 120], max: 400, rain: { secs: 120, turbo: 60, mode: "avoid" },
+    title: ["Não toque!", "Don't touch!", "¡No toques!"],
+    desc: ["Agora é ao contrário: toque em todas as bolas, menos na cor proibida. Acerto vale +1, erro vale -1.", "Now it's the opposite: tap every ball except the forbidden colour. Right is +1, wrong is -1.", "Ahora es al revés: toca todos los balones, menos el color prohibido. Acierto +1, error -1."],
+    steps: [
+      ["Aperte Iniciar: são 2 minutos, e o último é TURBO, bem mais rápido!", "Press Start: it lasts 2 minutes, and the last one is TURBO, much faster!", "Pulsa Iniciar: son 2 minutos, ¡y el último es TURBO, mucho más rápido!"],
+      ["O dedo vai querer tocar em tudo. Segure quando vier a cor proibida!", "Your finger will want to tap everything. Hold back for the forbidden colour!", "El dedo va a querer tocar todo. ¡Frénalo con el color prohibido!"],
+      ["É como não dar o bote na finta do atacante: controlar o impulso.", "It's like not diving in at a striker's feint: controlling the impulse.", "Es como no tirarse ante el amague del delantero: controlar el impulso."],
+    ],
+    unit: ["pontos", "points", "puntos"],
+  },
+  {
+    id: "chuvaconfusa", type: "mind", icon: "🎨", subs: ["decision", "reactions", "concentration"], tiers: [15, 30, 45, 60], max: 400, rain: { secs: 120, turbo: 60, mode: "stroop" },
+    title: ["Chuva confusa", "Tricky rain", "Lluvia confusa"],
+    desc: ["O nome da cor aparece pintado de outra cor. Vale a PALAVRA, não a tinta! Toque só nas bolas da cor escrita.", "The colour name is printed in a different colour. The WORD counts, not the ink! Tap only the balls of the written colour.", "El nombre del color aparece pintado de otro color. ¡Vale la PALABRA, no la tinta! Toca solo los balones del color escrito."],
+    steps: [
+      ["Exemplo: 'AZUIS' escrito em vermelho → toque nas bolas azuis.", "Example: 'BLUE' written in red → tap the blue balls.", "Ejemplo: 'AZULES' escrito en rojo → toca los balones azules."],
+      ["A cabeça vai querer seguir a tinta. Leia a palavra!", "Your head will want to follow the ink. Read the word!", "La cabeza va a querer seguir la tinta. ¡Lee la palabra!"],
+      ["Acerto vale +1, erro vale -1. São 2 minutos, e o último é TURBO!", "Right is +1, wrong is -1. It lasts 2 minutes, and the last one is TURBO!", "Acierto +1, error -1. Son 2 minutos, ¡y el último es TURBO!"],
+    ],
+    unit: ["pontos", "points", "puntos"],
   },
   {
     id: "minharotina", type: "mind", icon: "🔄", subs: ["composure", "resilience"], tiers: [1, 3, 5, 8], max: 30,
