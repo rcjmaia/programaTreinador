@@ -1063,8 +1063,8 @@ function renderCraque() {
   const CQ_RAIN_CROSS = [3.6, 2.0, 1.6, 1.3];
   const CQ_RAIN_GAP = [950, 520, 400, 320];
   // Gentler levels for rains with two different rules at once (m.rain.calm).
-  const CQ_RAIN_CROSS_CALM = [3.6, 3.3, 3.0, 2.8];
-  const CQ_RAIN_GAP_CALM = [950, 880, 820, 760];
+  const CQ_RAIN_CROSS_CALM = [3.6, 3.4, 3.2, 3.0];
+  const CQ_RAIN_GAP_CALM = [950, 910, 870, 830];
 
   function startRain(m, btn, input) {
     if (btn.cqStop) return btn.cqStop();
@@ -1101,7 +1101,7 @@ function renderCraque() {
       prevTarget: null,
       changedAt: 0,
       balls: [],
-      ruleAt: startAt + 5000 + Math.random() * 2000 + i * 1800,
+      ruleAt: startAt + (m.rain.calm ? 7000 + i * 3000 : 5000 + i * 1800) + Math.random() * 2000,
       spawnAt: startAt + 400 + i * 300,
     }));
     if (duo) lanes[1].target = other(lanes[0].target);
@@ -1211,7 +1211,7 @@ function renderCraque() {
           lane.changedAt = now;
           lane.target = other(lane.target);
           lane.rule++;
-          lane.ruleAt = now + (turbo ? 3000 + Math.random() * 1500 : 4500 + Math.random() * 2500);
+          lane.ruleAt = now + (m.rain.calm ? 7000 + Math.random() * 3000 : turbo ? 3000 + Math.random() * 1500 : 4500 + Math.random() * 2500);
           setRule(lane);
           sound.tick();
         }
