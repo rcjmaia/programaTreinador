@@ -117,7 +117,7 @@ CQ_MISSIONS.push(
     unit: ["pontos", "points", "puntos"],
   },
   {
-    id: "chuvamaluca", type: "mind", icon: "🌀", subs: ["decision", "reactions", "concentration"], tiers: [12, 35, 70, 120], max: 2000, rain: { sides: ["only", "avoid"] },
+    id: "chuvamaluca", type: "mind", icon: "🌀", subs: ["decision", "reactions", "concentration"], tiers: [10, 30, 60, 100], max: 2000, rain: { sides: ["only", "avoid"], calm: true },
     title: ["Chuva dupla maluca", "Crazy double rain", "Lluvia doble loca"],
     desc: ["Dois lados, duas regras opostas! Na esquerda, toque SÓ na cor pedida. Na direita, toque em TODAS, MENOS na cor proibida.", "Two sides, two opposite rules! On the left, tap ONLY the given colour. On the right, tap ALL balls EXCEPT the forbidden colour.", "¡Dos lados, dos reglas opuestas! A la izquierda, toca SOLO el color pedido. A la derecha, toca TODOS, MENOS el color prohibido."],
     steps: [

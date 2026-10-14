@@ -1065,6 +1065,9 @@ function renderCraque() {
   const CQ_RAIN_COLORS = { red: "#ef4444", blue: "#3b82f6", yellow: "#facc15", green: "#22c55e" };
   const CQ_RAIN_CROSS = [3.6, 2.0, 1.6, 1.3];
   const CQ_RAIN_GAP = [950, 520, 400, 320];
+  // Gentler levels for rains with two different rules at once (m.rain.calm).
+  const CQ_RAIN_CROSS_CALM = [3.6, 3.3, 3.0, 2.8];
+  const CQ_RAIN_GAP_CALM = [950, 880, 820, 760];
 
   function startRain(m, btn, input) {
     if (btn.cqStop) return btn.cqStop();
@@ -1088,7 +1091,9 @@ function renderCraque() {
     const startAt = Date.now();
     let streak = 0;
     let best = 0;
-    let speed = gameSpeed(0, CQ_RAIN_CROSS, CQ_RAIN_GAP);
+    const cross = m.rain.calm ? CQ_RAIN_CROSS_CALM : CQ_RAIN_CROSS;
+    const gap = m.rain.calm ? CQ_RAIN_GAP_CALM : CQ_RAIN_GAP;
+    let speed = gameSpeed(0, cross, gap);
 
     const lanes = [...wrap.querySelectorAll(".cq-rain")].map((area, i) => ({
       area,
@@ -1196,10 +1201,10 @@ function renderCraque() {
       const now = Date.now();
       const dt = (now - last) / 1000;
       last = now;
-      const next = gameSpeed((now - startAt) / 1000, CQ_RAIN_CROSS, CQ_RAIN_GAP);
+      const next = gameSpeed((now - startAt) / 1000, cross, gap);
       if (next.li !== speed.li) showSpeedLevel(wrap, next.li);
       speed = next;
-      const turbo = speed.li > 0;
+      const turbo = speed.li > 0 && !m.rain.calm;
       lanes.forEach((lane) => {
         if (now >= lane.ruleAt) {
           lane.prevTarget = lane.target;
