@@ -149,6 +149,28 @@ CQ_MISSIONS.push(
     unit: ["pontos", "points", "puntos"],
   },
   {
+    id: "chuvadupla", type: "mind", icon: "🌗", subs: ["decision", "reactions", "concentration"], tiers: [20, 40, 60, 80], max: 400, rain: { secs: 120, turbo: 60, sides: ["only", "only"] },
+    title: ["Chuva dupla", "Double rain", "Lluvia doble"],
+    desc: ["A tela vira duas! Cada lado tem a sua cor, e elas trocam em momentos diferentes. Toque só nas bolas certas de cada lado.", "The screen splits in two! Each side has its own colour, and they change at different times. Tap only the right balls on each side.", "¡La pantalla se divide en dos! Cada lado tiene su color, y cambian en momentos distintos. Toca solo los balones correctos de cada lado."],
+    steps: [
+      ["Olhe as duas regras antes de começar: esquerda e direita são diferentes.", "Check both rules before starting: left and right are different.", "Mira las dos reglas antes de empezar: izquierda y derecha son distintas."],
+      ["Acerto vale +1, erro vale -1. São 2 minutos, e o último é TURBO!", "Right is +1, wrong is -1. It lasts 2 minutes, and the last one is TURBO!", "Acierto +1, error -1. Son 2 minutos, ¡y el último es TURBO!"],
+      ["É como jogar olhando a bola e o companheiro ao mesmo tempo.", "It's like playing while watching the ball and your teammate at the same time.", "Es como jugar mirando el balón y al compañero al mismo tiempo."],
+    ],
+    unit: ["pontos", "points", "puntos"],
+  },
+  {
+    id: "chuvamaluca", type: "mind", icon: "🌀", subs: ["decision", "reactions", "concentration"], tiers: [20, 40, 60, 80], max: 400, rain: { secs: 120, turbo: 60, sides: ["only", "avoid"] },
+    title: ["Chuva dupla maluca", "Crazy double rain", "Lluvia doble loca"],
+    desc: ["Dois lados, duas regras opostas! Na esquerda, toque SÓ na cor pedida. Na direita, toque em TODAS, MENOS na cor proibida.", "Two sides, two opposite rules! On the left, tap ONLY the given colour. On the right, tap ALL balls EXCEPT the forbidden colour.", "¡Dos lados, dos reglas opuestas! A la izquierda, toca SOLO el color pedido. A la derecha, toca TODOS, MENOS el color prohibido."],
+    steps: [
+      ["Esquerda: 'Só'. Direita: 'Menos'. Não troque as regras!", "Left: 'Only'. Right: 'Not'. Don't mix up the rules!", "Izquierda: 'Solo'. Derecha: 'Menos'. ¡No cambies las reglas!"],
+      ["Acerto vale +1, erro vale -1. São 2 minutos, e o último é TURBO!", "Right is +1, wrong is -1. It lasts 2 minutes, and the last one is TURBO!", "Acierto +1, error -1. Son 2 minutos, ¡y el último es TURBO!"],
+      ["A cabeça troca de regra num piscar de olhos, como no jogo de verdade.", "Your head switches rules in a blink, just like in a real game.", "La cabeza cambia de regla en un parpadeo, como en el partido de verdad."],
+    ],
+    unit: ["pontos", "points", "puntos"],
+  },
+  {
     id: "minharotina", type: "mind", icon: "🔄", subs: ["composure", "resilience"], tiers: [1, 3, 5, 8], max: 30,
     title: ["Meu botão de reset", "My reset button", "Mi botón de reinicio"],
     desc: ["Crie seu botão de reset e use no treino ou no jogo depois de cada erro. Quantas vezes você usou?", "Create your reset button and use it in training or games after every mistake. How many times did you use it?", "Crea tu botón de reinicio y úsalo en el entrenamiento o el partido después de cada error. ¿Cuántas veces lo usaste?"],

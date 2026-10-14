@@ -2746,10 +2746,20 @@ body.cq-lock {
   font-size: 1.4rem;
 }
 
+.cq-rain-wrap {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.cq-rain-wrap.is-duo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
 .cq-rain {
   position: relative;
   height: 340px;
-  margin-bottom: 14px;
   overflow: hidden;
   border-radius: 14px;
   background: repeating-linear-gradient(180deg, #166534 0 34px, #15803d 34px 68px);
@@ -2758,11 +2768,11 @@ body.cq-lock {
   -webkit-user-select: none;
 }
 
-.cq-rain.is-turbo {
+.cq-rain-wrap.is-turbo .cq-rain {
   background: repeating-linear-gradient(180deg, #1e1b4b 0 34px, #312e81 34px 68px);
 }
 
-.cq-rain.is-turbo::after {
+.cq-rain-wrap.is-turbo::after {
   content: attr(data-turbo);
   position: absolute;
   z-index: 3;
@@ -2797,6 +2807,17 @@ body.cq-lock {
   font-weight: 600;
   white-space: nowrap;
   pointer-events: none;
+}
+
+.is-duo .cq-rain-rule {
+  padding: 5px 9px;
+  font-size: 0.85rem;
+}
+
+.is-duo .cq-rain-ball {
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
 }
 
 .cq-rain-rule:empty {
