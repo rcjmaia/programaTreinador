@@ -1765,7 +1765,7 @@ section {
   }
 }
 
-/* Craque Inteligente */
+/* Craque de Bola */
 .cq-hero {
   padding-bottom: 8px;
 }
@@ -1893,8 +1893,9 @@ section {
 
 .cq-stats {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2px 18px;
+  grid-template-columns: repeat(3, auto);
+  justify-content: center;
+  gap: 2px 12px;
   margin-top: 8px;
   font-family: Oswald, sans-serif;
   font-size: 0.95rem;
@@ -1940,7 +1941,7 @@ section {
 
 .cq-attrs {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 22px 20px;
 }
 
@@ -2664,6 +2665,45 @@ body.cq-lock {
 
 .cq-timer.is-running b {
   color: var(--hero-gold);
+}
+
+.cq-grid-next {
+  font-family: Oswald, sans-serif;
+  font-size: 1.4rem;
+  color: var(--hero-gold);
+}
+
+.cq-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--n), 1fr);
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.cq-grid button {
+  aspect-ratio: 1;
+  font: 700 1.25rem Oswald, sans-serif;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.cq-grid button.is-done {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.cq-grid button.is-wrong {
+  animation: cq-wrong 0.35s;
+}
+
+@keyframes cq-wrong {
+  0%, 100% { transform: none; background: var(--panel); }
+  30% { transform: translateX(-4px); background: #b91c1c; }
+  60% { transform: translateX(4px); }
 }
 
 .cq-sound {

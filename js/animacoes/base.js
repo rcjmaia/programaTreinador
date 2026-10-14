@@ -1,5 +1,5 @@
 /* ============================================================
-   Craque Inteligente — base das animações das missões.
+   Craque de Bola — base das animações das missões.
    Aqui ficam os jogadores, as poses, os objetos e o cenário.
    Cada missão tem seu próprio arquivo em js/animacoes/<id>.js,
    baixado só quando a criança clica em "Ver animação".
@@ -23,6 +23,16 @@ const CQ_KIT = {
   boots: "#111827",
   skin: "#c68642",
   hair: "#1f1610",
+};
+const CQ_KIT_GK = {
+  shirt: "#f97316",
+  trim: "#7c2d12",
+  shorts: "#111827",
+  socks: "#f97316",
+  boots: "#111827",
+  skin: "#c68642",
+  hair: "#1f1610",
+  gloves: "#a3e635",
 };
 // Family member who helps in some missions.
 const CQ_KIT_HELPER = {
@@ -249,7 +259,7 @@ function cqPlayerSvg(kit = CQ_KIT) {
       <line x1="-3.5" y1="6" x2="3.5" y2="6" stroke="${k.trim}" stroke-width="1.5" />
       <g class="a-fore">
         <line x1="0" y1="0" x2="0" y2="12" stroke="${k.skin}" stroke-width="5" stroke-linecap="round" />
-        <circle cx="0" cy="13" r="3.4" fill="${k.skin}" />
+        <circle cx="0" cy="13" r="${k.gloves ? 4.2 : 3.4}" fill="${k.gloves || k.skin}" />
       </g>
     </g>`;
   return `
@@ -446,7 +456,7 @@ function cqFrontPlayerSvg(kit = CQ_KIT) {
       <line x1="0" y1="0" x2="0" y2="6" stroke="${k.shirt}" stroke-width="7" stroke-linecap="round" />
       <g>
         <line x1="0" y1="0" x2="0" y2="12" stroke="${k.skin}" stroke-width="5" stroke-linecap="round" />
-        <circle cx="0" cy="13" r="3.4" fill="${k.skin}" />
+        <circle cx="0" cy="13" r="${k.gloves ? 4.2 : 3.4}" fill="${k.gloves || k.skin}" />
       </g>
     </g>`;
   return `

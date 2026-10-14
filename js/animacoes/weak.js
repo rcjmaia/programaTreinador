@@ -1,30 +1,24 @@
-/* Parede do pé fraco: passa na parede, a bola volta e ele domina com o mesmo pé. */
+/* Parede de primeira: a bola volta da parede e ele devolve sem dominar, trocando de pé a cada passe. */
 
 cqRegisterAnim("weak", (box, opts) => {
   const hipX = 196;
   const wallX = 262;
   const restX = hipX + 18;
-  const hitAt = 0.32;
-  const wallAt = 0.62;
-  const backAt = 0.95;
-  const cycle = 1.25;
-  const passBack = { ...CQ_POSE.stand, hipY: CQ_GROUND - 34, legF: [22, 30], armF: [-25, -20], armB: [25, -20] };
-  const passHit = { ...CQ_POSE.stand, hipY: CQ_GROUND - 34, lean: -4, legF: [-35, -5], armF: [25, -20], armB: [-25, -20] };
-  const trap = { ...CQ_POSE.stand, hipY: CQ_GROUND - 34, legF: [-22, 26] };
-  const frames = [
-    { t: 0, x: hipX, pose: CQ_POSE.stand },
-    { t: 0.22, x: hipX, pose: passBack },
-    { t: hitAt, x: hipX, pose: passHit },
-    { t: 0.6, x: hipX, pose: CQ_POSE.stand },
-    { t: 0.85, x: hipX, pose: trap },
-    { t: backAt, x: hipX, pose: trap },
-    { t: cycle, x: hipX, pose: CQ_POSE.stand },
-  ];
-  const weak = opts.pick(["pé fraco", "weak foot", "pierna débil"]);
+  const hitAt = 0.2;
+  const wallAt = 0.48;
+  const cycle = 0.8;
+  const y = CQ_GROUND - 6;
+  const mk = (leg) => ({
+    back: { ...CQ_POSE.stand, hipY: CQ_GROUND - 34, [leg]: [18, 26], armF: [-25, -20], armB: [25, -20] },
+    hit: { ...CQ_POSE.stand, hipY: CQ_GROUND - 34, lean: -4, [leg]: [-32, -5], armF: [25, -20], armB: [-25, -20] },
+  });
+  const feet = [mk("legF"), mk("legB")];
+  const names = [opts.pick(["direito", "right", "derecho"]), opts.pick(["esquerdo", "left", "izquierdo"])];
 
   box.innerHTML = cqSceneSvg(opts.label, `
     <g class="a-hit">${cqWallSvg(wallX)}</g>
-    ${cqNoteSvg(150, 160, `${weak} · 2 ${opts.steps}`)}
+    <text x="${hipX - 46}" y="78" text-anchor="middle" class="a-note a-say"></text>
+    ${cqNoteSvg(150, 160, `${opts.pick(["de primeira", "one touch", "de primera"])} · 2 ${opts.steps}`)}
     ${cqPlayerSvg()}
     <g class="a-ball-pos">${cqBallSvg(6)}</g>
     ${cqCountSvg(opts.unit)}`);
@@ -34,17 +28,27 @@ cqRegisterAnim("weak", (box, opts) => {
   const ball = cqMovableBall(svg);
   const count = cqCounter(svg, opts.unit);
   const wall = svg.querySelector(".a-hit");
-  const y = CQ_GROUND - 6;
+  const say = svg.querySelector(".a-say");
 
   return cqLoop((seconds) => {
     const round = Math.floor(seconds / cycle);
     const t = seconds - round * cycle;
-    rig.pose(hipX, 1, cqKeys(frames, t).pose);
+    const f = feet[round % 2];
+    rig.pose(hipX, 1, cqKeys([
+      { t: 0, x: hipX, pose: CQ_POSE.stand },
+      { t: 0.1, x: hipX, pose: f.back },
+      { t: hitAt, x: hipX, pose: f.hit },
+      { t: 0.45, x: hipX, pose: CQ_POSE.stand },
+      { t: cycle, x: hipX, pose: CQ_POSE.stand },
+    ], t).pose);
 
+    // The ball never stops: it arrives at the end of a round and leaves on the next kick.
     if (t < hitAt) ball(restX, y);
     else if (t < wallAt) ball(cqLerp(restX, wallX - 6, (t - hitAt) / (wallAt - hitAt)), y);
-    else if (t < backAt) ball(cqLerp(wallX - 6, restX, (t - wallAt) / (backAt - wallAt)), y);
-    else ball(restX, y);
-    count(round % 40 + (t >= backAt ? 1 : 0), wall);
+    else ball(cqLerp(wallX - 6, restX, (t - wallAt) / (cycle - wallAt)), y);
+
+    const name = names[round % 2];
+    if (say.textContent !== name) say.textContent = name;
+    count(round % 40 + (t >= wallAt ? 1 : 0), wall);
   });
 });

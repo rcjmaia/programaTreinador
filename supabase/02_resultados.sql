@@ -1,5 +1,5 @@
 -- ============================================================
--- Craque Inteligente — histórico de resultados das missões.
+-- Craque de Bola — histórico de resultados das missões.
 -- Rode uma vez no Supabase: SQL Editor > New query > Run.
 -- ============================================================
 

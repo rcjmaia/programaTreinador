@@ -20,7 +20,7 @@ const SITE = {
   },
 };
 
-/* Supabase (login e banco do Craque Inteligente).
+/* Supabase (login e banco do Craque de Bola).
    Cole a "Project URL" e a "anon public key" (Project Settings > API).
    Sem isso a página não funciona: todos os dados ficam no banco. */
 const SUPABASE = {

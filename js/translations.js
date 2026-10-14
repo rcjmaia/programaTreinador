@@ -15,7 +15,7 @@ const TRANSLATIONS = {
       lab: "Formações e Posicionamentos",
       studies: "Estudos de jogos",
       mind: "Mente blindada",
-      craque: "Craque Inteligente",
+      craque: "Craque de Bola",
       contact: "WhatsApp",
     },
     brand: {
@@ -24,7 +24,7 @@ const TRANSLATIONS = {
     },
     craqueHome: {
       kicker: "Para jogadores da base",
-      title: "Craque Inteligente",
+      title: "Craque de Bola",
       lead: "Treine em casa com missões, ganhe medalhas e veja sua carta de jogador evoluir como no FIFA.",
       login: "Entrar",
       signup: "Criar conta grátis",
@@ -176,7 +176,7 @@ const TRANSLATIONS = {
       lab: "Formations and Positioning",
       studies: "Match study",
       mind: "Locked-in mindset",
-      craque: "Smart Player",
+      craque: "Football Star",
       contact: "WhatsApp",
     },
     brand: {
@@ -185,7 +185,7 @@ const TRANSLATIONS = {
     },
     craqueHome: {
       kicker: "For young players",
-      title: "Smart Player",
+      title: "Football Star",
       lead: "Train at home with missions, earn medals and watch your player card grow, just like in FIFA.",
       login: "Log in",
       signup: "Create a free account",
@@ -337,7 +337,7 @@ const TRANSLATIONS = {
       lab: "Formaciones y Posicionamiento",
       studies: "Estudio de partidos",
       mind: "Mente blindada",
-      craque: "Crack Inteligente",
+      craque: "Crack del Balón",
       contact: "WhatsApp",
     },
     brand: {
@@ -346,7 +346,7 @@ const TRANSLATIONS = {
     },
     craqueHome: {
       kicker: "Para jugadores juveniles",
-      title: "Crack Inteligente",
+      title: "Crack del Balón",
       lead: "Entrena en casa con misiones, gana medallas y mira cómo evoluciona tu carta de jugador, como en el FIFA.",
       login: "Entrar",
       signup: "Crear cuenta gratis",

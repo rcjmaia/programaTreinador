@@ -7,8 +7,8 @@ cqRegisterAnim("measure", (box, opts) => {
   const ballX = hipX + 16;
   const targetX = 262;
   const stepPx = (targetX - ballX) / dist;
-  const misses = [1, 0, 2, 1, 0];
-  const sides = [-1, 1, -1, 1, 1];
+  const misses = [1, 0, 2, 1, 0, 1];
+  const sides = [-1, 1, -1, 1, 1, -1];
   const y = CQ_GROUND - 6;
   const passBack = { ...CQ_POSE.stand, hipY: CQ_GROUND - 34, legF: [22, 30], armF: [-25, -20], armB: [25, -20] };
   const passHit = { ...CQ_POSE.stand, hipY: CQ_GROUND - 34, lean: -4, legF: [-35, -5], armF: [25, -20], armB: [-25, -20] };
@@ -53,13 +53,15 @@ cqRegisterAnim("measure", (box, opts) => {
     let text = "";
     if (seg.kind === "show") {
       const n = misses[seg.i];
-      text = n === 0 ? opts.pick(["no alvo! 0", "on target! 0", "¡en el blanco! 0"]) : `${n} ${opts.steps}`;
+      if (n === 0) text = opts.pick(["no alvo! 0", "on target! 0", "¡en el blanco! 0"]);
+      else if (n === 1) text = opts.pick(["1 passo", "1 step", "1 paso"]);
+      else text = `${n} ${opts.steps}`;
       if (n === 0 && u < 0.1) cqFlash(cone);
     }
     if (away.textContent !== text) away.textContent = text;
     away.setAttribute("x", seg.kind === "show" ? stopX : targetX);
 
-    // Running total of the 5 passes.
+    // Running total of the 6 passes.
     let sum = 0;
     for (const s of segs) if (s.kind === "show" && t >= s.start) sum += misses[s.i];
     count(sum);

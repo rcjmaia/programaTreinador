@@ -1,4 +1,4 @@
--- Craque Inteligente — cole tudo no Supabase em SQL Editor > New query > Run.
+-- Craque de Bola — cole tudo no Supabase em SQL Editor > New query > Run.
 
 -- Perfis: um por conta. "card" guarda a carta e "progress" os recordes, XP e sequência.
 create table public.profiles (

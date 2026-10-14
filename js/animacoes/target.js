@@ -1,10 +1,10 @@
 /* Chute no alvo: de 5 passos, a bola passa entre os pés da cadeira.
-   args.weak: mesma cena, marcando que o chute é com o pé fraco. */
+   args.note: [pt, en, es] somado ao texto de baixo, para variações da mesma cena. */
 
 cqRegisterAnim("target", (box, opts) => {
   const ballX = 130;
   const chairX = 266;
-  const weak = opts.args?.weak ? ` · ${opts.pick(["pé fraco", "weak foot", "pierna débil"])}` : "";
+  const weak = opts.args?.note ? ` · ${opts.pick(opts.args.note)}` : "";
   return cqKickScene(box, opts, {
     ballX,
     scenery: `

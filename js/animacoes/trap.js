@@ -1,5 +1,5 @@
 /* Domínio do alto: joga a bola para cima e amortece com o pé, a bola fica pertinho.
-   args.weak: só com o pé fraco. */
+   args.note: [pt, en, es] somado ao texto de baixo, para variações da mesma cena. */
 
 cqRegisterAnim("trap", (box, opts) => {
   const hipX = 150;
@@ -19,7 +19,7 @@ cqRegisterAnim("trap", (box, opts) => {
 
   box.innerHTML = cqSceneSvg(opts.label, `
     <rect class="a-hit" x="${restX - 14}" y="${CQ_GROUND}" width="28" height="3" fill="rgba(250, 204, 21, 0.6)" />
-    ${cqNoteSvg(restX, 160, `≤ 1 ${opts.steps}${opts.args?.weak ? ` · ${opts.pick(["pé fraco", "weak foot", "pierna débil"])}` : ""}`)}
+    ${cqNoteSvg(restX, 160, `${opts.pick(["≤ 1 passo", "≤ 1 step", "≤ 1 paso"])}${opts.args?.note ? ` · ${opts.pick(opts.args.note)}` : ""}`)}
     ${cqPlayerSvg()}
     <g class="a-ball-pos">${cqBallSvg(6)}</g>
     ${cqCountSvg(opts.unit)}`);

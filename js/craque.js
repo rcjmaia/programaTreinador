@@ -16,16 +16,17 @@ const CQ_ATTRS = [
   { id: "fis", subs: ["jumping", "stamina", "strength", "combat"] },
   { id: "int", subs: ["positioning", "recovery", "reading", "decision", "teamplay", "communication"] },
   { id: "cab", subs: ["concentration", "courage", "resilience", "confidence", "discipline", "fairplay"] },
+  { id: "gol", subs: ["gkdiving", "gkhandling", "gkkicking", "gkreflexes", "gkpositioning"] },
 ];
+// The goalkeeping group only counts towards the overall of players whose position is goalkeeper.
+const CQ_GK_GROUP = "gol";
 
 const CQ_SHIRTS = ["#2563eb", "#dc2626", "#16a34a", "#f59e0b", "#111827"];
 const CQ_SKINS = ["#f6d3b3", "#d9a273", "#a86b3c", "#6b4226"];
 
 const CQ_TEXT = {
   pt: {
-    kicker: "Escolinha",
-    title: "Craque Inteligente",
-    lead: "Treine, registre seus resultados e veja sua carta evoluir.",
+    title: "Craque de Bola",
     setupTitle: "Crie sua carta de jogador",
     name: "Seu nome",
     number: "Número",
@@ -62,6 +63,7 @@ const CQ_TEXT = {
     save: "Salvar resultado",
     start: "Iniciar",
     stop: "Parar",
+    restart: "Recomeçar",
     time: "Tempo!",
     newRecord: "Novo recorde!",
     keepGoing: "Seu recorde é {n}. Você consegue bater!",
@@ -79,11 +81,11 @@ const CQ_TEXT = {
     resetConfirm: "Apagar sua carta e começar de novo?",
     medals: ["Bronze", "Prata", "Ouro", "Lenda"],
     noMedal: "Sem medalha",
-    attrs: { rit: ["RIT", "Ritmo"], fin: ["FIN", "Finalização"], pas: ["PAS", "Passes"], con: ["CON", "Condução"], def: ["DEF", "Defesa"], fis: ["FIS", "Físico"], int: ["INT", "Inteligência"], cab: ["CAB", "Cabeça"] },
+    attrs: { rit: ["RIT", "Ritmo"], fin: ["FIN", "Finalização"], pas: ["PAS", "Passes"], con: ["TEC", "Técnica"], def: ["DEF", "Defesa"], fis: ["FIS", "Físico"], int: ["INT", "Inteligência"], cab: ["MEN", "Mental"], gol: ["GOL", "Goleiro"] },
     positions: { gk: "GOL", cb: "ZAG", fb: "LAT", dm: "VOL", am: "MEI", st: "ATA" },
     foot: "Pé preferido",
     feet: { right: "Direito", left: "Esquerdo" },
-    weakFoot: "Pé fraco",
+    bothFeet: "Dois pés",
     skillMoves: "Habilidade",
     details: "Atributos",
     login: "Entrar",
@@ -101,9 +103,7 @@ const CQ_TEXT = {
     logout: "Sair",
   },
   en: {
-    kicker: "Youth academy",
-    title: "Smart Player",
-    lead: "Train, log your results and watch your card grow.",
+    title: "Football Star",
     setupTitle: "Create your player card",
     name: "Your name",
     number: "Number",
@@ -140,6 +140,7 @@ const CQ_TEXT = {
     save: "Save result",
     start: "Start",
     stop: "Stop",
+    restart: "Restart",
     time: "Time!",
     newRecord: "New record!",
     keepGoing: "Your best is {n}. You can beat it!",
@@ -157,11 +158,11 @@ const CQ_TEXT = {
     resetConfirm: "Delete your card and start again?",
     medals: ["Bronze", "Silver", "Gold", "Legend"],
     noMedal: "No medal",
-    attrs: { rit: ["PAC", "Pace"], fin: ["SHO", "Shooting"], pas: ["PAS", "Passing"], con: ["DRI", "Dribbling"], def: ["DEF", "Defending"], fis: ["PHY", "Physical"], int: ["INT", "Intelligence"], cab: ["MEN", "Mental"] },
+    attrs: { rit: ["PAC", "Pace"], fin: ["SHO", "Shooting"], pas: ["PAS", "Passing"], con: ["TEC", "Technique"], def: ["DEF", "Defending"], fis: ["PHY", "Physical"], int: ["INT", "Intelligence"], cab: ["MEN", "Mental"], gol: ["GK", "Goalkeeping"] },
     positions: { gk: "GK", cb: "CB", fb: "FB", dm: "DM", am: "AM", st: "ST" },
     foot: "Preferred foot",
     feet: { right: "Right", left: "Left" },
-    weakFoot: "Weak foot",
+    bothFeet: "Both feet",
     skillMoves: "Skill moves",
     details: "Attributes",
     login: "Log in",
@@ -179,9 +180,7 @@ const CQ_TEXT = {
     logout: "Log out",
   },
   es: {
-    kicker: "Escuelita",
-    title: "Crack Inteligente",
-    lead: "Entrena, anota tus resultados y mira cómo evoluciona tu carta.",
+    title: "Crack del Balón",
     setupTitle: "Crea tu carta de jugador",
     name: "Tu nombre",
     number: "Número",
@@ -218,6 +217,7 @@ const CQ_TEXT = {
     save: "Guardar resultado",
     start: "Iniciar",
     stop: "Parar",
+    restart: "Reiniciar",
     time: "¡Tiempo!",
     newRecord: "¡Nuevo récord!",
     keepGoing: "Tu récord es {n}. ¡Puedes superarlo!",
@@ -235,11 +235,11 @@ const CQ_TEXT = {
     resetConfirm: "¿Borrar tu carta y empezar de nuevo?",
     medals: ["Bronce", "Plata", "Oro", "Leyenda"],
     noMedal: "Sin medalla",
-    attrs: { rit: ["RIT", "Ritmo"], fin: ["TIR", "Tiro"], pas: ["PAS", "Pase"], con: ["REG", "Regate"], def: ["DEF", "Defensa"], fis: ["FIS", "Físico"], int: ["INT", "Inteligencia"], cab: ["MEN", "Mental"] },
+    attrs: { rit: ["RIT", "Ritmo"], fin: ["TIR", "Tiro"], pas: ["PAS", "Pase"], con: ["TEC", "Técnica"], def: ["DEF", "Defensa"], fis: ["FIS", "Físico"], int: ["INT", "Inteligencia"], cab: ["MEN", "Mental"], gol: ["POR", "Portero"] },
     positions: { gk: "POR", cb: "DFC", fb: "LAT", dm: "MCD", am: "MP", st: "DC" },
     foot: "Pie preferido",
     feet: { right: "Derecho", left: "Izquierdo" },
-    weakFoot: "Pierna débil",
+    bothFeet: "Dos pies",
     skillMoves: "Filigranas",
     details: "Atributos",
     login: "Entrar",
@@ -303,6 +303,11 @@ const CQ_SUBS = {
   confidence: ["Confiança", "Confidence", "Confianza"],
   discipline: ["Disciplina", "Discipline", "Disciplina"],
   fairplay: ["Fair play", "Fair play", "Juego limpio"],
+  gkdiving: ["Mergulho", "Diving", "Estirada"],
+  gkhandling: ["Encaixe", "Handling", "Blocaje"],
+  gkkicking: ["Reposição", "Kicking", "Saque"],
+  gkreflexes: ["Reflexo", "Reflexes", "Reflejos"],
+  gkpositioning: ["Posicionamento no gol", "GK positioning", "Colocación"],
 };
 
 function renderCraque() {
@@ -469,7 +474,15 @@ function renderCraque() {
     return Math.round(subs.reduce((a, s) => a + subValue(s), 0) / subs.length);
   }
 
-  const overall = () => Math.round(CQ_ATTRS.reduce((a, g) => a + groupValue(g), 0) / CQ_ATTRS.length);
+  // Goalkeepers: half goalkeeping, half the average of the other groups.
+  const overall = (p = state.player) => {
+    const field = CQ_ATTRS.filter((g) => g.id !== CQ_GK_GROUP);
+    const avg = field.reduce((a, g) => a + groupValue(g), 0) / field.length;
+    if (p?.pos !== "gk") return Math.round(avg);
+    return Math.round((avg + groupValue(CQ_ATTRS.find((g) => g.id === CQ_GK_GROUP))) / 2);
+  };
+  const gkSubs = CQ_ATTRS.find((g) => g.id === CQ_GK_GROUP).subs;
+  const isGkMission = (m) => m.subs.every((s) => gkSubs.includes(s));
 
   function tierOf(ovr) {
     if (ovr >= 80) return 3;
@@ -504,7 +517,8 @@ function renderCraque() {
     const seed = dayNumber();
     const open = openMissions();
     const ofType = (...types) => open.filter((m) => types.includes(m.type));
-    const balls = ofType("ball", "move");
+    const isGk = state.player?.pos === "gk";
+    const balls = ofType("ball", "move").filter((m) => isGk || !isGkMission(m));
     const weakest = balls
       .map((m, i) => ({ m, score: m.subs.reduce((a, s) => a + subValue(s), 0) / m.subs.length, order: (i + seed) % balls.length }))
       .sort((a, b) => a.score - b.score || a.order - b.order)[0].m;
@@ -525,7 +539,7 @@ function renderCraque() {
   }
 
   function cardHtml(p, opts = {}) {
-    const ovr = overall();
+    const ovr = overall(p);
     const tier = tierOf(ovr);
     const tx = t();
     const up = opts.up || new Set();
@@ -547,7 +561,7 @@ function renderCraque() {
       </button>`;
   }
 
-  const weakFootStars = () => Math.min(5, medalIndex(mission("weak"), state.records.weak) + 2);
+  const bothFeetStars = () => Math.min(5, medalIndex(mission("twofeet"), state.records.twofeet) + 2);
   const stars = (n) => "★".repeat(n) + "☆".repeat(5 - n);
   const skillStars = () => Math.min(5, medalIndex(mission("skills"), state.records.skills) + 2);
   const barColor = (v) => (v >= 80 ? "#22c55e" : v >= 68 ? "#a3e635" : v >= 55 ? "#facc15" : v > CQ_BASE ? "#f59e0b" : "#ef4444");
@@ -584,7 +598,7 @@ function renderCraque() {
           <strong>${esc(p.name)}</strong>
           <span>${overall()} · ${tx.positions[p.pos]} · #${esc(p.number)}</span>
           <span>${tx.foot}: <b>${tx.feet[p.foot || "right"]}</b></span>
-          <span>${tx.weakFoot}: <b class="cq-stars">${stars(weakFootStars())}</b></span>
+          <span>${tx.bothFeet}: <b class="cq-stars">${stars(bothFeetStars())}</b></span>
           <span>${tx.skillMoves}: <b class="cq-stars">${stars(skillStars())}</b></span>
         </header>
         <div class="cq-attrs">${cols}</div>
@@ -822,11 +836,14 @@ function renderCraque() {
     if (m.timer?.mode === "down") tool = `<div class="cq-timer"><b>${m.timer.s}</b>${controls}</div>`;
     if (m.timer?.mode === "up") tool = `<div class="cq-timer"><b>0</b>${controls}</div>`;
     if (m.timer?.mode === "breath") tool = `<div class="cq-timer is-breath"><span class="cq-ball"></span><em></em><b>0</b>${controls}</div>`;
+    if (m.grid) tool = `
+      <div class="cq-timer"><b>0</b><span class="cq-grid-next"></span><button type="button" class="cq-btn is-ghost" data-grid>${tx.start}</button></div>
+      <div class="cq-grid" style="--n:${Math.sqrt(m.grid)}"></div>`;
 
     openModal(`
       ${missionHeader(m)}
+      ${m.anim ? `<div class="cq-anim" hidden></div><button type="button" class="cq-btn is-ghost cq-anim-btn">${tx.watch}</button>` : ""}
       ${steps}
-      ${m.anim ? `<button type="button" class="cq-btn is-ghost cq-anim-btn">${tx.watch}</button><div class="cq-anim" hidden></div>` : ""}
       ${tool}
       <form class="cq-result-form">
         <label><span>${fill(tx.howMany, { unit: tr(m.unit) })}</span>
@@ -837,6 +854,8 @@ function renderCraque() {
     const input = dialog.querySelector('input[name="value"]');
     const timerBtn = dialog.querySelector("[data-timer]");
     if (timerBtn) timerBtn.addEventListener("click", () => toggleTimer(m, timerBtn, input));
+    const gridBtn = dialog.querySelector("[data-grid]");
+    if (gridBtn) gridBtn.addEventListener("click", () => startGrid(m, gridBtn, input));
     const soundBtn = dialog.querySelector("[data-sound]");
     if (soundBtn) soundBtn.addEventListener("click", () => {
       state.mute = !state.mute;
@@ -844,7 +863,10 @@ function renderCraque() {
       save();
     });
     const animBtn = dialog.querySelector(".cq-anim-btn");
-    if (animBtn) animBtn.addEventListener("click", () => toggleAnim(m, animBtn));
+    if (animBtn) {
+      animBtn.addEventListener("click", () => toggleAnim(m, animBtn));
+      toggleAnim(m, animBtn);
+    }
 
     dialog.querySelector(".cq-result-form").addEventListener("submit", (e) => {
       e.preventDefault();
@@ -892,6 +914,47 @@ function renderCraque() {
     },
     breath: (inhale) => tone(inhale ? 392 : 294, 0.6, { type: "sine", vol: 0.1 }),
   };
+
+  // Concentration grid: tap 1..n in order as fast as possible; the time in seconds is the result.
+  function startGrid(m, btn, input) {
+    stopTimer();
+    const grid = dialog.querySelector(".cq-grid");
+    const out = btn.closest(".cq-timer").querySelector("b");
+    const nextEl = btn.closest(".cq-timer").querySelector(".cq-grid-next");
+    const nums = Array.from({ length: m.grid }, (_, i) => i + 1);
+    for (let i = nums.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [nums[i], nums[j]] = [nums[j], nums[i]];
+    }
+    grid.innerHTML = nums.map((n) => `<button type="button" data-n="${n}">${n}</button>`).join("");
+    btn.textContent = t().restart;
+    let next = 1;
+    nextEl.textContent = "→ 1";
+    const startAt = Date.now();
+    sound.go();
+    timer = setInterval(() => { out.textContent = Math.floor((Date.now() - startAt) / 1000); }, 200);
+    grid.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+      if (+b.dataset.n !== next) {
+        b.classList.remove("is-wrong");
+        void b.offsetWidth;
+        b.classList.add("is-wrong");
+        return;
+      }
+      b.classList.add("is-done");
+      b.disabled = true;
+      sound.tick();
+      next++;
+      nextEl.textContent = next <= m.grid ? `→ ${next}` : "";
+      if (next > m.grid) {
+        stopTimer();
+        const secs = Math.max(1, Math.round((Date.now() - startAt) / 1000));
+        out.textContent = secs;
+        input.value = secs;
+        sound.whistle();
+        input.focus();
+      }
+    }));
+  }
 
   function toggleTimer(m, btn, input) {
     const tx = t();
@@ -987,10 +1050,20 @@ function renderCraque() {
         <div class="cq-quiz">
           <small>${fill(tx.question, { i: i + 1, n: pool.length })}</small>
           <strong>${tr(q.q)}</strong>
+          ${q.scene ? `<div class="cq-anim cq-board"></div>` : ""}
           <div class="cq-opts">${order.map((o) => `<button type="button" data-opt="${o}">${tr(q.opts[o])}</button>`).join("")}</div>
           <p class="cq-why" hidden></p>
           <button type="button" class="cq-btn" data-next hidden>${i + 1 < pool.length ? tx.next : tx.finish}</button>
         </div>`);
+      if (q.scene) {
+        const box = dialog.querySelector(".cq-board");
+        cqLoadAnim(q.scene.anim || "quadro").then((scene) => {
+          if (box.isConnected) stopAnim = scene(box, { label: tr(m.title), pick: tr, args: q.scene });
+        }).catch((err) => {
+          console.warn("Craque:", err);
+          box.remove();
+        });
+      }
 
       const opts = dialog.querySelectorAll("[data-opt]");
       opts.forEach((b) => b.addEventListener("click", () => {
@@ -1086,9 +1159,7 @@ function renderCraque() {
   root.innerHTML = `
     <section class="page-hero cq-hero">
       <div class="wrap">
-        <p class="hero-kicker" data-cq="kicker"></p>
         <h1 class="page-title" data-cq="title"></h1>
-        <p class="lead" data-cq="lead"></p>
       </div>
     </section>
     <section class="cq-section">
