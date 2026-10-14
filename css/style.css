@@ -1996,9 +1996,7 @@ section {
 
 .cq-attr li span {
   color: #cbd5e1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.25;
 }
 
 .cq-attr li b {
@@ -2408,6 +2406,43 @@ section {
   background: var(--line);
 }
 
+.cq-anim-btn {
+  margin: 4px 0 12px;
+}
+
+.cq-anim {
+  margin-bottom: 14px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0b1f4d, #12306b);
+}
+
+.cq-anim-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.cq-anim-svg .a-count {
+  fill: #facc15;
+  font-family: Oswald, sans-serif;
+  font-size: 18px;
+}
+
+.cq-anim-svg .a-note {
+  fill: rgba(255, 255, 255, 0.75);
+  font-size: 10px;
+}
+
+.cq-anim-svg .a-mark.is-hit .a-cone {
+  animation: cq-mark-hit 0.6s ease;
+}
+
+@keyframes cq-mark-hit {
+  0%, 100% { fill: #fb923c; }
+  30% { fill: #facc15; }
+}
+
 .cq-unlocked {
   font-weight: 700;
   color: #facc15;
@@ -2600,6 +2635,21 @@ body.cq-lock {
 
 .cq-timer.is-running b {
   color: var(--hero-gold);
+}
+
+.cq-sound {
+  margin-left: auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: transparent;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.cq-timer.is-breath .cq-sound {
+  margin-left: 0;
 }
 
 .cq-timer.is-breath {

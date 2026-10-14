@@ -5,11 +5,12 @@
    type: ball (com bola), move (movimento), quiz (perguntas),
          mind (cabeça), auto (sobe sozinha).
    tiers: metas de Bronze, Prata, Ouro e Lenda.
+   anim: true quando existe js/animacoes/<id>.js.
    ============================================================ */
 
 const CQ_TRAILS = [
   { id: "rit", phases: [["shuttle"], ["flipflops"], ["sprintball"]] },
-  { id: "fin", phases: [["target"], ["penalty", "volley"], ["longshot", "freekick"]] },
+  { id: "fin", phases: [["target"], ["penalty", "header"], ["volley", "longshot", "freekick"]] },
   { id: "pas", phases: [["weak"], ["longpass"], ["cross"]] },
   { id: "con", phases: [["keepy"], ["slalom", "dribble"], ["zigzag", "skills"]] },
   { id: "def", phases: [["bote"], ["steal"], ["heading", "sliding"]] },
@@ -25,18 +26,18 @@ const CQ_UNIT_TRIPS = ["voltas", "trips", "vueltas"];
 const CQ_MISSIONS = [
   // Ritmo
   {
-    id: "shuttle", type: "move", icon: "🏃", subs: ["acceleration", "sprint"], tiers: [6, 9, 12, 15], timer: { mode: "down", s: 30 },
+    id: "shuttle", type: "move", icon: "🏃", subs: ["acceleration", "sprint"], tiers: [6, 9, 12, 15], timer: { mode: "down", s: 30 }, anim: true,
     title: ["Vai e volta", "Shuttle run", "Ida y vuelta"],
-    desc: ["Em 30 segundos, quantas linhas você toca correndo entre duas marcas a 10 passos?", "In 30 seconds, how many lines can you touch running between two marks 10 steps apart?", "En 30 segundos, ¿cuántas líneas tocas corriendo entre dos marcas a 10 pasos?"],
+    desc: ["Em 30 segundos, quantas vezes você toca as marcas correndo de uma para a outra?", "In 30 seconds, how many times can you touch the markers running from one to the other?", "En 30 segundos, ¿cuántas veces tocas las marcas corriendo de una a la otra?"],
     steps: [
-      ["Marque duas linhas a 10 passos de distância.", "Mark two lines 10 steps apart.", "Marca dos líneas a 10 pasos."],
-      ["Corra e toque a linha com a mão.", "Run and touch the line with your hand.", "Corre y toca la línea con la mano."],
-      ["Cada linha tocada vale 1.", "Each line touched counts as 1.", "Cada línea tocada cuenta 1."],
+      ["Coloque duas marcas a 10 passos: cone, chinelo, garrafa ou o que tiver em casa.", "Place two markers 10 steps apart: a cone, a flip-flop, a bottle or anything you have at home.", "Pon dos marcas a 10 pasos: un cono, una chancla, una botella o lo que tengas en casa."],
+      ["Corra e toque a marca com a mão.", "Run and touch the marker with your hand.", "Corre y toca la marca con la mano."],
+      ["Cada marca tocada vale 1.", "Each marker touched counts as 1.", "Cada marca tocada cuenta 1."],
     ],
-    unit: ["linhas", "lines", "líneas"],
+    unit: ["toques", "touches", "toques"],
   },
   {
-    id: "flipflops", type: "move", icon: "👟", subs: ["acceleration", "agility"], tiers: [4, 6, 8, 10], timer: { mode: "down", s: 30 },
+    id: "flipflops", type: "move", icon: "👟", subs: ["acceleration", "agility"], tiers: [4, 6, 8, 10], timer: { mode: "down", s: 30 }, anim: true,
     title: ["Busca-chinelos", "Flip-flop fetch", "Busca chanclas"],
     desc: ["Em 30 segundos, quantos chinelos você busca e traz de volta, um por vez?", "In 30 seconds, how many flip-flops can you fetch and bring back, one at a time?", "En 30 segundos, ¿cuántas chanclas buscas y traes, una por vez?"],
     steps: [
@@ -80,6 +81,17 @@ const CQ_MISSIONS = [
       ["Conte as bolas no canto.", "Count the balls in the corner.", "Cuenta los balones en el rincón."],
     ],
     unit: ["gols no canto", "corner goals", "goles al rincón"],
+  },
+  {
+    id: "header", type: "ball", icon: "💫", subs: ["headfin", "attpos"], tiers: [2, 4, 6, 8], max: 10,
+    title: ["Cabeçada no gol", "Header on goal", "Cabezazo al arco"],
+    desc: ["Em 10 tentativas, quantas cabeçadas para baixo acertam o canto do gol?", "Out of 10 tries, how many downward headers hit the corner of the goal?", "De 10 intentos, ¿cuántos cabezazos hacia abajo van al rincón del arco?"],
+    steps: [
+      ["Use só bola leve: de plástico ou bexiga.", "Only use a light ball: plastic or a balloon.", "Usa solo balón liviano: de plástico o un globo."],
+      ["Alguém joga a bola para você, ou jogue para cima.", "Someone tosses you the ball, or toss it up yourself.", "Alguien te lanza el balón, o lánzalo tú hacia arriba."],
+      ["Cabeceie com a testa, de olhos abertos, para baixo e no canto: assim o goleiro não pega.", "Head it with your forehead, eyes open, down into the corner: that's how you beat the keeper.", "Cabecea con la frente, con los ojos abiertos, hacia abajo y al rincón: así el portero no llega."],
+    ],
+    unit: ["gols", "goals", "goles"],
   },
   {
     id: "longshot", type: "ball", icon: "🚀", subs: ["longshots", "power"], tiers: [2, 4, 6, 8], max: 10,
@@ -227,8 +239,8 @@ const CQ_MISSIONS = [
   },
   {
     id: "heading", type: "ball", icon: "🎈", subs: ["heading"], tiers: [2, 4, 6, 8], max: 10,
-    title: ["Cabeceio na parede", "Wall header", "Cabezazo a la pared"],
-    desc: ["Em 10 tentativas, quantos cabeceios acertam a parede acima de uma marca?", "Out of 10 tries, how many headers hit the wall above a mark?", "De 10 intentos, ¿cuántos cabezazos dan en la pared sobre una marca?"],
+    title: ["Cabeceio de defesa", "Defensive header", "Despeje de cabeza"],
+    desc: ["Em 10 tentativas, quantos cabeceios acertam a parede acima de uma marca alta? Na defesa, a bola vai para cima e para longe.", "Out of 10 tries, how many headers hit the wall above a high mark? In defence, the ball goes high and far.", "De 10 intentos, ¿cuántos cabezazos dan en la pared sobre una marca alta? En defensa, el balón va arriba y lejos."],
     steps: [
       ["Use só bola leve: de plástico ou bexiga.", "Only use a light ball: plastic or a balloon.", "Usa solo balón liviano: de plástico o un globo."],
       ["Jogue para cima e cabeceie com a testa, de olhos abertos.", "Toss it up and head it with your forehead, eyes open.", "Lánzalo arriba y cabecea con la frente, con los ojos abiertos."],

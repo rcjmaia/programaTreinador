@@ -7,7 +7,7 @@ const CQ_XP = { normal: 10, daily: 20, perLevel: 100, dailyCap: 3 };
 // The first six follow the FIFA card; "int" and "cab" are the academy's own groups.
 const CQ_ATTRS = [
   { id: "rit", subs: ["acceleration", "sprint"] },
-  { id: "fin", subs: ["attpos", "finishing", "power", "longshots", "volleys", "penalties", "freekick"] },
+  { id: "fin", subs: ["attpos", "finishing", "power", "longshots", "volleys", "penalties", "freekick", "headfin"] },
   { id: "pas", subs: ["vision", "cross", "short", "long", "curve"] },
   { id: "con", subs: ["agility", "balance", "reactions", "control", "carry", "dribble", "composure"] },
   { id: "def", subs: ["interceptions", "heading", "awareness", "standing", "sliding"] },
@@ -43,6 +43,11 @@ const CQ_TEXT = {
     phase: "Fase {n}",
     lockedHint: "Bloqueada: ganhe Bronze na fase anterior.",
     pickMission: "Escolha a missão",
+    go: "Vai!",
+    sound: "Som ligado/desligado",
+    watch: "▶ Ver animação",
+    hideAnim: "Esconder animação",
+    steps: "passos",
     unlocked: "Nova fase liberada! Veja nas Trilhas.",
     autoInfo: "Essa missão sobe sozinha: é só treinar em dias seguidos.",
     noCloud: "O banco de dados não está configurado. Fale com o Renato.",
@@ -50,7 +55,7 @@ const CQ_TEXT = {
     record: "Recorde",
     notDone: "Ainda não feita",
     types: { ball: "Com bola", move: "Movimento", quiz: "Jogo", mind: "Cabeça", auto: "Automática" },
-    howMany: "Quantos {unit} você fez?",
+    howMany: "Seu resultado ({unit})",
     save: "Salvar resultado",
     start: "Iniciar",
     stop: "Parar",
@@ -115,6 +120,11 @@ const CQ_TEXT = {
     phase: "Stage {n}",
     lockedHint: "Locked: earn Bronze in the previous stage.",
     pickMission: "Pick a mission",
+    go: "Go!",
+    sound: "Sound on/off",
+    watch: "▶ Watch animation",
+    hideAnim: "Hide animation",
+    steps: "steps",
     unlocked: "New stage unlocked! Check your Trails.",
     autoInfo: "This mission goes up by itself: just train on consecutive days.",
     noCloud: "The database is not set up yet.",
@@ -187,6 +197,11 @@ const CQ_TEXT = {
     phase: "Fase {n}",
     lockedHint: "Bloqueada: gana Bronce en la fase anterior.",
     pickMission: "Elige la misión",
+    go: "¡Ya!",
+    sound: "Sonido sí/no",
+    watch: "▶ Ver animación",
+    hideAnim: "Ocultar animación",
+    steps: "pasos",
     unlocked: "¡Nueva fase desbloqueada! Mírala en Caminos.",
     autoInfo: "Esta misión sube sola: solo entrena días seguidos.",
     noCloud: "La base de datos no está configurada.",
@@ -194,7 +209,7 @@ const CQ_TEXT = {
     record: "Récord",
     notDone: "Aún no hecha",
     types: { ball: "Con balón", move: "Movimiento", quiz: "Juego", mind: "Cabeza", auto: "Automática" },
-    howMany: "¿Cuántos {unit} hiciste?",
+    howMany: "Tu resultado ({unit})",
     save: "Guardar resultado",
     start: "Iniciar",
     stop: "Parar",
@@ -242,35 +257,36 @@ const CQ_TEXT = {
 const CQ_SUBS = {
   acceleration: ["Aceleração", "Acceleration", "Aceleración"],
   sprint: ["Pique", "Sprint speed", "Velocidad"],
-  attpos: ["Pos. ataque", "Att. positioning", "Pos. ofensivo"],
+  attpos: ["Posicionamento ofensivo", "Attacking positioning", "Posicionamiento ofensivo"],
   finishing: ["Finalização", "Finishing", "Definición"],
-  power: ["Força chute", "Shot power", "Potencia"],
-  longshots: ["Ch. de longe", "Long shots", "Tiros lejanos"],
+  power: ["Força do chute", "Shot power", "Potencia de tiro"],
+  longshots: ["Chute de longe", "Long shots", "Tiros lejanos"],
   volleys: ["Voleio", "Volleys", "Voleas"],
   penalties: ["Pênaltis", "Penalties", "Penaltis"],
+  headfin: ["Cabeceio ofensivo", "Attacking heading", "Remate de cabeza"],
   vision: ["Visão", "Vision", "Visión"],
   cross: ["Cruzamento", "Crossing", "Centros"],
-  freekick: ["Cobr. falta", "FK accuracy", "Tiros libres"],
+  freekick: ["Cobrança de falta", "Free kick accuracy", "Tiros libres"],
   short: ["Passe curto", "Short passing", "Pase corto"],
   long: ["Lançamento", "Long passing", "Pase largo"],
   curve: ["Curva", "Curve", "Efecto"],
   agility: ["Agilidade", "Agility", "Agilidad"],
   balance: ["Equilíbrio", "Balance", "Equilibrio"],
   reactions: ["Reação", "Reactions", "Reacciones"],
-  control: ["Contr. bola", "Ball control", "Control"],
+  control: ["Controle de bola", "Ball control", "Control del balón"],
   carry: ["Condução", "Ball carrying", "Conducción"],
   dribble: ["Drible", "Dribbling", "Regate"],
   composure: ["Frieza", "Composure", "Compostura"],
-  interceptions: ["Intercept.", "Interceptions", "Intercepciones"],
-  heading: ["Cabeceio", "Heading", "Cabezazo"],
-  awareness: ["Noção def.", "Def. awareness", "Conciencia def."],
-  standing: ["Div. em pé", "Standing tackle", "Entrada de pie"],
+  interceptions: ["Interceptação", "Interceptions", "Intercepciones"],
+  heading: ["Cabeceio defensivo", "Defensive heading", "Despeje de cabeza"],
+  awareness: ["Noção defensiva", "Defensive awareness", "Conciencia defensiva"],
+  standing: ["Dividida em pé", "Standing tackle", "Entrada de pie"],
   sliding: ["Carrinho", "Sliding tackle", "Barrida"],
   jumping: ["Impulsão", "Jumping", "Salto"],
   stamina: ["Fôlego", "Stamina", "Resistencia"],
   strength: ["Força", "Strength", "Fuerza"],
-  combat: ["Combativ.", "Aggression", "Agresividad"],
-  positioning: ["Posic. sem bola", "Off-ball position", "Posic. sin balón"],
+  combat: ["Combatividade", "Aggression", "Agresividad"],
+  positioning: ["Posicionamento sem bola", "Off-ball positioning", "Posicionamiento sin balón"],
   recovery: ["Recomposição", "Tracking back", "Repliegue"],
   reading: ["Leitura de jogo", "Reading the game", "Lectura de juego"],
   decision: ["Decisão", "Decisions", "Decisiones"],
@@ -306,6 +322,8 @@ function renderCraque() {
   let user = null;
   let timer = null;
   let saveTimer = null;
+  let stopAnim = null;
+  let audio = null;
 
   function emptyState() {
     return { player: null, records: {}, xp: 0, streak: { last: "", count: 0, best: 0 }, today: { date: "", counts: {} } };
@@ -709,6 +727,7 @@ function renderCraque() {
   }
 
   function openModal(html) {
+    endAnim();
     dialog.classList.remove("is-wide");
     dialog.innerHTML = `<button type="button" class="cq-close" aria-label="×">×</button>${html}`;
     modal.hidden = false;
@@ -717,6 +736,7 @@ function renderCraque() {
 
   function closeModal() {
     stopTimer();
+    endAnim();
     modal.hidden = true;
     document.body.classList.remove("cq-lock");
   }
@@ -724,6 +744,32 @@ function renderCraque() {
   function stopTimer() {
     if (timer) clearInterval(timer);
     timer = null;
+  }
+
+  function endAnim() {
+    if (stopAnim) stopAnim();
+    stopAnim = null;
+  }
+
+  function toggleAnim(m, btn) {
+    const box = dialog.querySelector(".cq-anim");
+    if (stopAnim) {
+      endAnim();
+      box.hidden = true;
+      btn.textContent = t().watch;
+      return;
+    }
+    btn.disabled = true;
+    cqLoadAnim(m.id).then((scene) => {
+      btn.disabled = false;
+      if (!box.isConnected) return;
+      box.hidden = false;
+      btn.textContent = t().hideAnim;
+      stopAnim = scene(box, { unit: tr(m.unit), steps: t().steps, label: tr(m.title) });
+    }).catch((err) => {
+      console.warn("Craque:", err);
+      btn.hidden = true;
+    });
   }
 
   function missionHeader(m) {
@@ -750,13 +796,17 @@ function renderCraque() {
     }
     const steps = m.steps ? `<ol class="cq-steps">${m.steps.map((s) => `<li>${tr(s)}</li>`).join("")}</ol>` : "";
     let tool = "";
-    if (m.timer?.mode === "down") tool = `<div class="cq-timer"><b>${m.timer.s}</b><button type="button" class="cq-btn is-ghost" data-timer>${tx.start}</button></div>`;
-    if (m.timer?.mode === "up") tool = `<div class="cq-timer"><b>0</b><button type="button" class="cq-btn is-ghost" data-timer>${tx.start}</button></div>`;
-    if (m.timer?.mode === "breath") tool = `<div class="cq-timer is-breath"><span class="cq-ball"></span><em></em><b>0</b><button type="button" class="cq-btn is-ghost" data-timer>${tx.start}</button></div>`;
+    const controls = `
+      <button type="button" class="cq-sound" data-sound aria-label="${tx.sound}" title="${tx.sound}">${state.mute ? "🔇" : "🔊"}</button>
+      <button type="button" class="cq-btn is-ghost" data-timer>${tx.start}</button>`;
+    if (m.timer?.mode === "down") tool = `<div class="cq-timer"><b>${m.timer.s}</b>${controls}</div>`;
+    if (m.timer?.mode === "up") tool = `<div class="cq-timer"><b>0</b>${controls}</div>`;
+    if (m.timer?.mode === "breath") tool = `<div class="cq-timer is-breath"><span class="cq-ball"></span><em></em><b>0</b>${controls}</div>`;
 
     openModal(`
       ${missionHeader(m)}
       ${steps}
+      ${m.anim ? `<button type="button" class="cq-btn is-ghost cq-anim-btn">${tx.watch}</button><div class="cq-anim" hidden></div>` : ""}
       ${tool}
       <form class="cq-result-form">
         <label><span>${fill(tx.howMany, { unit: tr(m.unit) })}</span>
@@ -767,6 +817,14 @@ function renderCraque() {
     const input = dialog.querySelector('input[name="value"]');
     const timerBtn = dialog.querySelector("[data-timer]");
     if (timerBtn) timerBtn.addEventListener("click", () => toggleTimer(m, timerBtn, input));
+    const soundBtn = dialog.querySelector("[data-sound]");
+    if (soundBtn) soundBtn.addEventListener("click", () => {
+      state.mute = !state.mute;
+      soundBtn.textContent = state.mute ? "🔇" : "🔊";
+      save();
+    });
+    const animBtn = dialog.querySelector(".cq-anim-btn");
+    if (animBtn) animBtn.addEventListener("click", () => toggleAnim(m, animBtn));
 
     dialog.querySelector(".cq-result-form").addEventListener("submit", (e) => {
       e.preventDefault();
@@ -775,43 +833,124 @@ function renderCraque() {
     });
   }
 
+  function tone(freq, dur, opts = {}) {
+    if (state.mute) return;
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+    audio = audio || new Ctx();
+    if (audio.state === "suspended") audio.resume();
+    const t0 = audio.currentTime + (opts.delay || 0);
+    const osc = audio.createOscillator();
+    const gain = audio.createGain();
+    osc.type = opts.type || "square";
+    osc.frequency.setValueAtTime(freq, t0);
+    if (opts.trill) {
+      const lfo = audio.createOscillator();
+      const depth = audio.createGain();
+      lfo.frequency.value = 28;
+      depth.gain.value = freq * 0.06;
+      lfo.connect(depth).connect(osc.frequency);
+      lfo.start(t0);
+      lfo.stop(t0 + dur);
+    }
+    const vol = opts.vol ?? 0.12;
+    gain.gain.setValueAtTime(0.0001, t0);
+    gain.gain.exponentialRampToValueAtTime(vol, t0 + 0.02);
+    gain.gain.setValueAtTime(vol, t0 + dur * 0.7);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(gain).connect(audio.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.05);
+  }
+
+  const sound = {
+    tick: () => tone(880, 0.12),
+    go: () => tone(1320, 0.45),
+    whistle: () => {
+      tone(2600, 0.25, { type: "triangle", trill: true, vol: 0.2 });
+      tone(2600, 0.7, { type: "triangle", trill: true, vol: 0.2, delay: 0.32 });
+    },
+    breath: (inhale) => tone(inhale ? 392 : 294, 0.6, { type: "sine", vol: 0.1 }),
+  };
+
   function toggleTimer(m, btn, input) {
     const tx = t();
     const box = btn.closest(".cq-timer");
     const out = box.querySelector("b");
-    if (timer) {
+    const finish = () => {
       stopTimer();
       box.classList.remove("is-running");
       btn.textContent = tx.start;
+    };
+    if (timer) {
+      finish();
+      if (box.dataset.phase === "ready") {
+        out.textContent = m.timer.mode === "down" ? m.timer.s : 0;
+        return;
+      }
+      if (m.timer.mode === "up") sound.whistle();
       if (m.timer.mode !== "down") input.value = out.textContent;
       return;
     }
     btn.textContent = tx.stop;
     box.classList.add("is-running");
-    const startAt = Date.now();
-    if (m.timer.mode === "down") {
-      timer = setInterval(() => {
-        const left = Math.max(0, m.timer.s - Math.floor((Date.now() - startAt) / 1000));
-        out.textContent = left;
-        if (left === 0) {
-          stopTimer();
-          box.classList.remove("is-running");
-          out.textContent = tx.time;
-          btn.textContent = tx.start;
-          if (navigator.vibrate) navigator.vibrate(400);
-          input.focus();
-        }
-      }, 200);
-    } else if (m.timer.mode === "up") {
-      timer = setInterval(() => { out.textContent = Math.floor((Date.now() - startAt) / 1000); }, 200);
-    } else {
+
+    const run = () => {
+      box.dataset.phase = "run";
+      const startAt = Date.now();
+      sound.go();
+      if (m.timer.mode === "down") {
+        let lastLeft = m.timer.s;
+        timer = setInterval(() => {
+          const left = Math.max(0, m.timer.s - Math.floor((Date.now() - startAt) / 1000));
+          out.textContent = left;
+          if (left !== lastLeft && left > 0 && left <= 3) sound.tick();
+          lastLeft = left;
+          if (left === 0) {
+            finish();
+            out.textContent = tx.time;
+            sound.whistle();
+            if (navigator.vibrate) navigator.vibrate(400);
+            input.focus();
+          }
+        }, 100);
+      } else if (m.timer.mode === "up") {
+        timer = setInterval(() => { out.textContent = Math.floor((Date.now() - startAt) / 1000); }, 200);
+      }
+    };
+
+    if (m.timer.mode === "breath") {
       const label = box.querySelector("em");
+      const startAt = Date.now();
+      let inhale = null;
       timer = setInterval(() => {
         const elapsed = (Date.now() - startAt) / 1000;
+        const now = elapsed % 8 < 4;
         out.textContent = Math.floor(elapsed / 8);
-        label.textContent = elapsed % 8 < 4 ? tx.breathIn : tx.breathOut;
+        label.textContent = now ? tx.breathIn : tx.breathOut;
+        if (now !== inhale) sound.breath(now);
+        inhale = now;
       }, 200);
+      return;
     }
+
+    // 3-2-1 so the child can put the phone down and get ready.
+    box.dataset.phase = "ready";
+    const readyAt = Date.now();
+    let shown = 0;
+    timer = setInterval(() => {
+      const n = 3 - Math.floor((Date.now() - readyAt) / 1000);
+      if (n !== shown && n > 0) {
+        shown = n;
+        out.textContent = n;
+        sound.tick();
+      }
+      if (n <= 0) {
+        stopTimer();
+        out.textContent = tx.go;
+        run();
+      }
+    }, 100);
   }
 
   function openQuiz(m) {
