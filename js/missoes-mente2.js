@@ -181,6 +181,7 @@ CQ_MISSIONS.push(
       ["No celular, use um dedo de cada mão. Tente sempre bater o seu recorde!", "On a phone, use one finger from each hand. Always try to beat your record!", "En el móvil, usa un dedo de cada mano. ¡Intenta siempre superar tu récord!"],
     ],
     unit: ["seguidos", "in a row", "seguidos"],
+    anim: true,
   },
   {
     id: "minharotina", type: "mind", icon: "🔄", subs: ["composure", "resilience"], tiers: [1, 3, 5, 8], max: 30,

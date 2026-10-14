@@ -882,10 +882,10 @@ function renderCraque() {
       ${m.anim ? `<div class="cq-anim" hidden></div><button type="button" class="cq-btn is-ghost cq-anim-btn">${tx.watch}</button>` : ""}
       ${steps}
       ${tool}
-      <form class="cq-result-form">
+      <form class="cq-result-form" ${isGame(m) ? "hidden" : ""}>
         <label><span>${fill(tx.howMany, { unit: tr(m.unit) })}</span>
-          <input type="number" name="value" min="0" max="${m.max ?? 999}" inputmode="numeric" ${isGame(m) ? "readonly" : "required"}></label>
-        <button type="submit" class="cq-btn" ${isGame(m) ? "disabled" : ""}>${tx.save}</button>
+          <input type="number" name="value" min="0" max="${m.max ?? 999}" inputmode="numeric" required></label>
+        <button type="submit" class="cq-btn">${tx.save}</button>
       </form>`);
 
     const input = dialog.querySelector('input[name="value"]');
@@ -956,11 +956,13 @@ function renderCraque() {
     breath: (inhale) => tone(inhale ? 392 : 294, 0.6, { type: "sine", vol: 0.1 }),
   };
 
-  // Game results come from the game itself: the field is read-only and Save opens only when a match ends.
+  // Game results come from the game itself: the field is read-only and the result is saved as soon as
+  // the match ends, so a bad match can't be skipped.
   const isGame = (m) => Boolean(m.grid || m.rain || m.dodge);
   const gameResult = (input, v) => {
     input.value = v ?? "";
-    input.form.querySelector("button").disabled = v == null;
+    // A plain submit event skips the browser's min/max check; the handler clamps the value itself.
+    if (v != null) input.form.dispatchEvent(new Event("submit", { cancelable: true }));
   };
 
   const shuffle = (list) => {
@@ -1191,6 +1193,15 @@ function renderCraque() {
     }, 30);
   }
 
+  const CQ_DODGE_KITS = ["#dc2626", "#1d4ed8", "#111827", "#7c3aed", "#ea580c"];
+  const CQ_DODGE_SKINS = ["#f1c27d", "#c68642", "#8d5524"];
+  const CQ_DODGE_OBS = [
+    () => `<svg viewBox="0 0 40 40"><path d="M20 3 L32 34 H8 Z" fill="#f97316"/><path d="M14.5 19 H25.5 L27.5 25 H12.5 Z" fill="#fff"/><rect x="5" y="33" width="30" height="4" rx="2" fill="#c2410c"/></svg>`,
+    (kit, skin) => `<svg viewBox="0 0 40 40"><g stroke-linecap="round"><path d="M16 30 L15 38 M24 30 L25 38" stroke="${skin}" stroke-width="3.5"/><path d="M14 16 L5 22 M26 16 L35 22" stroke="${kit}" stroke-width="4"/></g><rect x="13" y="13" width="14" height="13" rx="3" fill="${kit}"/><rect x="14" y="25" width="12" height="6" rx="1.5" fill="#f8fafc"/><circle cx="20" cy="8" r="5" fill="${skin}"/><path d="M15 7 Q15 2 20 2 Q25 2 25 7 Q20 4.5 15 7 Z" fill="#1f1610"/></svg>`,
+    (kit, skin) => `<svg viewBox="0 0 40 40"><ellipse cx="29" cy="35" rx="10" ry="3" fill="rgba(255,255,255,0.4)"/><g stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M21 23 L37 28" stroke="${skin}" stroke-width="5"/><path d="M21 23 L26 31 L32 33" stroke="${skin}" stroke-width="5"/><path d="M11 17 L4 25" stroke="${kit}" stroke-width="5"/><path d="M10 14 L20 22" stroke="${kit}" stroke-width="12"/></g><circle cx="21" cy="23" r="5.5" fill="#f8fafc"/><circle cx="7" cy="9" r="6" fill="${skin}"/><path d="M1.5 8 Q2 2 7 2.5 Q12 3 12.5 8 Q7 5.5 1.5 8 Z" fill="#1f1610"/></svg>`,
+  ];
+  const pick = (list) => list[Math.floor(Math.random() * list.length)];
+
   /* Double dodge: one ball at the top of each half, obstacles rise from the bottom.
      Tapping a half moves its ball to the other column. Every obstacle passed adds to the streak and
      speeds the game up (TURBO after m.dodge.turboAt); a crash resets the streak and the speed.
@@ -1217,7 +1228,8 @@ function renderCraque() {
     const lanes = [...wrap.querySelectorAll(".cq-dodge")].map((area, i) => {
       area.querySelector(".cq-rain-rule").textContent = "";
       area.classList.remove("is-crash");
-      return { area, ballEl: area.querySelector(".cq-dodge-ball"), col: i, obs: [], spawnAt: startAt + 800 + i * 600 };
+      area.classList.add("is-on");
+      return { area, ballEl: area.querySelector(".cq-dodge-ball"), col: i, obs: [], bg: 0, spawnAt: startAt + 800 + i * 600 };
     });
     const placeBall = (lane) => {
       lane.ballEl.style.left = lane.col ? "75%" : "25%";
@@ -1238,6 +1250,7 @@ function renderCraque() {
       wrap.classList.remove("is-turbo");
       lanes.forEach((lane) => {
         lane.area.onpointerdown = null;
+        lane.area.classList.remove("is-on");
         lane.obs.forEach((o) => o.el.remove());
         lane.obs = [];
       });
@@ -1262,6 +1275,7 @@ function renderCraque() {
       lane.area.classList.remove("is-crash");
       void lane.area.offsetWidth;
       lane.area.classList.add("is-crash");
+      tone(150, 0.3, { type: "sawtooth", vol: 0.1 });
       if (navigator.vibrate) navigator.vibrate(150);
     };
 
@@ -1280,11 +1294,15 @@ function renderCraque() {
       lanes.forEach((lane) => {
         const h = lane.area.clientHeight;
         const v = h / (turbo ? cqLerp(1.6, 1.0, k) : cqLerp(2.8, 1.9, k));
+        // The pitch scrolls with the obstacles.
+        lane.bg = (lane.bg - v * dt) % 68;
+        lane.area.style.backgroundPositionY = `${lane.bg.toFixed(1)}px`;
         if (now >= lane.spawnAt) {
           lane.spawnAt = now + (turbo ? cqLerp(780, 500, k) : cqLerp(1400, 900, k)) * (0.85 + Math.random() * 0.3);
           const col = Math.random() < 0.5 ? 0 : 1;
           const el = document.createElement("span");
           el.className = "cq-dodge-obs";
+          el.innerHTML = pick(CQ_DODGE_OBS)(pick(CQ_DODGE_KITS), pick(CQ_DODGE_SKINS));
           el.style.left = col ? "75%" : "25%";
           lane.area.appendChild(el);
           lane.obs.push({ el, col, y: h + 30 });
