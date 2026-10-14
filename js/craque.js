@@ -4,7 +4,7 @@
 // A new mission for an attribute lowers it a little until it is done.
 const CQ_BASE = 40;
 const CQ_SCORE = { max: 92, quality: 0.7 };
-const CQ_XP = { normal: 10, daily: 20, perLevel: 100, dailyCap: 3 };
+const CQ_XP = { normal: 10, daily: 20, perLevel: 100 };
 
 // The first six follow the FIFA card; "int" and "cab" are the academy's own groups.
 const CQ_ATTRS = [
@@ -75,7 +75,6 @@ const CQ_TEXT = {
     newRecord: "Novo recorde!",
     keepGoing: "Seu recorde é {n}. Você consegue bater!",
     gains: "Você ganhou",
-    xpCap: "XP desta missão já contou 3 vezes hoje. Amanhã tem mais!",
     back: "Voltar para a carta",
     question: "Pergunta {i} de {n}",
     next: "Próxima",
@@ -159,7 +158,6 @@ const CQ_TEXT = {
     newRecord: "New record!",
     keepGoing: "Your best is {n}. You can beat it!",
     gains: "You earned",
-    xpCap: "This mission already gave XP 3 times today. More tomorrow!",
     back: "Back to my card",
     question: "Question {i} of {n}",
     next: "Next",
@@ -243,7 +241,6 @@ const CQ_TEXT = {
     newRecord: "¡Nuevo récord!",
     keepGoing: "Tu récord es {n}. ¡Puedes superarlo!",
     gains: "Ganaste",
-    xpCap: "Esta misión ya dio XP 3 veces hoy. ¡Mañana hay más!",
     back: "Volver a mi carta",
     question: "Pregunta {i} de {n}",
     next: "Siguiente",
@@ -1187,6 +1184,9 @@ function renderCraque() {
           popPoints(lane.area, ball.x, ball.y, speed.points);
           el.classList.add("is-hit");
           sound.tick();
+        } else if (justChanged) {
+          // The finger was already on its way when the colour changed: that tap is neither a point nor an error.
+          el.style.opacity = "0.3";
         } else {
           el.classList.add("is-miss");
           miss(lane);
@@ -1528,11 +1528,8 @@ function renderCraque() {
 
     const today = dayKey();
     const count = state.today.counts[m.id] || 0;
-    let xp = 0;
-    if (count < CQ_XP.dailyCap) {
-      xp = isDaily ? CQ_XP.daily : CQ_XP.normal;
-      state.xp += xp;
-    }
+    const xp = isDaily ? CQ_XP.daily : CQ_XP.normal;
+    state.xp += xp;
     state.today.counts[m.id] = count + 1;
 
     if (state.streak.last !== today) {
@@ -1568,7 +1565,6 @@ function renderCraque() {
         <h3>${isRecord ? tx.newRecord : fill(tx.keepGoing, { n: state.records[m.id] })}</h3>
         <p>${tr(m.title)}: <b>${value}</b> ${tr(m.unit)}</p>
         ${gains.length ? `<small>${tx.gains}</small><ul class="cq-gains">${gains.join("")}</ul>` : ""}
-        ${xp ? "" : `<p class="cq-note">${tx.xpCap}</p>`}
         ${openPhaseCount() > phasesBefore ? `<p class="cq-unlocked">🔓 ${tx.unlocked}</p>` : ""}
         ${logged && pushed ? "" : `<p class="cq-auth-msg">${tx.saveError}</p>`}
         <button type="button" class="cq-btn" data-back>${tx.back}</button>
