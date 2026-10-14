@@ -2839,6 +2839,18 @@ body.cq-lock {
   margin: -20px 0 0 -20px;
 }
 
+.cq-dodge-count {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  color: rgba(255, 255, 255, 0.9);
+  font: 700 4.5rem/1 Oswald, sans-serif;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.7);
+  pointer-events: none;
+}
+
 .cq-dodge .cq-rain-rule {
   top: auto;
   bottom: 10px;

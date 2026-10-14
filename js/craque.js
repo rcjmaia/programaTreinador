@@ -868,8 +868,8 @@ function renderCraque() {
       <div class="cq-timer"><b>0</b><span class="cq-rain-score">🏆 0 · ${tx.record} ${state.records[m.id] ?? 0}</span><button type="button" class="cq-btn is-ghost" data-rain>${tx.start}</button></div>
       <div class="cq-rain-wrap${m.rain.sides ? " is-duo" : ""}">${(m.rain.sides || [0]).map(() => `<div class="cq-rain"><div class="cq-rain-rule"></div></div>`).join("")}</div></div>`;
     if (m.dodge) tool = `<div class="cq-play">
-      <div class="cq-timer"><b>0</b><span class="cq-rain-score">🏆 0 · ${tx.record} ${state.records[m.id] ?? 0}</span><button type="button" class="cq-btn is-ghost" data-dodge>${tx.start}</button></div>
-      <div class="cq-rain-wrap is-duo">${[0, 1].map(() => `<div class="cq-rain cq-dodge"><div class="cq-rain-rule">${tx.dodgeHint}</div><span class="cq-dodge-ball">⚽</span></div>`).join("")}</div></div>`;
+      <div class="cq-timer"><span class="cq-rain-score">🏆 0 · ${tx.record} ${state.records[m.id] ?? 0}</span><button type="button" class="cq-btn is-ghost" data-dodge>${tx.start}</button></div>
+      <div class="cq-rain-wrap is-duo"><span class="cq-dodge-count" aria-live="off">0</span>${[0, 1].map(() => `<div class="cq-rain cq-dodge"><div class="cq-rain-rule">${tx.dodgeHint}</div><span class="cq-dodge-ball">⚽</span></div>`).join("")}</div></div>`;
 
     openModal(`
       ${missionHeader(m)}
@@ -1202,17 +1202,24 @@ function renderCraque() {
   const pick = (list) => list[Math.floor(Math.random() * list.length)];
 
   /* Double dodge: one ball at the top of each half, obstacles rise from the bottom.
-     Tapping a half moves its ball to the other column. Every obstacle passed adds to the streak and
-     speeds the game up (TURBO after m.dodge.turboAt); a crash resets the streak and the speed.
-     There is no clock: the match runs until Stop, and the result is the best streak of the match. */
+     Tapping a half moves its ball to the other column. Every obstacle passed adds to the streak and a
+     crash resets it. The speed goes up with the match time (CQ_DODGE_LEVELS) and stays at the last level.
+     The match runs until Stop, and the result is the best streak of the match. */
+  // from: seconds into the match; cross: seconds an obstacle takes to climb the lane; gap: ms between obstacles.
+  const CQ_DODGE_LEVELS = [
+    { from: 0, cross: 2.8, gap: 1400, banner: "" },
+    { from: 10, cross: 1.6, gap: 780, banner: "⚡ TURBO! ⚡" },
+    { from: 70, cross: 1.35, gap: 660, banner: "⚡⚡ TURBO x2 ⚡⚡" },
+    { from: 130, cross: 1.15, gap: 560, banner: "⚡⚡⚡ TURBO x3 ⚡⚡⚡" },
+  ];
+
   function startDodge(m, btn, input) {
     if (btn.cqStop) return btn.cqStop();
     stopTimer();
     gameResult(input);
     const tx = t();
-    const turboAt = m.dodge.turboAt;
     const wrap = dialog.querySelector(".cq-rain-wrap");
-    const out = btn.closest(".cq-timer").querySelector("b");
+    const out = wrap.querySelector(".cq-dodge-count");
     const scoreEl = btn.closest(".cq-timer").querySelector(".cq-rain-score");
     wrap.querySelectorAll(".cq-dodge-obs").forEach((el) => el.remove());
     wrap.classList.remove("is-turbo");
@@ -1224,6 +1231,7 @@ function renderCraque() {
     const startAt = Date.now();
     let streak = 0;
     let best = 0;
+    let level = 0;
 
     const lanes = [...wrap.querySelectorAll(".cq-dodge")].map((area, i) => {
       area.querySelector(".cq-rain-rule").textContent = "";
@@ -1272,7 +1280,6 @@ function renderCraque() {
     const crash = (lane) => {
       streak = 0;
       showScore();
-      wrap.classList.remove("is-turbo");
       lane.area.classList.remove("is-crash");
       void lane.area.offsetWidth;
       lane.area.classList.add("is-crash");
@@ -1284,22 +1291,31 @@ function renderCraque() {
       const now = Date.now();
       const dt = (now - last) / 1000;
       last = now;
-      const turbo = streak >= turboAt;
-      const k = turbo ? cqClamp01((streak - turboAt) / turboAt) : cqClamp01(streak / turboAt);
-      if (turbo && !wrap.classList.contains("is-turbo")) {
+      const elapsed = (now - startAt) / 1000;
+      const li = CQ_DODGE_LEVELS.reduce((acc, l, i) => (elapsed >= l.from ? i : acc), 0);
+      const lv = CQ_DODGE_LEVELS[li];
+      // Each level change eases in over 1.5 s.
+      const prev = CQ_DODGE_LEVELS[Math.max(0, li - 1)];
+      const ease = cqClamp01((elapsed - lv.from) / 1.5);
+      const cross = cqLerp(prev.cross, lv.cross, ease);
+      const gap = cqLerp(prev.gap, lv.gap, ease);
+      if (li !== level) {
+        level = li;
+        wrap.classList.remove("is-turbo");
+        void wrap.offsetWidth;
         wrap.classList.add("is-turbo");
-        wrap.dataset.turbo = "⚡ TURBO! ⚡";
+        wrap.dataset.turbo = lv.banner;
         sound.go();
         if (navigator.vibrate) navigator.vibrate([100, 60, 100]);
       }
       lanes.forEach((lane) => {
         const h = lane.area.clientHeight;
-        const v = h / (turbo ? cqLerp(1.6, 1.0, k) : cqLerp(2.8, 1.9, k));
+        const v = h / cross;
         // The pitch scrolls with the obstacles.
         lane.bg = (lane.bg - v * dt) % 68;
         lane.area.style.backgroundPositionY = `${lane.bg.toFixed(1)}px`;
         if (now >= lane.spawnAt) {
-          lane.spawnAt = now + (turbo ? cqLerp(780, 500, k) : cqLerp(1400, 900, k)) * (0.85 + Math.random() * 0.3);
+          lane.spawnAt = now + gap * (0.85 + Math.random() * 0.3);
           const col = Math.random() < 0.5 ? 0 : 1;
           const el = document.createElement("span");
           el.className = "cq-dodge-obs";
@@ -1322,7 +1338,6 @@ function renderCraque() {
             streak++;
             if (streak > best) best = streak;
             showScore();
-            sound.tick();
           }
           if (o.y < -30) {
             o.el.remove();
