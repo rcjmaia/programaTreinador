@@ -5,7 +5,7 @@
    type: ball (com bola), move (movimento), quiz (perguntas),
          mind (cabeça), auto (sobe sozinha).
    tiers: metas de Bronze, Prata, Ouro e Lenda. O Bronze deve ser
-          fácil: é ele que abre a próxima fase.
+          fácil. A próxima fase abre ao registrar qualquer resultado.
    lower: true quando quanto menor, melhor (tiers decrescentes).
    anim: true quando existe js/animacoes/<id>.js, ou o nome de uma
          cena compartilhada ("medida") com parâmetros em animArgs.
@@ -62,7 +62,6 @@ const CQ_MISSIONS = [
     steps: [
       ["Coloque duas marcas a 10 passos: cone, chinelo, garrafa ou qualquer objeto.", "Place two markers 10 steps apart: a cone, a flip-flop, a bottle or any object.", "Pon dos marcas a 10 pasos: un cono, una chancla, una botella o cualquier objeto."],
       ["Conduza rápido, com toques curtos. Na marca, puxe a bola com a sola e vire.", "Dribble fast with short touches. At the marker, drag the ball back with your sole and turn.", "Conduce rápido con toques cortos. En la marca, arrastra el balón con la suela y gira."],
-      ["Conduza rápido, com toques curtos.", "Dribble fast with short touches.", "Conduce rápido con toques cortos."],
       CQ_STEPS_ROUND_TRIP,
     ],
     unit: CQ_UNIT_TRIPS,
@@ -70,7 +69,7 @@ const CQ_MISSIONS = [
 
   // Finalização
   {
-    id: "target", type: "ball", icon: "🎯", subs: ["finishing", "power"], tiers: [3, 5, 7, 9], max: 10, anim: true,
+    id: "target", type: "ball", icon: "🎯", subs: ["finishing", "composure"], tiers: [3, 5, 7, 9], max: 10, anim: true,
     title: ["Chute no alvo", "Target shooting", "Tiro al blanco"],
     desc: ["Em 10 chutes, quantos acertam o alvo?", "Out of 10 shots, how many hit the target?", "De 10 tiros, ¿cuántos dan en el blanco?"],
     steps: [
@@ -194,7 +193,7 @@ const CQ_MISSIONS = [
     unit: CQ_UNIT_TRIPS,
   },
   {
-    id: "zigzag", type: "ball", icon: "〰️", subs: ["agility", "control"], tiers: [2, 4, 6, 8], timer: { mode: "down", s: 60 }, anim: true,
+    id: "zigzag", type: "ball", icon: "〰️", subs: ["agility", "carry"], tiers: [2, 4, 6, 8], timer: { mode: "down", s: 60 }, anim: true,
     title: ["Zigue-zague", "Zigzag", "Zigzag"],
     desc: ["Em 1 minuto, quantas idas e voltas conduzindo em zigue-zague entre 6 chinelos?", "In 1 minute, how many zigzag round trips through 6 flip-flops?", "En 1 minuto, ¿cuántas idas y vueltas en zigzag entre 6 chanclas?"],
     steps: [
@@ -236,7 +235,7 @@ const CQ_MISSIONS = [
     unit: CQ_UNIT_HITS,
   },
   {
-    id: "steal", type: "ball", icon: "🧲", subs: ["interceptions", "awareness"], tiers: [1, 3, 5, 7], timer: { mode: "down", s: 60 }, helper: true, anim: true,
+    id: "steal", type: "ball", icon: "🧲", subs: ["standing", "combat"], tiers: [1, 3, 5, 7], timer: { mode: "down", s: 60 }, helper: true, anim: true,
     title: ["Rouba-bola", "Ball thief", "Roba balón"],
     desc: ["Em 1 minuto, quantas vezes você rouba a bola de alguém da família?", "In 1 minute, how many times can you win the ball from a family member?", "En 1 minuto, ¿cuántas veces le robas el balón a alguien de tu familia?"],
     steps: [
@@ -348,7 +347,7 @@ const CQ_MISSIONS = [
     unit: ["segundos", "seconds", "segundos"],
   },
   {
-    id: "breath", type: "mind", icon: "🫁", subs: ["composure", "resilience"], tiers: [3, 5, 8, 10], timer: { mode: "breath" }, anim: true,
+    id: "breath", type: "mind", icon: "🫁", subs: ["composure", "concentration"], tiers: [3, 5, 8, 10], timer: { mode: "breath" }, anim: true,
     title: ["Respiração do goleador", "Striker's breathing", "Respiración del goleador"],
     desc: ["Respire junto com a bola: ela cresce quando o ar entra e diminui quando sai.", "Breathe with the ball: it grows as you breathe in and shrinks as you breathe out.", "Respira con el balón: crece cuando entra el aire y se achica cuando sale."],
     steps: [

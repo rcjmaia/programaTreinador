@@ -115,7 +115,7 @@ CQ_MISSIONS.push(
     unit: ["joelhos", "knees", "rodillas"],
   },
   {
-    id: "conemove", type: "move", icon: "🔁", subs: ["agility", "strength"], tiers: [4, 6, 8, 10], timer: { mode: "down", s: 60 }, anim: true,
+    id: "conemove", type: "move", icon: "🔁", subs: ["agility", "acceleration"], tiers: [4, 6, 8, 10], timer: { mode: "down", s: 60 }, anim: true,
     title: ["Muda os cones", "Move the cones", "Cambia los conos"],
     desc: ["Em 1 minuto, quantos objetos você leva, um por vez, para o outro lado a 5 passos?", "In 1 minute, how many objects can you carry, one at a time, to the other side 5 steps away?", "En 1 minuto, ¿cuántos objetos llevas, uno por vez, al otro lado a 5 pasos?"],
     steps: [
@@ -137,7 +137,7 @@ CQ_MISSIONS.push(
     unit: ["objetos", "objects", "objetos"],
   },
   {
-    id: "star", type: "move", icon: "⭐", subs: ["agility", "reactions"], tiers: [6, 9, 12, 15], timer: { mode: "down", s: 30 }, anim: true,
+    id: "star", type: "move", icon: "⭐", subs: ["agility", "reactions", "acceleration"], tiers: [6, 9, 12, 15], timer: { mode: "down", s: 30 }, anim: true,
     title: ["Estrela", "Star drill", "Estrella"],
     desc: ["Em 30 segundos, quantas marcas você toca saindo do centro e voltando, em volta de você?", "In 30 seconds, how many markers can you touch going out from the centre and back?", "En 30 segundos, ¿cuántas marcas tocas saliendo del centro y volviendo?"],
     steps: [
@@ -148,7 +148,7 @@ CQ_MISSIONS.push(
     unit: ["toques", "touches", "toques"],
   },
   {
-    id: "ladder", type: "move", icon: "🪜", subs: ["agility", "balance"], tiers: [2, 4, 6, 8], timer: { mode: "down", s: 30 }, anim: true,
+    id: "ladder", type: "move", icon: "🪜", subs: ["agility", "balance", "acceleration"], tiers: [2, 4, 6, 8], timer: { mode: "down", s: 30 }, anim: true,
     title: ["Escada no chão", "Floor ladder", "Escalera en el suelo"],
     desc: ["Em 30 segundos, quantas vezes você passa pela escada pisando com os dois pés em cada espaço?", "In 30 seconds, how many times can you go through the ladder with both feet in every space?", "En 30 segundos, ¿cuántas veces pasas la escalera pisando con los dos pies en cada espacio?"],
     steps: [
@@ -172,7 +172,7 @@ CQ_MISSIONS.push(
 
   // ---------- Finalização ----------
   {
-    id: "weakshot", type: "ball", icon: "🦶", subs: ["finishing", "power"], tiers: [2, 4, 6, 8], max: 10, anim: "target", animArgs: { weak: true },
+    id: "weakshot", type: "ball", icon: "🦶", subs: ["finishing", "composure"], tiers: [2, 4, 6, 8], max: 10, anim: "target", animArgs: { weak: true },
     title: ["Alvo com o pé fraco", "Weak-foot target", "Blanco con la pierna débil"],
     desc: ["Em 10 chutes só com o pé fraco, quantos acertam o alvo?", "Out of 10 shots with your weak foot only, how many hit the target?", "De 10 tiros solo con la pierna débil, ¿cuántos dan en el blanco?"],
     steps: [
@@ -183,7 +183,7 @@ CQ_MISSIONS.push(
     unit: CQ_UNIT_HITS,
   },
   {
-    id: "placed", type: "ball", icon: "📐", subs: ["finishing", "curve"], tiers: [2, 4, 6, 8], max: 10, anim: true,
+    id: "placed", type: "ball", icon: "📐", subs: ["finishing", "composure"], tiers: [2, 4, 6, 8], max: 10, anim: true,
     title: ["Chute colocado", "Placed finish", "Tiro colocado"],
     desc: ["Em 10 chutes de chapa (parte de dentro do pé), quantos entram entre o chinelo e a trave?", "Out of 10 side-foot shots, how many go in between the flip-flop and the post?", "De 10 tiros con el interior del pie, ¿cuántos entran entre la chancla y el palo?"],
     steps: [
@@ -205,7 +205,7 @@ CQ_MISSIONS.push(
     unit: CQ_UNIT_HITS,
   },
   {
-    id: "firsttime", type: "ball", icon: "⚡", subs: ["volleys", "reactions"], tiers: [2, 4, 6, 8], max: 10, helper: true, anim: true,
+    id: "firsttime", type: "ball", icon: "⚡", subs: ["finishing", "reactions"], tiers: [2, 4, 6, 8], max: 10, helper: true, anim: true,
     title: ["Chute de primeira", "First-time shot", "Tiro de primera"],
     desc: ["Em 10 bolas que alguém rola para você, quantas você chuta de primeira, sem dominar, e acerta o gol?", "Out of 10 balls someone rolls to you, how many do you hit first time, without a touch, on target?", "De 10 balones que alguien te rueda, ¿cuántos disparas de primera, sin controlar, y van al arco?"],
     steps: [
@@ -263,8 +263,8 @@ CQ_MISSIONS.push(
     ],
     unit: ["passes", "passes", "pases"],
   },
-  cqMeasureMission("measure15", 15, [20, 14, 9, 5], ["long", "vision"]),
-  cqBucketMission("bucket5", 5, [1, 2, 4, 6], ["long", "control"]),
+  cqMeasureMission("measure15", 15, [20, 14, 9, 5], ["short", "vision"]),
+  cqBucketMission("bucket5", 5, [1, 2, 4, 6], ["short", "control"]),
   {
     id: "altinha", type: "ball", icon: "🏐", subs: ["control", "teamplay"], tiers: [5, 15, 30, 50], timer: { mode: "down", s: 60 }, helper: true, anim: true,
     title: ["Altinha", "Keep it up together", "Pelotita en el aire"],
@@ -277,7 +277,7 @@ CQ_MISSIONS.push(
     unit: ["toques", "touches", "toques"],
   },
   cqMeasureMission("measure20", 20, [25, 18, 12, 6], ["long", "vision"]),
-  cqBucketMission("bucket8", 8, [1, 2, 3, 5], ["long", "curve"]),
+  cqBucketMission("bucket8", 8, [1, 2, 3, 5], ["long", "control"]),
   cqMeasureMission("measure25", 25, [30, 22, 15, 8], ["long", "vision"]),
 
   // ---------- Condução ----------
@@ -371,7 +371,7 @@ CQ_MISSIONS.push(
     unit: ["toques", "touches", "toques"],
   },
   {
-    id: "backrun", type: "move", icon: "🔙", subs: ["recovery", "acceleration"], tiers: [3, 5, 7, 9], timer: { mode: "down", s: 30 }, anim: true,
+    id: "backrun", type: "move", icon: "🔙", subs: ["recovery", "acceleration", "awareness"], tiers: [3, 5, 7, 9], timer: { mode: "down", s: 30 }, anim: true,
     title: ["Recua de costas", "Backpedal and sprint", "Retrocede de espaldas"],
     desc: ["Em 30 segundos, quantas vezes você vai 5 passos de costas e volta correndo de frente?", "In 30 seconds, how many times can you backpedal 5 steps and sprint back forwards?", "En 30 segundos, ¿cuántas veces vas 5 pasos de espaldas y vuelves corriendo de frente?"],
     steps: [

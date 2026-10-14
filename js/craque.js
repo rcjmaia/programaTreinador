@@ -1,10 +1,9 @@
-// Untrained attributes sit at CQ_BASE. Each medal adds points to its attributes
-// (Bronze 1 ... Legend 4) and the attribute climbs towards CQ_CURVE.max with
-// diminishing returns, so adding new missions never lowers anyone's card.
+// Untrained attributes sit at CQ_BASE and reach CQ_SCORE.max with the top medal
+// in every mission that trains them. "quality" is the weight of how good the
+// medals are; the rest rewards how many of those missions have any medal.
+// A new mission for an attribute lowers it a little until it is done.
 const CQ_BASE = 40;
-const CQ_CURVE = { max: 92, k: 3 };
-// Without Bronze, this many logged tries also open the next phase.
-const CQ_TRIES_TO_PASS = 3;
+const CQ_SCORE = { max: 92, quality: 0.7 };
 const CQ_XP = { normal: 10, daily: 20, perLevel: 100, dailyCap: 3 };
 
 // The first six follow the FIFA card; "int" and "cab" are the academy's own groups.
@@ -41,14 +40,11 @@ const CQ_TEXT = {
     daily: "Missões do dia",
     dailyHint: "XP em dobro",
     trails: "Trilhas",
-    trailsHint: "Ganhe Bronze (ou faça 3 tentativas) para liberar a próxima fase.",
-    triesHint: "Sem Bronze ainda? Com 3 tentativas a próxima fase abre do mesmo jeito ({n}/{max}).",
-    triesDone: "Próxima fase liberada pelo seu esforço! Continue buscando o Bronze.",
     lowerHint: "Aqui, quanto menor o número, melhor.",
     helper: "👥 Precisa de outra pessoa",
     freeTraining: "Treino livre",
     phase: "Fase {n}",
-    lockedHint: "Bloqueada: ganhe Bronze ou faça 3 tentativas na fase anterior.",
+    lockedHint: "Bloqueada: faça a missão da fase anterior.",
     pickMission: "Escolha a missão",
     go: "Vai!",
     sound: "Som ligado/desligado",
@@ -122,14 +118,11 @@ const CQ_TEXT = {
     daily: "Today's missions",
     dailyHint: "Double XP",
     trails: "Trails",
-    trailsHint: "Earn Bronze (or make 3 tries) to unlock the next stage.",
-    triesHint: "No Bronze yet? After 3 tries the next stage opens anyway ({n}/{max}).",
-    triesDone: "Next stage unlocked by your effort! Keep going for Bronze.",
     lowerHint: "Here, the lower the number, the better.",
     helper: "👥 Needs another person",
     freeTraining: "Free training",
     phase: "Stage {n}",
-    lockedHint: "Locked: earn Bronze or make 3 tries in the previous stage.",
+    lockedHint: "Locked: do the mission of the previous stage.",
     pickMission: "Pick a mission",
     go: "Go!",
     sound: "Sound on/off",
@@ -203,14 +196,11 @@ const CQ_TEXT = {
     daily: "Misiones del día",
     dailyHint: "XP doble",
     trails: "Caminos",
-    trailsHint: "Gana Bronce (o haz 3 intentos) para desbloquear la siguiente fase.",
-    triesHint: "¿Todavía sin Bronce? Con 3 intentos la siguiente fase se abre igual ({n}/{max}).",
-    triesDone: "¡Siguiente fase desbloqueada por tu esfuerzo! Sigue buscando el Bronce.",
     lowerHint: "Aquí, cuanto menor el número, mejor.",
     helper: "👥 Necesita otra persona",
     freeTraining: "Entrenamiento libre",
     phase: "Fase {n}",
-    lockedHint: "Bloqueada: gana Bronce o haz 3 intentos en la fase anterior.",
+    lockedHint: "Bloqueada: haz la misión de la fase anterior.",
     pickMission: "Elige la misión",
     go: "¡Ya!",
     sound: "Sonido sí/no",
@@ -460,10 +450,17 @@ function renderCraque() {
   const isUnlocked = (sub) => CQ_MISSIONS.some((m) => m.subs.includes(sub));
 
   function subValue(sub) {
-    const points = CQ_MISSIONS
-      .filter((m) => m.subs.includes(sub))
-      .reduce((a, m) => a + medalIndex(m, state.records[m.id]) + 1, 0);
-    return Math.round(CQ_BASE + (CQ_CURVE.max - CQ_BASE) * (1 - Math.exp(-points / CQ_CURVE.k)));
+    const list = CQ_MISSIONS.filter((m) => m.subs.includes(sub));
+    if (!list.length) return CQ_BASE;
+    let quality = 0;
+    let done = 0;
+    list.forEach((m) => {
+      const medal = medalIndex(m, state.records[m.id]) + 1;
+      quality += medal / m.tiers.length;
+      if (medal) done++;
+    });
+    const score = CQ_SCORE.quality * (quality / list.length) + (1 - CQ_SCORE.quality) * (done / list.length);
+    return Math.round(CQ_BASE + (CQ_SCORE.max - CQ_BASE) * score);
   }
 
   function groupValue(group) {
@@ -486,7 +483,7 @@ function renderCraque() {
   // Results saved before tries were counted still count as one try.
   const triesOf = (id) => state.tries?.[id] ?? (state.records[id] != null ? 1 : 0);
   const hasMedal = (id) => medalIndex(mission(id), state.records[id]) >= 0;
-  const passed = (id) => hasMedal(id) || triesOf(id) >= CQ_TRIES_TO_PASS;
+  const passed = (id) => hasMedal(id) || triesOf(id) > 0;
   const phaseDone = (phase) => phase.every(passed);
   const phaseOpen = (trail, i) => i === 0 || phaseDone(trail.phases[i - 1]);
   const missionOpen = (id) => CQ_TRAILS.some((tl) => tl.phases.some((ph, i) => ph.includes(id) && phaseOpen(tl, i)));
@@ -691,7 +688,6 @@ function renderCraque() {
           <h2 class="cq-h">${tx.daily}</h2>
           <div class="cq-missions">${daily.map((id) => missionCard(mission(id), true)).join("")}</div>
           <h2 class="cq-h">${tx.trails}</h2>
-          <p class="cq-hint">${tx.trailsHint}</p>
           <div class="cq-trails">${CQ_TRAILS.map(trailRow).join("")}</div>
           <h2 class="cq-h">${tx.freeTraining}</h2>
           <div class="cq-missions is-compact">${openMissions().filter((m) => !daily.includes(m.id)).map((m) => missionCard(m, false)).join("")}</div>
@@ -798,10 +794,6 @@ function renderCraque() {
   function missionHeader(m) {
     const tx = t();
     const idx = medalIndex(m, state.records[m.id]);
-    const tries = triesOf(m.id);
-    const triesNote = idx < 0 && m.type !== "auto"
-      ? `<p class="cq-note">${tries >= CQ_TRIES_TO_PASS ? tx.triesDone : fill(tx.triesHint, { n: tries, max: CQ_TRIES_TO_PASS })}</p>`
-      : "";
     return `
       <span class="cq-mission-tag">${tx.types[m.type]}${m.helper ? ` · ${tx.helper}` : ""}</span>
       <h3>${m.icon} ${tr(m.title)}</h3>
@@ -809,8 +801,7 @@ function renderCraque() {
       <div class="cq-tiers">
         ${m.tiers.map((v, i) => `<span class="${i <= idx ? "is-done" : ""}"><span class="cq-medal m-${i}"></span>${m.lower ? "≤" : ""}${v}</span>`).join("")}
       </div>
-      ${m.lower ? `<p class="cq-note">${tx.lowerHint}</p>` : ""}
-      ${triesNote}`;
+      ${m.lower ? `<p class="cq-note">${tx.lowerHint}</p>` : ""}`;
   }
 
   function openMission(id) {
