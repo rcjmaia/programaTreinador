@@ -70,7 +70,6 @@ const CQ_TEXT = {
     rainAvoid: "Toque em todas, menos nas {c}",
     rainOnlyShort: "Só {c}",
     rainAvoidShort: "Menos {c}",
-    rainTurbo: "⚡ ÚLTIMO MINUTO: TURBO! ⚡",
     dodgeHint: "👆 Toque p/ trocar",
     rainColors: { red: "VERMELHAS", blue: "AZUIS", yellow: "AMARELAS", green: "VERDES" },
     time: "Tempo!",
@@ -156,7 +155,6 @@ const CQ_TEXT = {
     rainAvoid: "Tap every ball except {c}",
     rainOnlyShort: "Only {c}",
     rainAvoidShort: "Not {c}",
-    rainTurbo: "⚡ LAST MINUTE: TURBO! ⚡",
     dodgeHint: "👆 Tap to switch",
     rainColors: { red: "RED", blue: "BLUE", yellow: "YELLOW", green: "GREEN" },
     time: "Time!",
@@ -242,7 +240,6 @@ const CQ_TEXT = {
     rainAvoid: "Toca todos, menos los {c}",
     rainOnlyShort: "Solo {c}",
     rainAvoidShort: "Menos {c}",
-    rainTurbo: "⚡ ÚLTIMO MINUTO: ¡TURBO! ⚡",
     dodgeHint: "👆 Toca p/ cambiar",
     rainColors: { red: "ROJOS", blue: "AZULES", yellow: "AMARILLOS", green: "VERDES" },
     time: "¡Tiempo!",
@@ -871,7 +868,7 @@ function renderCraque() {
       <div class="cq-timer"><b>0</b><span class="cq-grid-next"></span><button type="button" class="cq-btn is-ghost" data-grid>${tx.start}</button></div>
       <div class="cq-grid" style="--n:${m.grid.size}"></div>`;
     if (m.rain) tool = `
-      <div class="cq-timer"><b>${m.rain.secs}</b><span class="cq-rain-score">⚽ 0</span><button type="button" class="cq-btn is-ghost" data-rain>${tx.start}</button></div>
+      <div class="cq-timer"><b>0</b><span class="cq-rain-score">🏆 0 · ${tx.record} ${state.records[m.id] ?? 0}</span><button type="button" class="cq-btn is-ghost" data-rain>${tx.start}</button></div>
       <div class="cq-rain-wrap${m.rain.sides ? " is-duo" : ""}">${(m.rain.sides || [0]).map(() => `<div class="cq-rain"><div class="cq-rain-rule"></div></div>`).join("")}</div>`;
     if (m.dodge) tool = `
       <div class="cq-timer"><b>0</b><span class="cq-rain-score">🏆 0 · ${tx.record} ${state.records[m.id] ?? 0}</span><button type="button" class="cq-btn is-ghost" data-dodge>${tx.start}</button></div>
@@ -1050,19 +1047,21 @@ function renderCraque() {
     }));
   }
 
-  /* Colour rain: balls fall and the rule colour keeps changing. The score is right taps minus wrong taps.
-     m.rain: { secs, turbo, mode: "only" | "avoid" | "stroop", sides: [mode, mode] }
-       turbo: seconds of the very fast final stretch.
+  /* Colour rain: balls fall and the rule colour keeps changing. Every right tap adds to the streak and
+     speeds the game up (TURBO after m.rain.turboAt); a wrong tap or a right ball let through resets it.
+     There is no clock: the match runs until Stop, and the result is the best streak of the match.
+     m.rain: { turboAt, mode: "only" | "avoid" | "stroop", sides: [mode, mode] }
        only: tap the rule colour; avoid: tap every colour except it;
        stroop: like only, but the colour name is printed in a different ink and the word is what counts.
        sides splits the screen in two lanes, each with its own rule. */
   const CQ_RAIN_COLORS = { red: "#ef4444", blue: "#3b82f6", yellow: "#facc15", green: "#22c55e" };
 
   function startRain(m, btn, input) {
+    if (btn.cqStop) return btn.cqStop();
     stopTimer();
     gameResult(input);
     const tx = t();
-    const { secs, turbo: turboSecs } = m.rain;
+    const turboAt = m.rain.turboAt;
     const modes = m.rain.sides || [m.rain.mode];
     const duo = modes.length > 1;
     const wrap = dialog.querySelector(".cq-rain-wrap");
@@ -1070,24 +1069,26 @@ function renderCraque() {
     const scoreEl = btn.closest(".cq-timer").querySelector(".cq-rain-score");
     wrap.querySelectorAll(".cq-rain-ball").forEach((el) => el.remove());
     wrap.classList.remove("is-turbo");
-    btn.textContent = tx.restart;
+    btn.textContent = tx.stop;
     const colors = Object.keys(CQ_RAIN_COLORS);
-    const pickColor = (list) => list[Math.floor(Math.random() * list.length)];
-    const other = (c) => pickColor(colors.filter((x) => x !== c));
+    const other = (c) => pick(colors.filter((x) => x !== c));
+    const record = state.records[m.id] ?? 0;
     const startAt = Date.now();
-    let score = 0;
-    let running = true;
+    let streak = 0;
+    let best = 0;
 
     const lanes = [...wrap.querySelectorAll(".cq-rain")].map((area, i) => ({
       area,
       ruleEl: area.querySelector(".cq-rain-rule"),
       mode: modes[i],
-      target: pickColor(colors),
+      target: pick(colors),
+      rule: 0,
       balls: [],
       ruleAt: startAt + 5000 + Math.random() * 2000 + i * 1800,
       spawnAt: startAt + 400 + i * 300,
     }));
     if (duo) lanes[1].target = other(lanes[0].target);
+    const isGood = (lane, color) => (lane.mode === "avoid" ? color !== lane.target : color === lane.target);
 
     const setRule = (lane) => {
       const ink = lane.mode === "stroop" ? other(lane.target) : lane.target;
@@ -1099,42 +1100,59 @@ function renderCraque() {
       lane.ruleEl.classList.add("is-new");
     };
     lanes.forEach(setRule);
-    scoreEl.textContent = "⚽ 0";
+    const showScore = () => {
+      out.textContent = streak;
+      scoreEl.textContent = `🏆 ${best} · ${tx.record} ${Math.max(record, best)}`;
+    };
+    showScore();
     let last = startAt;
     sound.go();
 
     const finish = () => {
-      running = false;
+      btn.cqStop = null;
+      btn.textContent = tx.restart;
       stopTimer();
       wrap.classList.remove("is-turbo");
       lanes.forEach((lane) => {
+        lane.area.onpointerdown = null;
         lane.ruleEl.textContent = "";
         lane.balls.forEach((b) => b.el.remove());
         lane.balls = [];
       });
-      out.textContent = tx.time;
+      out.textContent = best;
       sound.whistle();
-      gameResult(input, Math.max(0, score));
+      gameResult(input, best);
+    };
+    btn.cqStop = finish;
+
+    const miss = (lane) => {
+      streak = 0;
+      showScore();
+      wrap.classList.remove("is-turbo");
+      lane.area.classList.remove("is-crash");
+      void lane.area.offsetWidth;
+      lane.area.classList.add("is-crash");
+      tone(150, 0.3, { type: "sawtooth", vol: 0.1 });
+      if (navigator.vibrate) navigator.vibrate(120);
     };
 
     lanes.forEach((lane) => {
       lane.area.onpointerdown = (e) => {
         const el = e.target.closest(".cq-rain-ball");
-        if (!el || !running) return;
+        if (!el) return;
         const ball = lane.balls.find((b) => b.el === el);
         if (!ball || ball.done) return;
         ball.done = true;
-        const good = lane.mode === "avoid" ? ball.color !== lane.target : ball.color === lane.target;
-        if (good) {
-          score++;
+        if (isGood(lane, ball.color)) {
+          streak++;
+          if (streak > best) best = streak;
+          showScore();
           el.classList.add("is-hit");
           sound.tick();
         } else {
-          score--;
           el.classList.add("is-miss");
-          if (navigator.vibrate) navigator.vibrate(120);
+          miss(lane);
         }
-        scoreEl.textContent = `⚽ ${score}`;
         setTimeout(() => el.remove(), 300);
       };
     });
@@ -1145,24 +1163,18 @@ function renderCraque() {
       const now = Date.now();
       const dt = (now - last) / 1000;
       last = now;
-      const elapsed = (now - startAt) / 1000;
-      // Two stages: speeding up until the turbo, then a much faster final stretch.
-      const turbo = elapsed >= secs - turboSecs;
-      const k = turbo ? cqClamp01((elapsed - (secs - turboSecs)) / turboSecs) : cqClamp01(elapsed / (secs - turboSecs));
-      out.textContent = Math.max(0, Math.ceil(secs - elapsed));
-      if (elapsed >= secs) {
-        finish();
-        return;
-      }
+      const turbo = streak >= turboAt;
+      const k = turbo ? cqClamp01((streak - turboAt) / turboAt) : cqClamp01(streak / turboAt);
       if (turbo && !wrap.classList.contains("is-turbo")) {
         wrap.classList.add("is-turbo");
-        wrap.dataset.turbo = tx.rainTurbo;
+        wrap.dataset.turbo = "⚡ TURBO! ⚡";
         sound.go();
         if (navigator.vibrate) navigator.vibrate([100, 60, 100]);
       }
       lanes.forEach((lane) => {
         if (now >= lane.ruleAt) {
           lane.target = other(lane.target);
+          lane.rule++;
           lane.ruleAt = now + (turbo ? 3000 + Math.random() * 1500 : 4500 + Math.random() * 2500);
           setRule(lane);
           sound.tick();
@@ -1170,20 +1182,23 @@ function renderCraque() {
         const w = lane.area.clientWidth;
         const h = lane.area.clientHeight;
         if (now >= lane.spawnAt) {
-          lane.spawnAt = now + slow * (turbo ? cqLerp(360, 200, k) : cqLerp(700, 420, k));
-          const rule = Math.random() < (lane.mode === "avoid" ? 0.3 : 0.4);
-          const color = rule ? lane.target : other(lane.target);
+          lane.spawnAt = now + slow * (turbo ? cqLerp(420, 260, k) : cqLerp(950, 480, k));
+          const right = Math.random() < (lane.mode === "avoid" ? 0.3 : 0.4);
+          const color = right ? lane.target : other(lane.target);
           const el = document.createElement("span");
           el.className = "cq-rain-ball";
           el.style.background = CQ_RAIN_COLORS[color];
           lane.area.appendChild(el);
-          lane.balls.push({ el, color, x: 26 + Math.random() * (w - 52), y: -24, v: h / (turbo ? cqLerp(1.7, 1.05, k) : cqLerp(3.2, 2, k)) });
+          lane.balls.push({ el, color, rule: lane.rule, x: 26 + Math.random() * (w - 52), y: -24 });
         }
+        const v = h / (turbo ? cqLerp(1.8, 1.15, k) : cqLerp(3.6, 2.1, k));
         lane.balls = lane.balls.filter((b) => {
           if (b.done) return false;
-          b.y += b.v * dt;
+          b.y += v * dt;
           if (b.y > h + 30) {
             b.el.remove();
+            // A right ball let through only counts if the rule hasn't changed since it appeared.
+            if (b.rule === lane.rule && isGood(lane, b.color)) miss(lane);
             return false;
           }
           b.el.style.transform = `translate(${b.x.toFixed(1)}px, ${b.y.toFixed(1)}px)`;

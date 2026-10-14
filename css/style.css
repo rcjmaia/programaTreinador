@@ -2876,7 +2876,7 @@ body.cq-lock {
   opacity: 0;
 }
 
-.cq-dodge.is-crash {
+.cq-rain.is-crash {
   animation: cq-crash 0.45s;
 }
 
