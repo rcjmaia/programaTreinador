@@ -864,9 +864,9 @@ function renderCraque() {
     if (m.timer?.mode === "down") tool = `<div class="cq-timer"><b>${m.timer.s}</b>${controls}</div>`;
     if (m.timer?.mode === "up") tool = `<div class="cq-timer"><b>0</b>${controls}</div>`;
     if (m.timer?.mode === "breath") tool = `<div class="cq-timer is-breath"><span class="cq-ball"></span><em></em><b>0</b>${controls}</div>`;
-    if (m.grid) tool = `
+    if (m.grid) tool = `<div class="cq-play">
       <div class="cq-timer"><b>0</b><span class="cq-grid-next"></span><button type="button" class="cq-btn is-ghost" data-grid>${tx.start}</button></div>
-      <div class="cq-grid" style="--n:${m.grid.size}"></div>`;
+      <div class="cq-grid" style="--n:${m.grid.cols}"></div></div>`;
     if (m.rain) tool = `<div class="cq-play">
       <div class="cq-timer"><span class="cq-rain-score">🏆 0 · ${tx.record} ${state.records[m.id] ?? 0}</span><button type="button" class="cq-btn is-ghost" data-rain>${tx.start}</button></div>
       <div class="cq-rain-wrap${m.rain.sides ? " is-duo" : ""}"><span class="cq-game-count is-faint">0</span>${(m.rain.sides || [0]).map(() => `<div class="cq-rain"><div class="cq-rain-rule"></div></div>`).join("")}</div></div>`;
@@ -977,19 +977,34 @@ function renderCraque() {
     return list;
   };
 
-  /* Concentration grid: tap the cells in order as fast as possible; the time in seconds is the result.
-     m.grid: { size } */
+  /* Concentration grid: tap the numbers in order as fast as possible; the time in seconds is the result.
+     It plays full screen, like the other games, and Stop leaves without a result.
+     m.grid: { n, cols } */
   function startGrid(m, btn, input) {
+    if (btn.cqStop) return btn.cqStop();
     stopTimer();
     gameResult(input);
-    const g = m.grid;
-    const n = g.size * g.size;
+    const tx = t();
     const grid = dialog.querySelector(".cq-grid");
+    const play = btn.closest(".cq-play");
     const out = btn.closest(".cq-timer").querySelector("b");
     const nextEl = btn.closest(".cq-timer").querySelector(".cq-grid-next");
-    const seq = Array.from({ length: n }, (_, i) => String(i + 1));
+    const seq = Array.from({ length: m.grid.n }, (_, i) => String(i + 1));
     grid.innerHTML = shuffle([...seq]).map((k) => `<button type="button" data-k="${k}">${k}</button>`).join("");
-    btn.textContent = t().restart;
+    btn.textContent = tx.stop;
+    play.classList.add("is-full");
+    const finish = () => {
+      btn.cqStop = null;
+      stopTimer();
+      play.classList.remove("is-full");
+      btn.textContent = tx.restart;
+      nextEl.textContent = "";
+    };
+    btn.cqStop = () => {
+      finish();
+      grid.innerHTML = "";
+      out.textContent = 0;
+    };
     let step = 0;
     const showNext = () => {
       if (step >= seq.length) {
@@ -1004,7 +1019,11 @@ function renderCraque() {
     timer = setInterval(() => {
       out.textContent = Math.floor((Date.now() - startAt) / 1000);
     }, 100);
-    grid.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+    // pointerdown with preventDefault: the number never takes the focus, which on phones made the
+    // window scroll a little on every tap.
+    grid.querySelectorAll("button").forEach((b) => b.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      if (b.classList.contains("is-done")) return;
       if (b.dataset.k !== seq[step]) {
         b.classList.remove("is-wrong");
         void b.offsetWidth;
@@ -1012,12 +1031,11 @@ function renderCraque() {
         return;
       }
       b.classList.add("is-done");
-      b.disabled = true;
       sound.tick();
       step++;
       showNext();
       if (step >= seq.length) {
-        stopTimer();
+        finish();
         const secs = Math.max(1, Math.round((Date.now() - startAt) / 1000));
         out.textContent = secs;
         sound.whistle();

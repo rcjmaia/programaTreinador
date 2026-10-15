@@ -28,7 +28,7 @@ const CQ_CHAIN = {
   ],
   cab: [
     "turma", "statue", "nuvens", "nuvemcount", "breath", "agora", "grade", "nomear", "termometro", "blindstatue",
-    "rotina", "minharotina", "estoico", "countdown", "lanterna", "sofa", "cincomin", "metas", "metasemana",
+    "rotina", "minharotina", "estoico", "countdown", "lanterna", "sofa", "cincomin", "metas", "metasemana", "grade40",
     "vigia", "gratidao", "cinema", "pavao", "timeunido", "vozcampo", "porque", "descanso", "sono", "lesao", "melhor", "streak",
   ],
   gol: ["gkcatch", "gkshuffle", "gkdive", "gktennis", "gkdrop", "gkthrow", "gkquiz", "gkhigh", "gkpunt", "gkpenalty", "gkgoalkick"],

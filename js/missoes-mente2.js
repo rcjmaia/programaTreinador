@@ -86,7 +86,7 @@ CQ_MISSIONS.push(
 
   // Práticas
   {
-    id: "grade", type: "mind", icon: "🧩", subs: ["concentration"], tiers: [90, 60, 45, 35], lower: true, max: 600, grid: { size: 5 },
+    id: "grade", type: "mind", icon: "🧩", subs: ["concentration"], tiers: [90, 60, 45, 35], lower: true, max: 600, grid: { n: 25, cols: 5 },
     title: ["Grade de concentração", "Concentration grid", "Cuadrícula de concentración"],
     desc: ["Toque os números de 1 a 25, em ordem, o mais rápido que conseguir. Quanto menos segundos, melhor!", "Tap the numbers from 1 to 25, in order, as fast as you can. The fewer seconds, the better!", "Toca los números del 1 al 25, en orden, lo más rápido que puedas. ¡Cuantos menos segundos, mejor!"],
     steps: [
@@ -103,6 +103,17 @@ CQ_MISSIONS.push(
         { d: 2.6, mood: { zumzum: "small" }, say: ["capitao", ["Calma: lanterna aberta... achei o 7!", "Easy: torch wide... found 7!", "Calma: linterna abierta... ¡encontré el 7!"]], cloud: ["1, 2, 3...", "1, 2, 3...", "1, 2, 3..."], text: ["Foco calmo é foco rápido", "Calm focus is fast focus", "Foco tranquilo es foco rápido"] },
       ],
     },
+  },
+  {
+    id: "grade40", type: "mind", icon: "🔢", subs: ["concentration"], tiers: [150, 105, 80, 65], lower: true, max: 900, grid: { n: 40, cols: 5 },
+    title: ["Grade 40", "Grid 40", "Cuadrícula 40"],
+    desc: ["Agora são 40 números! Toque de 1 a 40, em ordem, o mais rápido que conseguir.", "Now there are 40 numbers! Tap from 1 to 40, in order, as fast as you can.", "¡Ahora son 40 números! Toca del 1 al 40, en orden, lo más rápido que puedas."],
+    steps: [
+      ["Aperte Iniciar: os números aparecem embaralhados, na tela toda.", "Press Start: the numbers appear shuffled, full screen.", "Pulsa Iniciar: los números aparecen mezclados, en toda la pantalla."],
+      ["Ache o 1, depois o 2, o 3... até o 40. Errou? O número treme e você continua.", "Find 1, then 2, 3... up to 40. Wrong one? It shakes and you carry on.", "Encuentra el 1, después el 2, el 3... hasta el 40. ¿Fallaste? Tiembla y sigues."],
+      ["Respire e mantenha a calma: foco calmo é foco rápido!", "Breathe and stay calm: calm focus is fast focus!", "Respira y mantén la calma: ¡foco tranquilo es foco rápido!"],
+    ],
+    unit: ["segundos", "seconds", "segundos"],
   },
   {
     id: "chuva", type: "mind", icon: "🌈", subs: ["decision", "reactions", "concentration"], tiers: [15, 45, 90, 150], max: 2000, rain: { mode: "only" },

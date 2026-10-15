@@ -2750,6 +2750,20 @@ body.cq-lock {
   cursor: default;
 }
 
+/* Full screen: the rows share the height, so a big grid (40 numbers) still fits on a phone. */
+.cq-play.is-full .cq-grid {
+  flex: 1;
+  min-height: 0;
+  grid-auto-rows: 1fr;
+  margin-bottom: 0;
+}
+
+.cq-play.is-full .cq-grid button {
+  aspect-ratio: auto;
+  min-height: 0;
+  font-size: 1.5rem;
+}
+
 .cq-grid button.is-wrong {
   animation: cq-wrong 0.35s;
 }
