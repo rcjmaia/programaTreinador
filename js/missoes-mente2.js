@@ -172,7 +172,7 @@ CQ_MISSIONS.push(
     anim: true,
   },
   {
-    id: "minharotina", type: "quiz", icon: "✊", subs: ["composure", "resilience"], tiers: [2, 4, 6],
+    id: "minharotina", type: "quiz", icon: "✊", subs: ["composure", "courage", "resilience"], tiers: [2, 4, 6],
     title: ["Meu gesto de capitão", "My captain's gesture", "Mi gesto de capitán"],
     desc: ["Um gesto simples para lembrar de respirar e voltar ao comando. Serve no jogo, na escola, em casa: para a vida toda.", "A simple gesture to remind you to breathe and take back command. It works in games, at school, at home: for life.", "Un gesto simple para acordarte de respirar y volver al mando. Sirve en el partido, en la escuela, en casa: para toda la vida."],
     unit: CQ_UNIT_POINTS,

@@ -11,11 +11,11 @@ const CQ_ATTRS = [
   { id: "rit", subs: ["acceleration", "sprint"] },
   { id: "fin", subs: ["attpos", "finishing", "power", "longshots", "volleys", "penalties", "freekick", "headfin"] },
   { id: "pas", subs: ["vision", "cross", "short", "long", "curve"] },
-  { id: "con", subs: ["agility", "balance", "reactions", "control", "carry", "dribble", "composure"] },
+  { id: "con", subs: ["agility", "balance", "reactions", "control", "carry", "dribble"] },
   { id: "def", subs: ["interceptions", "heading", "awareness", "standing", "sliding"] },
   { id: "fis", subs: ["jumping", "stamina", "strength", "combat"] },
   { id: "int", subs: ["positioning", "recovery", "reading", "decision", "teamplay", "communication"] },
-  { id: "cab", subs: ["concentration", "courage", "resilience", "confidence", "discipline", "fairplay"] },
+  { id: "cab", subs: ["concentration", "composure", "courage", "resilience", "confidence", "discipline", "fairplay"] },
   { id: "gol", subs: ["gkdiving", "gkhandling", "gkkicking", "gkreflexes", "gkpositioning"] },
 ];
 // The goalkeeping group only counts towards the overall of players whose position is goalkeeper.
@@ -34,6 +34,7 @@ const CQ_HAIRS = {
   spiky: ["", `<path d="M34 34 L33 24 L39 27 L40 16 L46 23 L50 13 L54 23 L60 16 L61 27 L67 24 L66 34 Q60 26 50 27 Q40 26 34 34 Z" />`],
   afro: [`<circle cx="50" cy="30" r="22" />`, `<path d="M34 33 Q36 22 50 22 Q64 22 66 33 Q60 27 50 28 Q40 27 34 33 Z" />`],
   long: [`<path d="M32 36 Q30 16 50 16 Q70 16 68 36 L70 62 Q62 65 57 56 L43 56 Q38 65 30 62 Z" />`, `<path d="M34 38 Q32 18 50 18 Q68 18 66 38 Q64 28 56 26 Q48 30 38 28 Q35 32 34 38 Z" />`],
+  bob: [`<path d="M32 37 Q31 16 50 16 Q69 16 68 37 L68 46 L63 47 Q63 40 58 36 L42 36 Q37 40 37 47 L32 46 Z" />`, `<path d="M34 39 Q33 18 52 18 Q67 19 66 37 Q64 27 58 25 Q53 30 46 30 L44 32 L42 30 Q37 32 34 39 Z" />`],
   longer: [`<path d="M32 36 Q30 16 50 16 Q70 16 68 36 L73 84 Q63 89 58 79 L57 56 L43 56 L42 79 Q37 89 27 84 Z" />`, `<path d="M34 38 Q32 18 50 18 Q68 18 66 38 Q64 28 56 26 Q48 30 38 28 Q35 32 34 38 Z" />`],
   braids: [`<path d="M33 36 Q31 17 50 17 Q69 17 67 36 Z" />${[44, 51, 58, 65, 72].map((y) => `<circle cx="33" cy="${y}" r="3.6" /><circle cx="67" cy="${y}" r="3.6" />`).join("")}`, `<path d="M34 35 Q34 18 50 18 Q66 18 66 35 Q60 26 50 27 Q40 26 34 35 Z" />`],
   bun: [`<circle cx="50" cy="15" r="7" />`, `<path d="M34 35 Q34 19 50 19 Q66 19 66 35 Q62 25 50 25 Q38 25 34 35 Z" />`],
