@@ -95,14 +95,8 @@ CQ_MISSIONS.push(
       ["Ao terminar, o tempo já vai para o resultado. É só salvar.", "When you finish, your time is filled in. Just save it.", "Al terminar, el tiempo ya pasa al resultado. Solo guárdalo."],
     ],
     unit: ["segundos", "seconds", "segundos"],
-    anim: "cabine",
-    animArgs: {
-      cast: ["capitao", "zumzum", "pulinho"],
-      steps: [
-        { d: 2.4, say: ["zumzum", ["Rápido! Rápido! Cadê o 7?!", "Quick! Quick! Where's 7?!", "¡Rápido! ¡Rápido! ¿Dónde está el 7?"]], mood: { zumzum: "big" }, text: ["A pressa embaralha a vista", "Rushing scrambles your eyes", "La prisa nubla la vista"] },
-        { d: 2.6, mood: { zumzum: "small" }, say: ["capitao", ["Calma: lanterna aberta... achei o 7!", "Easy: torch wide... found 7!", "Calma: linterna abierta... ¡encontré el 7!"]], cloud: ["1, 2, 3...", "1, 2, 3...", "1, 2, 3..."], text: ["Foco calmo é foco rápido", "Calm focus is fast focus", "Foco tranquilo es foco rápido"] },
-      ],
-    },
+    anim: "grade",
+    animArgs: { to: 25 },
   },
   {
     id: "grade40", type: "mind", icon: "🔢", subs: ["concentration"], tiers: [150, 105, 80, 65], lower: true, max: 900, grid: { n: 40, cols: 5 },
@@ -114,6 +108,8 @@ CQ_MISSIONS.push(
       ["Respire e mantenha a calma: foco calmo é foco rápido!", "Breathe and stay calm: calm focus is fast focus!", "Respira y mantén la calma: ¡foco tranquilo es foco rápido!"],
     ],
     unit: ["segundos", "seconds", "segundos"],
+    anim: "grade",
+    animArgs: { to: 40 },
   },
   {
     id: "chuva", type: "mind", icon: "🌈", subs: ["decision", "reactions", "concentration"], tiers: [25, 60, 120, 180], max: 9999, rain: { mode: "only" },
@@ -125,6 +121,8 @@ CQ_MISSIONS.push(
       ["Tocou errado ou deixou cair uma bola certa? Perde 1 ❤️. Sem os 3 ❤️, zera (o recorde 🏆 fica). Pense rápido, mas pense!", "Wrong tap or let a right ball drop? You lose 1 ❤️. Lose all 3 and you're back to 0 (your record 🏆 stays). Think fast, but think!", "¿Tocaste mal o dejaste caer un balón correcto? Pierdes 1 ❤️. Sin los 3 ❤️, vuelves a 0 (tu récord 🏆 queda). ¡Piensa rápido, pero piensa!"],
     ],
     unit: ["pontos", "points", "puntos"],
+    anim: "chuva",
+    animArgs: { mode: "only" },
   },
   {
     id: "chuvanao", type: "mind", icon: "🚫", subs: ["decision", "reactions", "concentration"], tiers: [45, 105, 200, 320], max: 9999, rain: { mode: "avoid" },
@@ -137,6 +135,8 @@ CQ_MISSIONS.push(
       ["É como não dar o bote na finta do atacante: controlar o impulso.", "It's like not diving in at a striker's feint: controlling the impulse.", "Es como no tirarse ante el amague del delantero: controlar el impulso."],
     ],
     unit: ["pontos", "points", "puntos"],
+    anim: "chuva",
+    animArgs: { mode: "avoid" },
   },
   {
     id: "chuvaconfusa", type: "mind", icon: "🎨", subs: ["decision", "reactions", "concentration"], tiers: [25, 60, 120, 180], max: 9999, rain: { mode: "stroop" },
@@ -148,6 +148,8 @@ CQ_MISSIONS.push(
       ["Aos 10 s entra o TURBO e a cada minuto acelera mais. Cada acerto vale 1 ponto, e cada TURBO soma +1 por acerto! Tocou errado ou deixou cair uma bola certa? Perde 1 ❤️. Sem os 3 ❤️, zera (o recorde 🏆 fica).", "TURBO kicks in at 10 s and it speeds up every minute. Each hit is worth 1 point, and every TURBO adds +1 per hit! Wrong tap or let a right ball drop? You lose 1 ❤️. Lose all 3 and you're back to 0 (your record 🏆 stays).", "A los 10 s entra el TURBO y cada minuto acelera más. Cada acierto vale 1 punto, ¡y cada TURBO suma +1 por acierto! ¿Tocaste mal o dejaste caer un balón correcto? Pierdes 1 ❤️. Sin los 3 ❤️, vuelves a 0 (tu récord 🏆 queda)."],
     ],
     unit: ["pontos", "points", "puntos"],
+    anim: "chuva",
+    animArgs: { mode: "stroop" },
   },
   {
     id: "chuvadupla", type: "mind", icon: "🌗", subs: ["decision", "reactions", "concentration"], tiers: [25, 50, 90, 135], max: 9999, rain: { sides: ["only", "only"], calm: true },
@@ -159,6 +161,8 @@ CQ_MISSIONS.push(
       ["É como jogar olhando a bola e o companheiro ao mesmo tempo.", "It's like playing while watching the ball and your teammate at the same time.", "Es como jugar mirando el balón y al compañero al mismo tiempo."],
     ],
     unit: ["pontos", "points", "puntos"],
+    anim: "chuva",
+    animArgs: { sides: ["only", "only"] },
   },
   {
     id: "chuvamaluca", type: "mind", icon: "🌀", subs: ["decision", "reactions", "concentration"], tiers: [30, 70, 125, 185], max: 9999, rain: { sides: ["only", "avoid"], calm: true },
@@ -170,6 +174,8 @@ CQ_MISSIONS.push(
       ["A cabeça troca de regra num piscar de olhos, como no jogo de verdade.", "Your head switches rules in a blink, just like in a real game.", "La cabeza cambia de regla en un parpadeo, como en el partido de verdad."],
     ],
     unit: ["pontos", "points", "puntos"],
+    anim: "chuva",
+    animArgs: { sides: ["only", "avoid"] },
   },
   {
     id: "desvio", type: "mind", icon: "↕️", subs: ["decision", "reactions", "concentration"], tiers: [90, 200, 380, 580], max: 9999, dodge: {},
