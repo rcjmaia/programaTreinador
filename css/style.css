@@ -3189,7 +3189,43 @@ body.cq-lock {
   80% { rotate: 4deg; }
 }
 
-/* The one-second pause after a miss or crash: points lost and the record. */
+/* Lives in the scoring games: a lost heart turns grey and the row shakes. */
+.cq-game-lives {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 44px;
+  translate: -50% 0;
+  display: flex;
+  gap: 4px;
+  font-size: 1.25rem;
+  line-height: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+}
+
+.cq-game-lives i {
+  font-style: normal;
+  transition: opacity 0.3s, filter 0.3s;
+}
+
+.cq-game-lives i.is-lost {
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+
+.cq-game-lives.is-hurt {
+  animation: cq-hurt 0.45s;
+}
+
+@keyframes cq-hurt {
+  20% { translate: calc(-50% - 6px) 0; scale: 1.25; }
+  40% { translate: calc(-50% + 6px) 0; }
+  60% { translate: calc(-50% - 4px) 0; }
+  80% { translate: calc(-50% + 3px) 0; }
+}
+
+/* The pause after losing the last heart: points lost and the record. */
 .cq-game-dead {
   position: absolute;
   z-index: 4;

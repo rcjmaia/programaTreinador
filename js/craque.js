@@ -1091,17 +1091,44 @@ function renderCraque() {
        only: tap the rule colour; avoid: tap every colour except it;
        stroop: like only, but the colour name is printed in a different ink and the word is what counts.
        sides splits the screen in two lanes, each with its own rule. */
-  /* Every miss or crash freezes the game for 2 s, showing the points just lost and the record.
-     hit() returns how long the game must push its clocks forward (0 if it was already frozen),
-     so speed levels and timed events don't move on during the pause. */
+  /* Lives and the pause after losing them, shared by the scoring games.
+     Every mistake costs one of 3 hearts and the points stay; right after one, the next 0.8 s can't cost
+     another, so two balls at once don't take two hearts. Losing the last heart freezes the game for 2 s,
+     showing the points just lost and the record; then the points restart from 0 with 3 new hearts.
+     lose() → "" (ignored), "heart" or "out". hit() returns how long the game must push its clocks
+     forward (0 if it was already frozen), so speed levels and timed events don't move on during the pause. */
   const CQ_PAUSE = 2000;
+  const CQ_LIVES = 3;
+  const CQ_LIFE_GRACE = 800;
   function gamePause(wrap, m, record) {
     const tx = t();
     const el = document.createElement("div");
     el.className = "cq-game-dead";
     wrap.appendChild(el);
+    const hearts = document.createElement("div");
+    hearts.className = "cq-game-lives";
+    wrap.appendChild(hearts);
     let until = 0;
+    let lives = CQ_LIVES;
+    let safeUntil = 0;
+    const drawHearts = () => {
+      hearts.innerHTML = Array.from({ length: CQ_LIVES }, (_, i) => `<i${i < lives ? "" : ' class="is-lost"'}>❤️</i>`).join("");
+    };
+    drawHearts();
     return {
+      lose() {
+        const now = Date.now();
+        if (now < safeUntil || now < until) return "";
+        safeUntil = now + CQ_LIFE_GRACE;
+        lives--;
+        drawHearts();
+        hearts.classList.remove("is-hurt");
+        void hearts.offsetWidth;
+        hearts.classList.add("is-hurt");
+        if (lives > 0) return "heart";
+        lives = CQ_LIVES;
+        return "out";
+      },
       hit(lost, best) {
         const isNew = lost > record && lost === best;
         el.innerHTML = `<b>💥 ${lost} ${tr(m.unit)}</b><small>🏆 ${isNew ? tx.newRecord : `${tx.record} ${Math.max(record, best)}`}</small>`;
@@ -1113,10 +1140,16 @@ function renderCraque() {
       },
       frozen(now) {
         if (now < until) return true;
-        el.classList.remove("is-on");
+        if (el.classList.contains("is-on")) {
+          el.classList.remove("is-on");
+          drawHearts();
+        }
         return false;
       },
-      remove: () => el.remove(),
+      remove: () => {
+        el.remove();
+        hearts.remove();
+      },
     };
   }
 
@@ -1210,6 +1243,14 @@ function renderCraque() {
     btn.cqStop = finish;
 
     const miss = (lane) => {
+      const lost = pause.lose();
+      if (!lost) return;
+      lane.area.classList.remove("is-crash");
+      void lane.area.offsetWidth;
+      lane.area.classList.add("is-crash");
+      tone(150, 0.3, { type: "sawtooth", vol: 0.1 });
+      if (navigator.vibrate) navigator.vibrate(120);
+      if (lost === "heart") return;
       const p = pause.hit(streak, best);
       startAt += p;
       lanes.forEach((l) => {
@@ -1219,11 +1260,6 @@ function renderCraque() {
       });
       streak = 0;
       showScore();
-      lane.area.classList.remove("is-crash");
-      void lane.area.offsetWidth;
-      lane.area.classList.add("is-crash");
-      tone(150, 0.3, { type: "sawtooth", vol: 0.1 });
-      if (navigator.vibrate) navigator.vibrate(120);
     };
 
     lanes.forEach((lane) => {
@@ -1396,16 +1432,19 @@ function renderCraque() {
     });
 
     const crash = (lane) => {
-      const p = pause.hit(streak, best);
-      startAt += p;
-      lanes.forEach((l) => (l.spawnAt += p));
-      streak = 0;
-      showScore();
+      const lost = pause.lose();
+      if (!lost) return;
       lane.area.classList.remove("is-crash");
       void lane.area.offsetWidth;
       lane.area.classList.add("is-crash");
       tone(150, 0.3, { type: "sawtooth", vol: 0.1 });
       if (navigator.vibrate) navigator.vibrate(150);
+      if (lost === "heart") return;
+      const p = pause.hit(streak, best);
+      startAt += p;
+      lanes.forEach((l) => (l.spawnAt += p));
+      streak = 0;
+      showScore();
     };
 
     timer = setInterval(() => {
@@ -1464,12 +1503,12 @@ function renderCraque() {
      must be eaten by the block of their own colour: touching another block, or getting through uneaten,
      resets the points. Speed and points per ball follow CQ_BLOK_AT.
      Rainbow balls can be eaten by any block and are worth double; bombs must touch no block, and letting
-     one through scores. From TURBO x2 on, the colours swap between the lines every few seconds. */
+     one through scores. From TURBO x2 on, the colours swap between the lines every 20 to 28 s. */
   const CQ_BLOK_COLORS = ["yellow", "green", "blue", "red"];
   // Blokolor speeds up sooner and in bigger steps than the other games.
-  const CQ_BLOK_AT = [0, 10, 35, 60, 85, 110, 135];
-  const CQ_BLOK_CROSS = [5.5, 4.0, 3.0, 2.4, 2.0, 1.7, 1.5];
-  const CQ_BLOK_GAP = [2300, 1600, 1200, 1000, 850, 730, 640];
+  const CQ_BLOK_AT = [0, 10, 35, 60, 85, 110];
+  const CQ_BLOK_CROSS = [5.5, 4.0, 3.0, 2.4, 2.0, 1.7];
+  const CQ_BLOK_GAP = [2300, 1600, 1200, 1000, 850, 730];
 
   function startBlok(m, btn, input) {
     if (btn.cqStop) return btn.cqStop();
@@ -1564,17 +1603,20 @@ function renderCraque() {
     area.onpointercancel = (e) => drags.delete(e.pointerId);
 
     const crash = () => {
+      const lost = pause.lose();
+      if (!lost) return;
+      area.classList.remove("is-crash");
+      void area.offsetWidth;
+      area.classList.add("is-crash");
+      tone(150, 0.3, { type: "sawtooth", vol: 0.1 });
+      if (navigator.vibrate) navigator.vibrate(150);
+      if (lost === "heart") return;
       const p = pause.hit(streak, best);
       startAt += p;
       spawnAt += p;
       swapAt += p;
       streak = 0;
       showScore();
-      area.classList.remove("is-crash");
-      void area.offsetWidth;
-      area.classList.add("is-crash");
-      tone(150, 0.3, { type: "sawtooth", vol: 0.1 });
-      if (navigator.vibrate) navigator.vibrate(150);
     };
 
     timer = setInterval(() => {
@@ -1599,7 +1641,7 @@ function renderCraque() {
       // halfway by the new colours; balls come back once the child has seen the new lines.
       const swapping = speed.li >= 2 && now >= swapAt;
       if (swapping && !balls.length) {
-        swapAt = now + 9000 + Math.random() * 4000;
+        swapAt = now + 20000 + Math.random() * 8000;
         spawnAt = now + 1500;
         // Rotating the colours guarantees every line gets a new one.
         const shift = 1 + Math.floor(Math.random() * (rows.length - 1));
@@ -1851,14 +1893,18 @@ function renderCraque() {
     const phasesBefore = openPhaseCount();
     const streakSub = mission("streak").subs;
 
+    // A result of 0 (a game stopped right away, nothing done) still counts as a try, but it is no record
+    // and earns no XP, or starting and stopping a game would farm XP.
+    const played = m.lower || value > 0;
     const prev = state.records[m.id];
-    const isRecord = prev == null || (beats(m, value, prev) && value !== prev);
+    const isRecord = played && (prev == null || (beats(m, value, prev) && value !== prev));
     state.tries = { ...state.tries, [m.id]: triesOf(m.id) + 1 };
     if (isRecord) state.records[m.id] = value;
 
     const today = dayKey();
     const count = state.today.counts[m.id] || 0;
-    const xp = isDaily ? CQ_XP.daily : CQ_XP.normal;
+    // The daily bonus is paid on the first time the daily mission is done that day; repeats earn the normal XP.
+    const xp = !played ? 0 : isDaily && count === 0 ? CQ_XP.daily : CQ_XP.normal;
     state.xp += xp;
     state.today.counts[m.id] = count + 1;
 
@@ -1892,7 +1938,7 @@ function renderCraque() {
       <div class="cq-done">
         <span class="cq-medal is-big m-${idx}"></span>
         <strong>${idx >= 0 ? tx.medals[idx] : tx.noMedal}</strong>
-        <h3>${isRecord ? tx.newRecord : fill(tx.keepGoing, { n: state.records[m.id] })}</h3>
+        <h3>${isRecord ? tx.newRecord : fill(tx.keepGoing, { n: state.records[m.id] ?? 0 })}</h3>
         <p>${tr(m.title)}: <b>${value}</b> ${tr(m.unit)}</p>
         ${gains.length ? `<small>${tx.gains}</small><ul class="cq-gains">${gains.join("")}</ul>` : ""}
         ${openPhaseCount() > phasesBefore ? `<p class="cq-unlocked">🔓 ${tx.unlocked}</p>` : ""}
