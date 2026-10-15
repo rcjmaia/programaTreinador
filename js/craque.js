@@ -1073,6 +1073,35 @@ function renderCraque() {
        only: tap the rule colour; avoid: tap every colour except it;
        stroop: like only, but the colour name is printed in a different ink and the word is what counts.
        sides splits the screen in two lanes, each with its own rule. */
+  /* Every miss or crash freezes the game for 1.5 s, showing the points just lost and the record.
+     hit() returns how long the game must push its clocks forward (0 if it was already frozen),
+     so speed levels and timed events don't move on during the pause. */
+  const CQ_PAUSE = 1500;
+  function gamePause(wrap, m, record) {
+    const tx = t();
+    const el = document.createElement("div");
+    el.className = "cq-game-dead";
+    wrap.appendChild(el);
+    let until = 0;
+    return {
+      hit(lost, best) {
+        const isNew = lost > record && lost === best;
+        el.innerHTML = `<b>💥 ${lost} ${tr(m.unit)}</b><small>🏆 ${isNew ? tx.newRecord : `${tx.record} ${Math.max(record, best)}`}</small>`;
+        el.classList.add("is-on");
+        const now = Date.now();
+        if (now < until) return 0;
+        until = now + CQ_PAUSE;
+        return CQ_PAUSE;
+      },
+      frozen(now) {
+        if (now < until) return true;
+        el.classList.remove("is-on");
+        return false;
+      },
+      remove: () => el.remove(),
+    };
+  }
+
   const CQ_RAIN_COLORS = { red: "#ef4444", blue: "#3b82f6", yellow: "#facc15", green: "#22c55e" };
   const CQ_RAIN_CROSS = [3.6, 2.0, 1.6, 1.3];
   const CQ_RAIN_GAP = [950, 520, 400, 320];
@@ -1099,7 +1128,8 @@ function renderCraque() {
     const colors = Object.keys(CQ_RAIN_COLORS);
     const other = (c) => pick(colors.filter((x) => x !== c));
     const record = state.records[m.id] ?? 0;
-    const startAt = Date.now();
+    let startAt = Date.now();
+    const pause = gamePause(wrap, m, record);
     let streak = 0;
     let best = 0;
     const cross = m.rain.calm ? CQ_RAIN_CROSS_CALM : CQ_RAIN_CROSS;
@@ -1148,6 +1178,7 @@ function renderCraque() {
       btn.closest(".cq-play").classList.remove("is-full");
       stopTimer();
       wrap.classList.remove("is-turbo");
+      pause.remove();
       lanes.forEach((lane) => {
         lane.area.onpointerdown = null;
         lane.ruleEl.textContent = "";
@@ -1161,6 +1192,13 @@ function renderCraque() {
     btn.cqStop = finish;
 
     const miss = (lane) => {
+      const p = pause.hit(streak, best);
+      startAt += p;
+      lanes.forEach((l) => {
+        l.ruleAt += p;
+        l.spawnAt += p;
+        l.changedAt += p;
+      });
       streak = 0;
       showScore();
       lane.area.classList.remove("is-crash");
@@ -1172,6 +1210,7 @@ function renderCraque() {
 
     lanes.forEach((lane) => {
       lane.area.onpointerdown = (e) => {
+        if (pause.frozen(Date.now())) return;
         // The tap goes to the ball whose centre is closest to the finger, not to whichever element is on top.
         const box = lane.area.getBoundingClientRect();
         const px = e.clientX - box.left;
@@ -1215,6 +1254,7 @@ function renderCraque() {
       const now = Date.now();
       const dt = (now - last) / 1000;
       last = now;
+      if (pause.frozen(now)) return;
       const next = gameSpeed((now - startAt) / 1000, cross, gap);
       if (next.li !== speed.li) showSpeedLevel(wrap, next.li);
       speed = next;
@@ -1285,7 +1325,8 @@ function renderCraque() {
     const BALL_Y = 44;
     const HIT = 36;
     const record = state.records[m.id] ?? 0;
-    const startAt = Date.now();
+    let startAt = Date.now();
+    const pause = gamePause(wrap, m, record);
     let streak = 0;
     let best = 0;
     let speed = gameSpeed(0, CQ_DODGE_CROSS, CQ_DODGE_GAP);
@@ -1314,6 +1355,7 @@ function renderCraque() {
       btn.closest(".cq-play").classList.remove("is-full");
       stopTimer();
       wrap.classList.remove("is-turbo");
+      pause.remove();
       lanes.forEach((lane) => {
         lane.area.onpointerdown = null;
         lane.area.classList.remove("is-on");
@@ -1329,12 +1371,16 @@ function renderCraque() {
     lanes.forEach((lane) => {
       lane.area.onpointerdown = (e) => {
         e.preventDefault();
+        if (pause.frozen(Date.now())) return;
         lane.col = 1 - lane.col;
         placeBall(lane);
       };
     });
 
     const crash = (lane) => {
+      const p = pause.hit(streak, best);
+      startAt += p;
+      lanes.forEach((l) => (l.spawnAt += p));
       streak = 0;
       showScore();
       lane.area.classList.remove("is-crash");
@@ -1348,6 +1394,7 @@ function renderCraque() {
       const now = Date.now();
       const dt = (now - last) / 1000;
       last = now;
+      if (pause.frozen(now)) return;
       const next = gameSpeed((now - startAt) / 1000, CQ_DODGE_CROSS, CQ_DODGE_GAP);
       if (next.li !== speed.li) showSpeedLevel(wrap, next.li);
       speed = next;
@@ -1422,9 +1469,10 @@ function renderCraque() {
     btn.closest(".cq-play").classList.add("is-full");
     const R = 18;
     const record = state.records[m.id] ?? 0;
-    const startAt = Date.now();
+    let startAt = Date.now();
     let streak = 0;
     let best = 0;
+    const pause = gamePause(wrap, m, record);
     let speed = gameSpeed(0, CQ_BLOK_CROSS, CQ_BLOK_GAP, CQ_BLOK_AT);
     let spawnAt = startAt + 900;
     let swapAt = startAt + (CQ_BLOK_AT[2] + 6) * 1000;
@@ -1458,6 +1506,7 @@ function renderCraque() {
       wrap.classList.remove("is-turbo");
       area.onpointerdown = area.onpointermove = area.onpointerup = area.onpointercancel = null;
       area.classList.remove("is-on");
+      pause.remove();
       balls.forEach((b) => b.el.remove());
       balls = [];
       out.textContent = best;
@@ -1497,6 +1546,10 @@ function renderCraque() {
     area.onpointercancel = (e) => drags.delete(e.pointerId);
 
     const crash = () => {
+      const p = pause.hit(streak, best);
+      startAt += p;
+      spawnAt += p;
+      swapAt += p;
       streak = 0;
       showScore();
       area.classList.remove("is-crash");
@@ -1510,6 +1563,7 @@ function renderCraque() {
       const now = Date.now();
       const dt = (now - last) / 1000;
       last = now;
+      if (pause.frozen(now)) return;
       const next = gameSpeed((now - startAt) / 1000, CQ_BLOK_CROSS, CQ_BLOK_GAP, CQ_BLOK_AT);
       if (next.li !== speed.li) showSpeedLevel(wrap, next.li);
       speed = next;

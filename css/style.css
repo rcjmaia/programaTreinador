@@ -3136,6 +3136,44 @@ body.cq-lock {
   80% { rotate: 4deg; }
 }
 
+/* The one-second pause after a miss or crash: points lost and the record. */
+.cq-game-dead {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 30%;
+  translate: -50% -50%;
+  display: none;
+  gap: 4px;
+  justify-items: center;
+  padding: 14px 22px;
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.88);
+  box-shadow: 0 0 0 2px #ef4444, 0 10px 30px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.cq-game-dead.is-on {
+  display: grid;
+  animation: cq-dead 0.25s;
+}
+
+.cq-game-dead b {
+  font-size: 1.6rem;
+  color: #fff;
+}
+
+.cq-game-dead small {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fde047;
+}
+
+@keyframes cq-dead {
+  from { scale: 0.6; opacity: 0; }
+}
+
 /* Any block can eat the rainbow ball; the bomb must touch none. */
 .cq-blok .cq-rain-ball.is-rainbow {
   background: conic-gradient(#ef4444, #facc15, #22c55e, #3b82f6, #a855f7, #ef4444);
