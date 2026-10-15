@@ -846,7 +846,7 @@ function renderCraque() {
           <button type="button" class="cq-edit-look">${tx.editLook}</button>
         </div>
         <div class="cq-side">
-          ${user ? `<div class="cq-user"><span>@${esc(user.username)}</span><button type="button" class="cq-logout">${tx.logout}</button></div>` : ""}
+          ${user ? `<div class="cq-user"><span>@${esc(user.username)}</span><span class="cq-user-actions"><button type="button" class="cq-reset">${tx.reset}</button><button type="button" class="cq-logout">${tx.logout}</button></span></div>` : ""}
           <div class="cq-status">
             <div class="cq-level">
               <span>${tx.level} <b>${lvl}</b></span>
@@ -855,15 +855,14 @@ function renderCraque() {
             </div>
             <div class="cq-streak"><b>🔥 ${state.streak.count}</b><small>${tx.streak}</small></div>
           </div>
-          <h2 class="cq-h">${tx.daily}</h2>
+          <h2 class="cq-h is-group"><span aria-hidden="true">⭐</span> ${tx.daily}</h2>
           <div class="cq-missions">${daily.map((id) => missionCard(mission(id), true)).join("")}</div>
-          <h2 class="cq-h">${tx.trails}</h2>
+          <h2 class="cq-h is-group"><span aria-hidden="true">🗺️</span> ${tx.trails}</h2>
           <div class="cq-trails">${CQ_TRAILS.map(trailRow).join("")}</div>
-          <h2 class="cq-h">${tx.games}</h2>
+          <h2 class="cq-h is-group"><span aria-hidden="true">🎮</span> ${tx.games}</h2>
           <div class="cq-missions is-compact">${CQ_MISSIONS.filter(isGame).map((m) => missionCard(m, false)).join("")}</div>
-          <h2 class="cq-h">${tx.freeTraining}</h2>
+          <h2 class="cq-h is-group"><span aria-hidden="true">⚽</span> ${tx.freeTraining}</h2>
           <div class="cq-missions is-compact">${openMissions().filter((m) => !daily.includes(m.id) && !isGame(m)).map((m) => missionCard(m, false)).join("")}</div>
-          <button type="button" class="cq-reset">${tx.reset}</button>
         </div>
       </div>`;
     // Long trails scroll sideways; start each one at the phase being played.
