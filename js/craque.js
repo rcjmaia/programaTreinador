@@ -243,6 +243,7 @@ const CQ_TEXT = {
     go: "Vai!",
     sound: "Som ligado/desligado",
     watch: "▶ Ver animação",
+    explain: "Explicação",
     hideAnim: "Esconder animação",
     steps: "passos",
     unlocked: "Nova fase liberada! Veja nas Trilhas.",
@@ -334,6 +335,7 @@ const CQ_TEXT = {
     go: "Go!",
     sound: "Sound on/off",
     watch: "▶ Watch animation",
+    explain: "How to play",
     hideAnim: "Hide animation",
     steps: "steps",
     unlocked: "New stage unlocked! Check your Trails.",
@@ -425,6 +427,7 @@ const CQ_TEXT = {
     go: "¡Ya!",
     sound: "Sonido sí/no",
     watch: "▶ Ver animación",
+    explain: "Explicación",
     hideAnim: "Ocultar animación",
     steps: "pasos",
     unlocked: "¡Nueva fase desbloqueada! Mírala en Caminos.",
@@ -1180,11 +1183,15 @@ function renderCraque() {
             ${CQ_BLOK_COLORS.map((c, i) => `<div class="cq-blok-row" style="--c:${CQ_RAIN_COLORS[c]}"><span class="cq-blok-block" style="left:${[72, 50, 28, 44][i]}%"><i class="cq-blok-eyes"></i><i class="cq-blok-mouth"></i></span></div>`).join("")}
       </div></div></div></div>`;
 
+    const anim = m.anim ? `<div class="cq-anim" hidden></div><button type="button" class="cq-btn is-ghost cq-anim-btn">${tx.watch}</button>` : "";
+    // In the games the how-to starts folded, so the game itself is what shows up first.
+    const howTo = isGame(m) && (anim || steps)
+      ? `<details class="cq-explain"><summary>📖 ${tx.explain}</summary>${anim}${steps}</details>`
+      : `${anim}${steps}`;
     openModal(`
       ${cupPlay ? cupTurnBanner(m) : ""}
       ${missionHeader(m)}
-      ${m.anim ? `<div class="cq-anim" hidden></div><button type="button" class="cq-btn is-ghost cq-anim-btn">${tx.watch}</button>` : ""}
-      ${steps}
+      ${howTo}
       ${tool}
       <form class="cq-result-form" ${isGame(m) ? "hidden" : ""}>
         <label><span>${fill(tx.howMany, { unit: tr(m.unit) })}</span>
@@ -1210,10 +1217,14 @@ function renderCraque() {
       save();
     });
     const animBtn = dialog.querySelector(".cq-anim-btn");
+    const explain = dialog.querySelector(".cq-explain");
     if (animBtn) {
       animBtn.addEventListener("click", () => toggleAnim(m, animBtn));
-      toggleAnim(m, animBtn);
+      if (!explain) toggleAnim(m, animBtn);
     }
+    if (explain && animBtn) explain.addEventListener("toggle", () => {
+      if (!animBtn.disabled && explain.open !== Boolean(stopAnim)) toggleAnim(m, animBtn);
+    });
 
     dialog.querySelector(".cq-result-form").addEventListener("submit", (e) => {
       e.preventDefault();
