@@ -3773,6 +3773,30 @@ body.cq-lock {
   color: var(--text);
 }
 
+.cq-story-go {
+  justify-self: center;
+  display: block;
+  margin: 0 auto;
+  font-size: 1.15rem;
+  padding: 14px 28px;
+  animation: cq-pulse 1.2s ease infinite;
+}
+
+@keyframes cq-pulse {
+  50% { transform: scale(1.06); }
+}
+
+.cq-story-go[hidden] {
+  display: none;
+}
+
+.cq-opts.is-big button {
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 700;
+  padding: 16px 14px;
+}
+
 .cq-done {
   display: grid;
   justify-items: center;

@@ -289,6 +289,15 @@ CQ_MISSIONS.push(
 Object.assign(CQ_QUIZ, {
   menteRotina: [
     {
+      story: { anim: "historia", id: "rotina" },
+      q: ["O que ajudou no pênalti?", "What helped with the penalty?", "¿Qué ayudó en el penal?"],
+      opts: [
+        ["🔁 Fazer meus passos de sempre", "🔁 Doing my usual steps", "🔁 Hacer mis pasos de siempre"],
+        ["⚡ Chutar correndo, sem pensar", "⚡ Rushing the kick without thinking", "⚡ Patear apurado, sin pensar"],
+      ],
+      why: ["Os mesmos passos acalmam a cabeça, e o corpo chuta certinho.", "The same steps calm your head, and your body kicks just right.", "Los mismos pasos calman la cabeza, y el cuerpo patea justo."],
+    },
+    {
       q: ["Por que o craque faz sempre os mesmos passos antes do pênalti?", "Why does a great player always do the same steps before a penalty?", "¿Por qué el crack hace siempre los mismos pasos antes del penal?"],
       opts: [
         ["Para ficar calmo e o corpo saber o que fazer", "To stay calm so the body knows what to do", "Para estar tranquilo y que el cuerpo sepa qué hacer"],
@@ -381,6 +390,15 @@ Object.assign(CQ_QUIZ, {
 
   menteTermometro: [
     {
+      story: { anim: "historia", id: "termometro" },
+      q: ["Como é melhor entrar em campo?", "What's the best way to play?", "¿Cómo es mejor entrar a la cancha?"],
+      opts: [
+        ["🌡️ Ligado, mas calmo", "🌡️ Switched on, but calm", "🌡️ Activo, pero tranquilo"],
+        ["🔥 Fervendo, com tudo em todo mundo", "🔥 Boiling, all-in on everyone", "🔥 Hirviendo, con todo contra todos"],
+      ],
+      why: ["Nem frio, nem fervendo: ligado e calmo joga melhor!", "Not cold, not boiling: on and calm plays better!", "Ni frío ni hirviendo: ¡activo y tranquilo juega mejor!"],
+    },
+    {
       q: ["Frio, quente ou no meio: como é melhor entrar em campo?", "Cold, hot or in the middle: how is it best to play?", "Frío, caliente o en el medio: ¿cómo es mejor jugar?"],
       opts: [
         ["No meio: ligado, mas calmo", "In the middle: awake, but calm", "En el medio: despierto, pero tranquilo"],
@@ -471,6 +489,15 @@ Object.assign(CQ_QUIZ, {
 
   menteLanterna: [
     {
+      story: { anim: "historia", id: "lanterna" },
+      q: ["Na hora do chute, pra onde vai a lanterna?", "When you shoot, where does the torch point?", "Al patear, ¿adónde apunta la linterna?"],
+      opts: [
+        ["🔦 Na bola e no gol", "🔦 At the ball and the goal", "🔦 Al balón y al arco"],
+        ["🐦 No passarinho", "🐦 At the bird", "🐦 Al pajarito"],
+      ],
+      why: ["Atenção é lanterna: na hora do chute, ilumina só a bola!", "Attention is a torch: when you shoot, light up only the ball!", "La atención es una linterna: ¡al patear, ilumina solo el balón!"],
+    },
+    {
       q: ["Sua atenção é uma lanterna. Bola no meio-campo: como ela fica?", "Your attention is a torch. Ball in midfield: how is it?", "Tu atención es una linterna. Balón en el medio: ¿cómo está?"],
       opts: [
         ["Aberta: vejo colegas, adversários e espaços", "Wide: I see teammates, opponents and space", "Abierta: veo compañeros, rivales y espacios"],
@@ -552,6 +579,15 @@ Object.assign(CQ_QUIZ, {
   ],
 
   menteMetas: [
+    {
+      story: { anim: "historia", id: "metas" },
+      q: ["Como chegar num sonho grande?", "How do you reach a big dream?", "¿Cómo llegar a un sueño grande?"],
+      opts: [
+        ["🪜 Um degrau de cada vez", "🪜 One step at a time", "🪜 Un escalón a la vez"],
+        ["🦘 Pulando direto lá pro alto", "🦘 Jumping straight to the top", "🦘 Saltando directo arriba"],
+      ],
+      why: ["Sonho grande, passos pequenos. Um de cada vez!", "Big dream, small steps. One at a time!", "Sueño grande, pasos pequeños. ¡Uno a la vez!"],
+    },
     {
       q: ["Qual destas metas depende só de você?", "Which of these goals depends only on you?", "¿Cuál de estas metas depende solo de ti?"],
       opts: [
@@ -636,6 +672,15 @@ Object.assign(CQ_QUIZ, {
 
   menteTime: [
     {
+      story: { anim: "historia", id: "timeunido" },
+      q: ["O que ajudou o amigo?", "What helped your friend?", "¿Qué ayudó al amigo?"],
+      opts: [
+        ["📣 Avisar: 'Ladrão!'", "📣 Shouting: 'Man on!'", "📣 Avisar: '¡Te marcan!'"],
+        ["🤐 Ficar quieto", "🤐 Staying quiet", "🤐 Quedarse callado"],
+      ],
+      why: ["Quem fala em campo ajuda o time todo!", "Talking on the pitch helps the whole team!", "¡Quien habla en la cancha ayuda a todo el equipo!"],
+    },
+    {
       q: ["Por que é importante falar com o time em campo?", "Why is it important to talk to your team on the pitch?", "¿Por qué es importante hablarle al equipo en la cancha?"],
       opts: [
         ["Ajuda o colega: 'ladrão!', 'vira!', 'sozinho!'", "It helps your teammate: 'man on!', 'turn!', 'you're free!'", "Ayuda al compañero: '¡ladrón!', '¡gira!', '¡solo!'"],
@@ -719,6 +764,15 @@ Object.assign(CQ_QUIZ, {
 
   mentePorque: [
     {
+      story: { anim: "historia", id: "porque" },
+      q: ["Por que a gente joga bola?", "Why do we play football?", "¿Por qué jugamos a la pelota?"],
+      opts: [
+        ["😄 Porque é divertido", "😄 Because it's fun", "😄 Porque es divertido"],
+        ["😰 Porque sou obrigado a ganhar", "😰 Because I have to win", "😰 Porque tengo que ganar"],
+      ],
+      why: ["Diversão é o combustível que nunca acaba!", "Fun is the fuel that never runs out!", "¡La diversión es el combustible que nunca se acaba!"],
+    },
+    {
       q: ["Qual é o melhor motivo para jogar futebol?", "What's the best reason to play football?", "¿Cuál es el mejor motivo para jugar al fútbol?"],
       opts: [
         ["Gostar de jogar e de ficar melhor", "Loving to play and getting better", "Disfrutar de jugar y de mejorar"],
@@ -800,6 +854,15 @@ Object.assign(CQ_QUIZ, {
   ],
 
   menteDescanso: [
+    {
+      story: { anim: "historia", id: "descanso" },
+      q: ["Amanhã tem jogo. O que fazer hoje à noite?", "Game tomorrow. What do you do tonight?", "Mañana hay partido. ¿Qué haces esta noche?"],
+      opts: [
+        ["😴 Dormir cedo", "😴 Go to bed early", "😴 Dormir temprano"],
+        ["📱 Ficar no celular até tarde", "📱 Stay on my phone until late", "📱 Quedarme con el celular hasta tarde"],
+      ],
+      why: ["Dormir bem também é treino!", "Sleeping well is training too!", "¡Dormir bien también es entrenar!"],
+    },
     {
       q: ["Quantas horas por noite uma criança que joga bola deve dormir?", "How many hours a night should a kid who plays football sleep?", "¿Cuántas horas por noche debe dormir un niño que juega al fútbol?"],
       opts: [
@@ -884,6 +947,15 @@ Object.assign(CQ_QUIZ, {
   ],
 
   menteLesao: [
+    {
+      story: { anim: "historia", id: "lesao" },
+      q: ["Sentiu dor no treino. O que fazer?", "You feel pain at training. What do you do?", "Sientes dolor en el entreno. ¿Qué haces?"],
+      opts: [
+        ["🙋 Paro e aviso um adulto", "🙋 Stop and tell an adult", "🙋 Paro y aviso a un adulto"],
+        ["😬 Escondo e continuo", "😬 Hide it and keep going", "😬 Lo escondo y sigo"],
+      ],
+      why: ["Dor é aviso do corpo. Cuidar é coisa de craque!", "Pain is your body's warning. Looking after it is what stars do!", "El dolor es un aviso del cuerpo. ¡Cuidarse es de cracks!"],
+    },
     {
       q: ["Você sente dor no treino. O que fazer?", "You feel pain at training. What do you do?", "Sientes dolor en el entreno. ¿Qué haces?"],
       opts: [

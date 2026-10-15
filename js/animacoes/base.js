@@ -44,6 +44,14 @@ const CQ_KIT_HELPER = {
   skin: "#e0ac69",
   hair: "#6b4226",
 };
+// The kid's own colours (shirt, skin, hair from the card) on the story hero, plus a teammate that looks different.
+function cqMeKits(me = {}) {
+  const shirt = me.shirt || CQ_KIT.shirt;
+  const dark = ["#111827", "#2563eb", "#1d4ed8"].includes(shirt);
+  const kit = { ...CQ_KIT, shirt, skin: me.skin || CQ_KIT.skin, hair: me.hair || CQ_KIT.hair, shorts: dark ? "#f8fafc" : "#111827" };
+  const light = ["#f6d3b3", "#d9a273", "#f1c27d"].includes(kit.skin);
+  return { me: kit, mate: { ...kit, skin: light ? "#8d5524" : "#f1c27d", hair: light ? "#1f1610" : "#6b3e1f" } };
+}
 
 function cqRegisterAnim(id, scene) {
   CQ_ANIMS[id] = scene;

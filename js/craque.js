@@ -258,6 +258,8 @@ const CQ_TEXT = {
     save: "Salvar resultado",
     start: "Iniciar",
     meetCrew: "Conheça a turma",
+    answer: "Responder ➜",
+    replay: "↺ Ver a historinha de novo",
     blokSwap: "🔀 TROCOU! 🔀",
     stop: "Parar",
     restart: "Recomeçar",
@@ -351,6 +353,8 @@ const CQ_TEXT = {
     save: "Save result",
     start: "Start",
     meetCrew: "Meet the crew",
+    answer: "Answer ➜",
+    replay: "↺ Watch the story again",
     blokSwap: "🔀 SWAP! 🔀",
     stop: "Stop",
     restart: "Restart",
@@ -444,6 +448,8 @@ const CQ_TEXT = {
     save: "Guardar resultado",
     start: "Iniciar",
     meetCrew: "Conoce a la pandilla",
+    answer: "Responder ➜",
+    replay: "↺ Ver la historia otra vez",
     blokSwap: "🔀 ¡CAMBIO! 🔀",
     stop: "Parar",
     restart: "Reiniciar",
@@ -1156,7 +1162,7 @@ function renderCraque() {
 
   function openMission(id) {
     const m = mission(id);
-    if (m.type === "quiz") return m.cast ? openCast(m) : openQuiz(m);
+    if (m.type === "quiz") return m.cast && (m.castFirst || !CQ_QUIZ[m.quiz].some((q) => q.story)) ? openCast(m) : openQuiz(m);
     const tx = t();
     if (m.type === "auto") {
       return openModal(`
@@ -2200,25 +2206,51 @@ function renderCraque() {
     });
   }
 
+  // A story question first plays its cartoon on its own; the question shows up only after it.
+  function openStory(m, q, onAnswer) {
+    const tx = t();
+    openModal(`
+      <h3>${m.icon} ${tr(m.title)}</h3>
+      <div class="cq-anim cq-story"></div>
+      <button type="button" class="cq-btn cq-story-go" data-answer hidden>${tx.answer}</button>`);
+    const box = dialog.querySelector(".cq-story");
+    const go = dialog.querySelector("[data-answer]");
+    go.addEventListener("click", onAnswer);
+    const l = look(state.player);
+    const me = { shirt: l.shirt, skin: l.skin, hair: l.hairColor };
+    Promise.all([cqLoadAnim("cabine"), cqLoadAnim(q.story.anim)]).then(([, scene]) => {
+      if (box.isConnected) stopAnim = scene(box, { label: tr(m.title), pick: tr, args: q.story, me, onEnd: () => { go.hidden = false; } });
+    }).catch((err) => {
+      console.warn("Craque:", err);
+      box.remove();
+      go.hidden = false;
+    });
+  }
+
   function openQuiz(m) {
     const tx = t();
-    const pool = [...CQ_QUIZ[m.quiz]].sort(() => Math.random() - 0.5).slice(0, 3);
+    const all = CQ_QUIZ[m.quiz];
+    const shuffled = (list) => [...list].sort(() => Math.random() - 0.5);
+    const pool = [...all.filter((q) => q.story), ...shuffled(all.filter((q) => !q.story))].slice(0, 3);
     let i = 0;
     let score = 0;
 
-    const step = () => {
+    const step = (watched) => {
       const q = pool[i];
-      const order = [0, 1, 2].sort(() => Math.random() - 0.5);
+      if (q.story && !watched) return openStory(m, q, () => step(true));
+      const order = shuffled(q.opts.map((_, o) => o));
       openModal(`
-        ${missionHeader(m)}
+        ${q.story ? `<h3>${m.icon} ${tr(m.title)}</h3>` : missionHeader(m)}
         <div class="cq-quiz">
           <small>${fill(tx.question, { i: i + 1, n: pool.length })}</small>
           <strong>${tr(q.q)}</strong>
           ${q.scene ? `<div class="cq-anim cq-board"></div>` : ""}
-          <div class="cq-opts">${order.map((o) => `<button type="button" data-opt="${o}">${tr(q.opts[o])}</button>`).join("")}</div>
+          <div class="cq-opts${q.story ? " is-big" : ""}">${order.map((o) => `<button type="button" data-opt="${o}">${tr(q.opts[o])}</button>`).join("")}</div>
+          ${q.story ? `<button type="button" class="cq-btn is-ghost" data-replay>${tx.replay}</button>` : ""}
           <p class="cq-why" hidden></p>
           <button type="button" class="cq-btn" data-next hidden>${i + 1 < pool.length ? tx.next : tx.finish}</button>
         </div>`);
+      dialog.querySelector("[data-replay]")?.addEventListener("click", () => step(false));
       if (q.scene) {
         const box = dialog.querySelector(".cq-board");
         cqLoadAnim(q.scene.anim || "quadro").then((scene) => {
@@ -2238,6 +2270,7 @@ function renderCraque() {
           if (x.dataset.opt === "0") x.classList.add("is-right");
         });
         if (!ok) b.classList.add("is-wrong");
+        dialog.querySelector("[data-replay]")?.remove();
         const why = dialog.querySelector(".cq-why");
         why.innerHTML = `<b>${ok ? tx.correct : tx.wrong}</b> ${tr(q.why)}`;
         why.hidden = false;

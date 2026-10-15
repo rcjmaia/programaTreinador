@@ -10,6 +10,7 @@ CQ_MISSIONS.push(
     desc: ["Na sua cabeça mora uma turma: Pulinho (alegria), Tremelique (medo), Faísca (raiva), Nublada (tristeza), Zum-Zum (preocupação), Sr. Sofá (preguiça) e Pavão (exibido). Quem manda é o Capitão Agora!", "A crew lives in your head: Bouncy (joy), Shaky (fear), Spark (anger), Cloudy (sadness), Buzz (worry), Mr. Couch (laziness) and Peacock (show-off). The boss is Captain Now!", "En tu cabeza vive una pandilla: Saltito (alegría), Tembleque (miedo), Chispa (rabia), Nublada (tristeza), Zum-Zum (preocupación), Sr. Sofá (pereza) y Pavo Real (presumido). ¡El jefe es el Capitán Ahora!"],
     unit: CQ_UNIT_HITS,
     // Shown before the questions: who is who in the crew (faces come from js/animacoes/cabine.js).
+    castFirst: true,
     cast: [
       { id: "capitao", emo: ["O comandante: a sua atenção", "The leader: your attention", "El comandante: tu atención"], line: ["Observa a turma toda, respira e escolhe a melhor jogada.", "Watches the whole crew, breathes and picks the best play.", "Observa a toda la pandilla, respira y elige la mejor jugada."] },
       { id: "pulinho", emo: ["Alegria", "Joy", "Alegría"], line: ["Comemora e dá energia. Se exagerar, você esquece de voltar para marcar.", "Celebrates and gives you energy. Too much, and you forget to track back.", "Celebra y da energía. Si exagera, te olvidas de volver a marcar."] },
@@ -189,6 +190,15 @@ CQ_MISSIONS.push(
 Object.assign(CQ_QUIZ, {
   menteTurma: [
     {
+      story: { anim: "historia", id: "turma" },
+      q: ["Fez gol! E depois?", "You scored! What next?", "¡Hiciste un gol! ¿Y después?"],
+      opts: [
+        ["🏃 Comemoro e volto pro jogo", "🏃 Celebrate and get back in the game", "🏃 Festejo y vuelvo al juego"],
+        ["🎉 Fico comemorando sem parar", "🎉 Keep celebrating non-stop", "🎉 Sigo festejando sin parar"],
+      ],
+      why: ["A alegria é ótima! E o Capitão lembra: o jogo continua.", "Joy is great! And the Captain reminds you: the game goes on.", "¡La alegría es genial! Y el Capitán recuerda: el partido sigue."],
+    },
+    {
       q: ["Quem deve mandar na sua cabeça durante o jogo?", "Who should be the boss of your head during the game?", "¿Quién debe mandar en tu cabeza durante el partido?"],
       opts: [
         ["O Capitão Agora, que decide com calma", "Captain Now, who decides calmly", "El Capitán Ahora, que decide con calma"],
@@ -296,6 +306,15 @@ Object.assign(CQ_QUIZ, {
 
   menteNuvens: [
     {
+      story: { anim: "historia", id: "nuvens" },
+      q: ["Veio um pensamento no meio do jogo. O que fazer?", "A thought pops up mid-game. What do you do?", "Llegó un pensamiento en medio del partido. ¿Qué haces?"],
+      opts: [
+        ["☁️ Deixo passar e volto pra bola", "☁️ Let it pass and get back to the ball", "☁️ Lo dejo pasar y vuelvo al balón"],
+        ["👀 Fico olhando a nuvem", "👀 Keep staring at the cloud", "👀 Me quedo mirando la nube"],
+      ],
+      why: ["Pensamento é nuvem: vem e vai. A bola fica!", "Thoughts are clouds: they come and go. The ball stays!", "El pensamiento es una nube: viene y va. ¡El balón se queda!"],
+    },
+    {
       q: ["Você pensa: 'eu sou ruim'. O que fazer?", "You think: 'I'm bad'. What do you do?", "Piensas: 'soy malo'. ¿Qué haces?"],
       opts: [
         ["Deixo passar, como uma nuvem no céu", "Let it pass, like a cloud in the sky", "Lo dejo pasar, como una nube en el cielo"],
@@ -387,6 +406,15 @@ Object.assign(CQ_QUIZ, {
 
   menteAgora: [
     {
+      story: { anim: "historia", id: "agora" },
+      q: ["Qual lance importa mais?", "Which play matters most?", "¿Qué jugada importa más?"],
+      opts: [
+        ["📍 O lance de agora", "📍 The play happening now", "📍 La jugada de ahora"],
+        ["⏪ O erro que já passou", "⏪ The mistake that's gone", "⏪ El error que ya pasó"],
+      ],
+      why: ["O erro já foi. O jogo acontece agora!", "The mistake is gone. The game happens now!", "El error ya pasó. ¡El partido es ahora!"],
+    },
+    {
       q: ["Qual jogada você pode jogar de verdade?", "Which play can you really play?", "¿Qué jugada puedes jugar de verdad?"],
       opts: [
         ["A de agora, esta aqui", "The one happening now, this one", "La de ahora, esta"],
@@ -468,6 +496,15 @@ Object.assign(CQ_QUIZ, {
   ],
 
   menteEstoico: [
+    {
+      story: { anim: "historia", id: "estoico" },
+      q: ["O juiz errou. O que você controla?", "The ref got it wrong. What do you control?", "El árbitro se equivocó. ¿Qué controlas tú?"],
+      opts: [
+        ["🛡️ A minha atitude", "🛡️ My attitude", "🛡️ Mi actitud"],
+        ["😡 A decisão do juiz", "😡 The ref's decision", "😡 La decisión del árbitro"],
+      ],
+      why: ["Juiz, chuva e torcida você não controla. Sua atitude, sim!", "You can't control the ref, the rain or the crowd. Your attitude, you can!", "Árbitro, lluvia e hinchada no los controlas. ¡Tu actitud, sí!"],
+    },
     {
       q: ["O que você controla num jogo?", "What do you control in a game?", "¿Qué controlas en un partido?"],
       opts: [
@@ -560,6 +597,15 @@ Object.assign(CQ_QUIZ, {
 
   menteSofa: [
     {
+      story: { anim: "historia", id: "sofa" },
+      q: ["Bateu a preguiça. Como vencer o Sr. Sofá?", "Feeling lazy. How do you beat Mr. Couch?", "Llegó la pereza. ¿Cómo vences al Sr. Sofá?"],
+      opts: [
+        ["⏱️ Começo com só 5 minutinhos", "⏱️ Start with just 5 minutes", "⏱️ Empiezo con solo 5 minutitos"],
+        ["🛋️ Espero a vontade chegar", "🛋️ Wait until I feel like it", "🛋️ Espero a que lleguen las ganas"],
+      ],
+      why: ["Depois que começa, fica fácil!", "Once you start, it gets easy!", "¡Después de empezar, es fácil!"],
+    },
+    {
       q: ["O Sr. Sofá diz: 'Treina amanhã'. O que você responde?", "Mr. Couch says: 'Train tomorrow'. What do you answer?", "El Sr. Sofá dice: 'Entrena mañana'. ¿Qué respondes?"],
       opts: [
         ["'Só 5 minutinhos agora!' e começo", "'Just 5 minutes now!' and start", "'¡Solo 5 minutitos ahora!' y empiezo"],
@@ -650,6 +696,15 @@ Object.assign(CQ_QUIZ, {
 
   menteVigia: [
     {
+      story: { anim: "historia", id: "vigia" },
+      q: ["O que você fala pra você mesmo?", "What do you tell yourself?", "¿Qué te dices a ti mismo?"],
+      opts: [
+        ["💪 Eu treinei, eu consigo!", "💪 I trained, I can do it!", "💪 ¡Entrené, yo puedo!"],
+        ["😨 Vou errar...", "😨 I'll mess up...", "😨 Voy a fallar..."],
+      ],
+      why: ["O que você pensa muda o que você faz!", "What you think changes what you do!", "¡Lo que piensas cambia lo que haces!"],
+    },
+    {
       q: ["Você pensa: 'eu nunca acerto o chute'. O que é melhor pensar?", "You think: 'I never hit a good shot'. What's better to think?", "Piensas: 'nunca acierto el tiro'. ¿Qué es mejor pensar?"],
       opts: [
         ["'Ainda não acerto, mas vou treinar'", "'I can't do it yet, but I'll practise'", "'Todavía no acierto, pero voy a entrenar'"],
@@ -732,6 +787,15 @@ Object.assign(CQ_QUIZ, {
   ],
 
   mentePavao: [
+    {
+      story: { anim: "hist-pavao" },
+      q: ["Qual jogada deu gol?", "Which play scored?", "¿Qué jugada hizo gol?"],
+      opts: [
+        ["🤝 Passar para o amigo", "🤝 Pass to my friend", "🤝 Pasar al amigo"],
+        ["🦚 Driblar todo mundo sozinho", "🦚 Dribble everyone alone", "🦚 Gambetear a todos solo"],
+      ],
+      why: ["Quem joga junto brilha mais ✨", "Playing together shines brighter ✨", "Quien juega en equipo brilla más ✨"],
+    },
     {
       q: ["O Pavão quer driblar todo mundo, mas um colega está livre. O que fazer?", "Peacock wants to dribble past everyone, but a teammate is free. What do you do?", "El Pavo Real quiere gambetear a todos, pero un compañero está libre. ¿Qué haces?"],
       opts: [
@@ -823,6 +887,15 @@ Object.assign(CQ_QUIZ, {
   ],
 
   menteMelhor: [
+    {
+      story: { anim: "historia", id: "melhor" },
+      q: ["Errou o chute. E agora?", "You missed the shot. Now what?", "Fallaste el tiro. ¿Y ahora?"],
+      opts: [
+        ["🔁 Tento de novo", "🔁 Try again", "🔁 Lo intento otra vez"],
+        ["😞 Desisto", "😞 Give up", "😞 Me rindo"],
+      ],
+      why: ["Errar faz parte. Quem tenta de novo melhora!", "Missing is part of it. Trying again makes you better!", "Fallar es parte. ¡Quien lo intenta otra vez mejora!"],
+    },
     {
       q: ["O que você controla: o placar ou o seu esforço?", "What do you control: the score or your effort?", "¿Qué controlas: el marcador o tu esfuerzo?"],
       opts: [
