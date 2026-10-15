@@ -258,8 +258,8 @@ const CQ_TEXT = {
     save: "Salvar resultado",
     start: "Iniciar",
     meetCrew: "Conheça a turma",
-    answer: "Responder ➜",
-    replay: "↺ Ver a historinha de novo",
+    decideAsk: "O que você faz?",
+    decideStep: "Lance {i} de {n}",
     blokSwap: "🔀 TROCOU! 🔀",
     stop: "Parar",
     restart: "Recomeçar",
@@ -353,8 +353,8 @@ const CQ_TEXT = {
     save: "Save result",
     start: "Start",
     meetCrew: "Meet the crew",
-    answer: "Answer ➜",
-    replay: "↺ Watch the story again",
+    decideAsk: "What do you do?",
+    decideStep: "Play {i} of {n}",
     blokSwap: "🔀 SWAP! 🔀",
     stop: "Stop",
     restart: "Restart",
@@ -448,8 +448,8 @@ const CQ_TEXT = {
     save: "Guardar resultado",
     start: "Iniciar",
     meetCrew: "Conoce a la pandilla",
-    answer: "Responder ➜",
-    replay: "↺ Ver la historia otra vez",
+    decideAsk: "¿Qué haces?",
+    decideStep: "Jugada {i} de {n}",
     blokSwap: "🔀 ¡CAMBIO! 🔀",
     stop: "Parar",
     restart: "Reiniciar",
@@ -1162,7 +1162,7 @@ function renderCraque() {
 
   function openMission(id) {
     const m = mission(id);
-    if (m.type === "quiz") return m.cast && (m.castFirst || !CQ_QUIZ[m.quiz].some((q) => q.story)) ? openCast(m) : openQuiz(m);
+    if (m.type === "quiz") return m.cast ? openCast(m) : m.decide ? openDecide(m) : openQuiz(m);
     const tx = t();
     if (m.type === "auto") {
       return openModal(`
@@ -2192,7 +2192,7 @@ function renderCraque() {
       <ul class="cq-cast"><li class="cq-loading">${tx.loading}</li></ul>
       ${m.castNote ? `<p class="cq-note">${tr(m.castNote)}</p>` : ""}
       <button type="button" class="cq-btn" data-quiz>${tx.start}</button>`);
-    dialog.querySelector("[data-quiz]").addEventListener("click", () => openQuiz(m));
+    dialog.querySelector("[data-quiz]").addEventListener("click", () => (m.decide ? openDecide(m) : openQuiz(m)));
     const list = dialog.querySelector(".cq-cast");
     // The faces and names live in the crew's animation file, loaded on demand.
     cqLoadAnim("cabine").then(() => {
@@ -2206,51 +2206,96 @@ function renderCraque() {
     });
   }
 
-  // A story question first plays its cartoon on its own; the question shows up only after it.
-  function openStory(m, q, onAnswer) {
+  // "Você decide": a game scene stops at the key moment, the kid picks what to do,
+  // then watches what that choice leads to. Best choice 2 points, so-so 1, bad 0.
+  function openDecide(m) {
     const tx = t();
-    openModal(`
-      <h3>${m.icon} ${tr(m.title)}</h3>
-      <div class="cq-anim cq-story"></div>
-      <button type="button" class="cq-btn cq-story-go" data-answer hidden>${tx.answer}</button>`);
-    const box = dialog.querySelector(".cq-story");
-    const go = dialog.querySelector("[data-answer]");
-    go.addEventListener("click", onAnswer);
-    const l = look(state.player);
+    const l = look(state.player || {});
     const me = { shirt: l.shirt, skin: l.skin, hair: l.hairColor };
-    Promise.all([cqLoadAnim("cabine"), cqLoadAnim(q.story.anim)]).then(([, scene]) => {
-      if (box.isConnected) stopAnim = scene(box, { label: tr(m.title), pick: tr, args: q.story, me, onEnd: () => { go.hidden = false; } });
+    const shuffled = (list) => [...list].sort(() => Math.random() - 0.5);
+    let i = 0;
+    let score = 0;
+
+    const play = (box, story, then, onEnd) => cqLoadAnim("historia").then((scene) => {
+      if (!box.isConnected) return;
+      endAnim();
+      stopAnim = scene(box, { label: tr(m.title), pick: tr, args: { story, then }, me, onEnd });
     }).catch((err) => {
       console.warn("Craque:", err);
       box.remove();
-      go.hidden = false;
+      onEnd();
     });
+
+    const step = () => {
+      const lance = m.decide[i];
+      const order = shuffled(lance.opts.map((_, o) => o));
+      openModal(`
+        <h3>${m.icon} ${tr(m.title)}</h3>
+        <small class="cq-decide-step">${fill(tx.decideStep, { i: i + 1, n: m.decide.length })} · ${score} ${tr(m.unit)}</small>
+        <p class="cq-decide-text">${tr(lance.text)}</p>
+        <div class="cq-anim cq-story"></div>
+        <div class="cq-decide-ask" hidden>
+          <strong>${tx.decideAsk}</strong>
+          <div class="cq-opts">${order.map((o) => `<button type="button" data-opt="${o}">${tr(lance.opts[o].text)}</button>`).join("")}</div>
+        </div>
+        <p class="cq-why" hidden></p>
+        <button type="button" class="cq-btn" data-next hidden>${i + 1 < m.decide.length ? tx.next : tx.finish}</button>`);
+      const box = dialog.querySelector(".cq-story");
+      const ask = dialog.querySelector(".cq-decide-ask");
+      const why = dialog.querySelector(".cq-why");
+      const next = dialog.querySelector("[data-next]");
+      let done = false;
+
+      const choose = (o) => {
+        if (done) return;
+        done = true;
+        const pick = lance.opts[o];
+        const pts = pick.pts;
+        score += pts;
+        dialog.querySelectorAll("[data-opt]").forEach((b) => { b.disabled = true; });
+        play(box, lance.scene, pick.scene, () => {
+          dialog.querySelectorAll("[data-opt]").forEach((b) => {
+            const p = lance.opts[b.dataset.opt].pts;
+            if (b.dataset.opt === String(o)) b.classList.add(p === 2 ? "is-right" : p === 1 ? "is-so" : "is-wrong");
+            else if (p === 2) b.classList.add("is-right");
+          });
+          why.innerHTML = `<span class="cq-pts p-${pts}">+${pts}</span> ${tr(pick.why)}`;
+          why.hidden = false;
+          next.hidden = false;
+        });
+      };
+
+      play(box, lance.scene, null, () => { ask.hidden = false; });
+      dialog.querySelectorAll("[data-opt]").forEach((b) => b.addEventListener("click", () => choose(+b.dataset.opt)));
+      next.addEventListener("click", () => {
+        i++;
+        if (i < m.decide.length) step();
+        else finishMission(m, score);
+      });
+    };
+    step();
   }
 
   function openQuiz(m) {
     const tx = t();
-    const all = CQ_QUIZ[m.quiz];
     const shuffled = (list) => [...list].sort(() => Math.random() - 0.5);
-    const pool = [...all.filter((q) => q.story), ...shuffled(all.filter((q) => !q.story))].slice(0, 3);
+    const pool = shuffled(CQ_QUIZ[m.quiz]).slice(0, 3);
     let i = 0;
     let score = 0;
 
-    const step = (watched) => {
+    const step = () => {
       const q = pool[i];
-      if (q.story && !watched) return openStory(m, q, () => step(true));
       const order = shuffled(q.opts.map((_, o) => o));
       openModal(`
-        ${q.story ? `<h3>${m.icon} ${tr(m.title)}</h3>` : missionHeader(m)}
+        ${missionHeader(m)}
         <div class="cq-quiz">
           <small>${fill(tx.question, { i: i + 1, n: pool.length })}</small>
           <strong>${tr(q.q)}</strong>
           ${q.scene ? `<div class="cq-anim cq-board"></div>` : ""}
-          <div class="cq-opts${q.story ? " is-big" : ""}">${order.map((o) => `<button type="button" data-opt="${o}">${tr(q.opts[o])}</button>`).join("")}</div>
-          ${q.story ? `<button type="button" class="cq-btn is-ghost" data-replay>${tx.replay}</button>` : ""}
+          <div class="cq-opts">${order.map((o) => `<button type="button" data-opt="${o}">${tr(q.opts[o])}</button>`).join("")}</div>
           <p class="cq-why" hidden></p>
           <button type="button" class="cq-btn" data-next hidden>${i + 1 < pool.length ? tx.next : tx.finish}</button>
         </div>`);
-      dialog.querySelector("[data-replay]")?.addEventListener("click", () => step(false));
       if (q.scene) {
         const box = dialog.querySelector(".cq-board");
         cqLoadAnim(q.scene.anim || "quadro").then((scene) => {
@@ -2270,7 +2315,6 @@ function renderCraque() {
           if (x.dataset.opt === "0") x.classList.add("is-right");
         });
         if (!ok) b.classList.add("is-wrong");
-        dialog.querySelector("[data-replay]")?.remove();
         const why = dialog.querySelector(".cq-why");
         why.innerHTML = `<b>${ok ? tx.correct : tx.wrong}</b> ${tr(q.why)}`;
         why.hidden = false;

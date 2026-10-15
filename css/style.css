@@ -3773,28 +3773,59 @@ body.cq-lock {
   color: var(--text);
 }
 
-.cq-story-go {
-  justify-self: center;
-  display: block;
-  margin: 0 auto;
-  font-size: 1.15rem;
-  padding: 14px 28px;
-  animation: cq-pulse 1.2s ease infinite;
+.cq-opts button.is-so {
+  border-color: #facc15;
+  background: rgba(250, 204, 21, 0.15);
 }
 
-@keyframes cq-pulse {
-  50% { transform: scale(1.06); }
+.cq-decide-step {
+  color: var(--muted);
 }
 
-.cq-story-go[hidden] {
+.cq-decide-text {
+  margin: 6px 0 10px;
+  line-height: 1.4;
+}
+
+.cq-decide-ask[hidden] {
   display: none;
 }
 
-.cq-opts.is-big button {
+.cq-decide-ask {
+  margin-top: 12px;
+}
+
+.cq-decide-ask .cq-opts {
+  margin-top: 10px;
+}
+
+.cq-decide-ask .cq-opts button {
+  text-align: left;
+  font-size: 1rem;
+  padding: 12px 14px;
+}
+
+.cq-pts {
+  display: inline-block;
+  min-width: 2.2em;
+  margin-right: 4px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-weight: 800;
   text-align: center;
-  font-size: 1.15rem;
-  font-weight: 700;
-  padding: 16px 14px;
+  color: #0b1324;
+}
+
+.cq-pts.p-2 {
+  background: #4ade80;
+}
+
+.cq-pts.p-1 {
+  background: #facc15;
+}
+
+.cq-pts.p-0 {
+  background: #f87171;
 }
 
 .cq-done {

@@ -1,21 +1,23 @@
-/* Historinhas da Turma da Cabeça: um desenho curto que toca antes da pergunta.
-   A pergunta aponta para o roteiro com story: { anim: "historia", id }. Precisa de cabine.js (carinhas da turma).
-   Toca uma vez, chama opts.onEnd e continua animando a última cena até a criança responder.
+/* Cenas do "Você decide" (js/missoes-decide.js): um lance de jogo que para no momento da decisão.
+   opts.args.story é o roteiro do lance; com opts.args.then, junta as cenas de then ao roteiro
+   e começa do fim do lance (a consequência da escolha). Toca uma vez, chama opts.onEnd e segue animando a última cena.
 
-   Roteiro (CQ_STORIES[id]):
-     bg       "pitch" | "room" | "night"
-     props    objetos visíveis no início: goal, goalL, crowd, sofa, bed, stairs, bird, spot, zzz, phone, ice
-     cast     { ator: { kit, x, dir, pose, lift, hide } }; "me" é a criança e veste a camisa da carta dela
+   Roteiro:
+     bg       "pitch" | "stadium" | "room" | "night"
+     hud      { score: [nós, eles], min } liga o placar (min número vira 70'; texto aparece como está)
+     props    objetos visíveis no início: goal, goalL, crowd, sofa, bed, stairs, bird, spot, zzz, phone, ice, card, rain,
+              icon: [emoji, x, y] ou [emoji, ator] (o emoji flutua sobre a cabeça do ator)
+     cast     { ator: { kit, x, dir, pose, lift, hide } }; "me" é a criança e veste a camisa da carta dela.
+              kits: me, mate, rival, keeper, ref, coach (outros atores podem repetir um kit: rival2: { kit: "rival" })
      ball     dono | [x, y] | null
      beats    [{ d, cap, think: [carinha, texto, ator] | null, say: [ator, texto], big, bigAt, bigFor,
-                 fx: "rewind" | "cut", sparks, bg, props, clouds: [texto, ...],
+                 fx: "rewind" | "cut", sparks, bg, props, score, clouds: [texto, ...],
                  a: { ator: { x, dir, pose, lift, hop, glide, hide, t0, t1 } },
                  ball: { to: ator | "goal" | "goalL" | "over" | "wide" | [x, y], h, t0, t1 } | { give: ator, t0 } | { juggle: ator } }]
-   Textos são [pt, en, es]. cap, think, bg, props e sparks continuam valendo nas cenas seguintes.
-   "rewind" volta tudo ao começo (com o ⏪); "cut" pula direto para a nova posição (troca de cena). */
+   O chão fica em y 140. Textos são [pt, en, es]. cap, think, bg, props, sparks e score continuam valendo nas cenas seguintes.
+   "rewind" volta tudo ao começo (com o ⏪); "cut" pula direto para a nova posição (troca de cena).
+   props.card mostra o cartão amarelo na mão do juiz (pose "card"). think precisa de cabine.js (carinhas da turma). */
 
-const CQS_GOAL = ["GOOOL!", "GOAL!", "¡GOOOL!"];
-const CQS_OOPS = "😬";
 const CQS_JUMP = { ...CQ_POSE.air, legF: [-20, 40], legB: [10, 40] };
 const CQS_POSES = {
   sad: { ...CQ_POSE.stand, lean: 14, armF: [4, 0], armB: [-4, 0] },
@@ -25,316 +27,17 @@ const CQS_POSES = {
   think: { ...CQ_POSE.stand, lean: -10, armF: [-30, -130], armB: [6, -10] },
   lie: CQ_POSE.lieBack,
   juggleUp: { ...CQ_POSE.stand, legF: [-60, 30], armF: [-30, -20], armB: [30, -20] },
-};
-
-// Beats that repeat across the stories.
-const cqsRun = (who, x, d = 1.2, more = {}) => ({ d, a: { [who]: { x, ...more } } });
-const cqsShoot = (who = "me", more = {}) => ({
-  d: 1, big: CQS_GOAL, bigAt: 0.85, ...more,
-  a: { [who]: { pose: "kick", t1: 0.35 }, ...(more.a || {}) },
-  ball: { to: "goal", h: 12, t0: 0.3, t1: 0.85 },
-});
-const cqsMiss = (who = "me", to = "over", more = {}) => ({
-  d: 1, big: CQS_OOPS, bigAt: 0.8, ...more,
-  a: { [who]: { pose: "kick", t1: 0.35 }, ...(more.a || {}) },
-  ball: { to, h: 30, t0: 0.3, t1: 0.9 },
-});
-const cqsParty = (text, cap, who = ["me"], more = {}) => ({
-  d: 2.6, sparks: true, think: text ? ["pulinho", text] : null, cap, ...more,
-  a: { ...Object.fromEntries(who.map((id) => [id, { pose: "cheer" }])), ...(more.a || {}) },
-});
-const cqsRewind = { d: 1.1, fx: "rewind" };
-
-const CQ_STORIES = {
-  // A alegria é ótima, mas o jogo continua.
-  turma: {
-    props: { goal: true, goalL: true },
-    cast: { rival: { kit: "rival", x: 210, dir: -1, pose: "ready" }, me: { x: 110 } },
-    ball: "me",
-    beats: [
-      { ...cqsRun("me", 245, 1.4), cap: ["⚽ Você vai pro gol!", "⚽ You go for goal!", "⚽ ¡Vas al arco!"] },
-      cqsShoot(),
-      { d: 1.8, sparks: true, think: ["pulinho", ["Uhuuu! Vou comemorar muito!", "Woohoo! Let's party!", "¡Uhuuu! ¡A festejar mucho!"]], cap: ["😄 O Pulinho tomou conta...", "😄 Bouncy took over...", "😄 Saltito tomó el mando..."], a: { me: { pose: "cheer" } } },
-      { d: 1, cap: ["⚽ Mas o jogo continuou...", "⚽ But the game went on...", "⚽ Pero el partido siguió..."], ball: { to: [160, CQ_GROUND - 5], t1: 0.01 }, a: { rival: { x: 172 } } },
-      { d: 1.2, ball: { give: "rival" }, a: { rival: { x: 70 } } },
-      { ...cqsShoot("rival"), ball: { to: "goalL", h: 10, t0: 0.3, t1: 0.85 }, big: ["Gol deles! 😱", "Their goal! 😱", "¡Gol de ellos! 😱"], sparks: false, think: null },
-      cqsRewind,
-      { ...cqsRun("me", 245, 1.1), cap: ["⚽ Você vai pro gol!", "⚽ You go for goal!", "⚽ ¡Vas al arco!"] },
-      cqsShoot(),
-      { d: 1.1, sparks: true, think: ["pulinho", ["Uhuuu!", "Woohoo!", "¡Uhuuu!"]], a: { me: { pose: "cheer" } } },
-      { d: 1.8, sparks: false, think: ["capitao", ["Comemora e volta pro jogo!", "Celebrate, then get back!", "¡Festeja y vuelve al juego!"]], cap: ["⭐ O Capitão lembra: o jogo continua", "⭐ The Captain says: the game goes on", "⭐ El Capitán dice: el partido sigue"], ball: { to: [160, CQ_GROUND - 5], t1: 0.01 }, a: { me: { x: 92, dir: -1, t0: 0.2 }, rival: { x: 172 } } },
-      { d: 1.1, ball: { give: "rival", t0: 0 }, a: { rival: { x: 142 }, me: { dir: 1, pose: "ready" } } },
-      { d: 0.8, ball: { give: "me", t0: 0.4 }, big: "💪", a: { rival: { pose: "sad", t0: 0.4 } } },
-      { ...cqsRun("me", 230, 1.3), think: null },
-      cqsParty(["Comemorei e voltei!", "Celebrated and came back!", "¡Festejé y volví!"], ["🎉 Alegria com atenção!", "🎉 Joy with focus!", "🎉 ¡Alegría con atención!"]),
-    ],
-  },
-
-  // Pensamentos são nuvens: deixa passar e volta para a bola.
-  nuvens: {
-    props: { goal: true },
-    cast: { mate: { kit: "mate", x: 40 }, me: { x: 150, pose: "ready" } },
-    ball: "mate",
-    beats: [
-      { d: 1.4, cap: ["⚽ O amigo vai passar pra você", "⚽ Your friend will pass to you", "⚽ El amigo te va a pasar"] },
-      { d: 2.6, cap: ["☁️ Chegaram os pensamentos...", "☁️ Here come the thoughts...", "☁️ Llegaron los pensamientos..."], think: ["zumzum", ["Olha quanta nuvem!", "Look at all the clouds!", "¡Mira cuántas nubes!"]], clouds: [["e o lanche? 🍕", "snack time? 🍕", "¿y la merienda? 🍕"], ["e se eu errar? 😟", "what if I miss? 😟", "¿y si fallo? 😟"], ["videogame 🎮", "video games 🎮", "videojuegos 🎮"]], a: { me: { pose: "think" } } },
-      { d: 1.4, cap: ["😕 A bola passou...", "😕 The ball went by...", "😕 El balón pasó..."], a: { mate: { pose: "kick", t1: 0.35 } }, ball: { to: [340, CQ_GROUND - 5], t0: 0.3, t1: 1 } },
-      cqsRewind,
-      { d: 2.2, cap: ["⭐ Deixa a nuvem passar...", "⭐ Let the cloud go by...", "⭐ Deja pasar la nube..."], think: ["capitao", ["Nuvem passou. Volta pra bola!", "Cloud's gone. Back to the ball!", "Pasó la nube. ¡Vuelve al balón!"]], clouds: [["e o lanche? 🍕", "snack time? 🍕", "¿y la merienda? 🍕"], ["e se eu errar? 😟", "what if I miss? 😟", "¿y si fallo? 😟"]] },
-      { d: 1.1, a: { mate: { pose: "kick", t1: 0.35 } }, ball: { to: "me", h: 6, t0: 0.3, t1: 0.95 } },
-      { ...cqsRun("me", 245, 1.2), think: null },
-      cqsShoot(),
-      cqsParty(["Gol!", "Goal!", "¡Gol!"], ["🎉 Atenção na bola = gol!", "🎉 Eyes on the ball = goal!", "🎉 ¡Atención en el balón = gol!"], ["me", "mate"]),
-    ],
-  },
-
-  // O erro já passou: o jogo é agora.
-  agora: {
-    props: { goal: true },
-    cast: { rival: { kit: "rival", x: 270, dir: -1 }, me: { x: 120, pose: "sad" } },
-    ball: "rival",
-    beats: [
-      { d: 1.6, cap: ["😢 Você errou um passe...", "😢 You missed a pass...", "😢 Fallaste un pase..."], think: ["nublada", ["Errei... que vergonha...", "I messed up... so embarrassing...", "Fallé... qué vergüenza..."]] },
-      { ...cqsRun("rival", 20, 2.2), cap: ["😕 Ficou no erro... e o adversário passou", "😕 Stuck on the mistake... and he got past", "😕 Te quedaste en el error... y el rival pasó"] },
-      cqsRewind,
-      { d: 1.4, cap: ["😢 Você errou um passe...", "😢 You missed a pass...", "😢 Fallaste un pase..."], think: ["nublada", ["Errei...", "I messed up...", "Fallé..."]] },
-      { d: 1.8, cap: ["📍 O jogo é agora!", "📍 The game is now!", "📍 ¡El partido es ahora!"], think: ["capitao", ["Já passou! Agora é ESTE lance!", "It's gone! THIS play matters!", "¡Ya pasó! ¡Ahora es ESTA jugada!"]], a: { me: { pose: "ready" } } },
-      { ...cqsRun("rival", 162, 1.2), think: null },
-      { d: 0.8, ball: { give: "me", t0: 0.4 }, big: "💪", a: { rival: { pose: "sad", t0: 0.4 } } },
-      cqsRun("me", 245, 1.3),
-      cqsShoot(),
-      cqsParty(["Esse lance foi meu!", "That play was mine!", "¡Esa jugada fue mía!"], ["🎉 Cabeça no agora!", "🎉 Mind on the now!", "🎉 ¡Cabeza en el ahora!"]),
-    ],
-  },
-
-  // O juiz você não controla. A sua atitude, sim.
-  estoico: {
-    props: { goal: true, crowd: true },
-    cast: { ref: { kit: "ref", x: 240, dir: -1 }, rival: { kit: "rival", x: 180, dir: -1, pose: "ready" }, me: { x: 110 } },
-    ball: "me",
-    beats: [
-      { ...cqsRun("me", 160, 1.1), cap: ["⚽ Você disputou a bola...", "⚽ You went for the ball...", "⚽ Disputaste el balón..."] },
-      { d: 1.4, big: ["🎵 FALTA!", "🎵 FOUL!", "🎵 ¡FALTA!"], bigFor: 1.2, cap: ["😤 O juiz errou: marcou falta!", "😤 The ref got it wrong: foul!", "😤 El árbitro se equivocó: ¡falta!"], a: { rival: { pose: "sit" }, ref: { pose: "shout" }, me: { pose: "stand" } }, ball: { to: [172, CQ_GROUND - 5], h: 0, t1: 0.3 } },
-      { d: 2.2, think: ["faisca", ["Juiz ladrão! Não foi nada!", "Bad ref! That was nothing!", "¡Árbitro ladrón! ¡No fue nada!"]], cap: ["😡 A Faísca tomou conta...", "😡 Spark took over...", "😡 Chispa tomó el mando..."], a: { me: { x: 205, pose: "argue" } } },
-      { d: 1.6, big: "🟨", bigFor: 1.5, cap: ["🟨 Cartão amarelo...", "🟨 Yellow card...", "🟨 Tarjeta amarilla..."], a: { ref: { pose: "shout" } } },
-      cqsRewind,
-      { ...cqsRun("me", 160, 1.1), cap: ["⚽ Você disputou a bola...", "⚽ You went for the ball...", "⚽ Disputaste el balón..."] },
-      { d: 1.4, big: ["🎵 FALTA!", "🎵 FOUL!", "🎵 ¡FALTA!"], bigFor: 1.2, cap: ["😤 O juiz errou: marcou falta!", "😤 The ref got it wrong: foul!", "😤 El árbitro se equivocó: ¡falta!"], a: { rival: { pose: "sit" }, ref: { pose: "shout" }, me: { pose: "stand" } }, ball: { to: [172, CQ_GROUND - 5], h: 0, t1: 0.3 } },
-      { d: 2, think: ["capitao", ["Não depende de mim. Próximo lance!", "Not up to me. Next play!", "No depende de mí. ¡Próxima jugada!"]], cap: ["🛡️ Escudo da calma", "🛡️ The calm shield", "🛡️ Escudo de la calma"], a: { me: { x: 90, dir: -1 }, ref: { pose: "stand" } } },
-      { d: 1.4, think: null, ball: { give: "rival" }, a: { me: { dir: 1, pose: "ready" }, rival: { pose: "stand", x: 140 } } },
-      { d: 0.8, ball: { give: "me", t0: 0.4 }, big: "💪", a: { rival: { pose: "sad", t0: 0.4 } } },
-      cqsParty(["Boa! Cabeça fria!", "Nice! Cool head!", "¡Bien! ¡Cabeza fría!"], ["🎉 Cuidou só do que é seu!", "🎉 You handled your part!", "🎉 ¡Cuidaste solo lo tuyo!"]),
-    ],
-  },
-
-  // Vencendo a preguiça: só 5 minutinhos.
-  sofa: {
-    bg: "room",
-    props: { sofa: true },
-    cast: { me: { x: 100, pose: "lie", lift: 16 } },
-    ball: [262, CQ_GROUND - 5],
-    beats: [
-      { d: 2, cap: ["🛋️ Hora de treinar...", "🛋️ Time to train...", "🛋️ Hora de entrenar..."], think: ["sofa", ["Ahhh... depois eu treino...", "Ahhh... I'll train later...", "Ahhh... después entreno..."]] },
-      { d: 2.4, cap: ["😴 O Sr. Sofá venceu...", "😴 Mr. Couch won...", "😴 Ganó el Sr. Sofá..."], think: null, props: { zzz: true } },
-      cqsRewind,
-      { d: 1.4, cap: ["🛋️ Hora de treinar...", "🛋️ Time to train...", "🛋️ Hora de entrenar..."], think: ["sofa", ["Ahhh... depois...", "Ahhh... later...", "Ahhh... después..."]] },
-      { d: 2, cap: ["⭐ Só 5 minutinhos!", "⭐ Just 5 minutes!", "⭐ ¡Solo 5 minutitos!"], think: ["capitao", ["Só 5 minutinhos. Bora?", "Just 5 minutes. Let's go?", "Solo 5 minutitos. ¿Vamos?"]], a: { me: { pose: "sit" } } },
-      { ...cqsRun("me", 242, 1.4, { lift: 0, t0: 0.1 }), think: null },
-      { d: 3, sparks: true, cap: ["⚽ Começou... e ficou fácil!", "⚽ Once you start, it's easy!", "⚽ ¡Empezaste... y fue fácil!"], think: ["pulinho", ["Olha eu na embaixadinha!", "Look at my keepy-ups!", "¡Mírame hacer jueguitos!"]], ball: { juggle: "me" }, a: { me: { pose: "juggle" } } },
-    ],
-  },
-
-  // O que você fala para você mesmo muda o seu jogo.
-  vigia: {
-    props: { goal: true, crowd: true },
-    cast: { rival: { kit: "rival", x: 205, dir: -1, pose: "ready" }, mate: { kit: "mate", x: 50 }, me: { x: 150, dir: -1 } },
-    ball: "mate",
-    beats: [
-      { d: 2.2, cap: ["😨 O Tremelique tomou conta...", "😨 Shaky took over...", "😨 Tembleque tomó el mando..."], think: ["tremelique", ["Vou errar... nem quero a bola...", "I'll mess up... I don't want the ball...", "Voy a fallar... no quiero el balón..."]], a: { me: { x: 222, dir: 1, pose: "sad" } } },
-      { d: 1.8, big: "🤷", cap: ["🤷 Ninguém pediu a bola...", "🤷 Nobody asked for the ball...", "🤷 Nadie pidió el balón..."], a: { mate: { pose: "think" } } },
-      cqsRewind,
-      { d: 1.4, cap: ["😨 Bateu o medo...", "😨 Fear kicked in...", "😨 Llegó el miedo..."], think: ["tremelique", ["Vou errar...", "I'll mess up...", "Voy a fallar..."]] },
-      { d: 2.2, cap: ["🔦 Troca o pensamento!", "🔦 Swap the thought!", "🔦 ¡Cambia el pensamiento!"], think: ["capitao", ["Eu treinei. Eu consigo!", "I trained. I can do it!", "Entrené. ¡Yo puedo!"]], a: { me: { pose: "wave" } } },
-      { d: 1.1, think: null, a: { mate: { pose: "kick", t1: 0.35 } }, ball: { to: "me", h: 8, t0: 0.3, t1: 0.95 } },
-      { d: 0.4, a: { me: { dir: 1, pose: "stand" } } },
-      { d: 1.2, a: { me: { x: 248 }, rival: { pose: "sad", t0: 0.5 } } },
-      cqsShoot(),
-      cqsParty(["Eu consigo!", "I can do it!", "¡Yo puedo!"], ["🎉 Pensou forte, jogou forte!", "🎉 Strong thoughts, strong play!", "🎉 ¡Pensó fuerte, jugó fuerte!"], ["me", "mate"]),
-    ],
-  },
-
-  // Errar faz parte: o que importa é tentar de novo.
-  melhor: {
-    props: { goal: true },
-    cast: { me: { x: 200 } },
-    ball: "me",
-    beats: [
-      { ...cqsMiss("me", "wide"), cap: ["⚽ Chutou... e errou!", "⚽ Shot... and missed!", "⚽ Pateó... ¡y falló!"] },
-      { d: 2.4, cap: ["😢 Desistiu...", "😢 Gave up...", "😢 Se rindió..."], think: ["nublada", ["Errei... não sirvo pra isso...", "I missed... I'm no good...", "Fallé... no sirvo para esto..."]], a: { me: { pose: "sit" } } },
-      cqsRewind,
-      { ...cqsMiss("me", "wide"), cap: ["⚽ Chutou... e errou!", "⚽ Shot... and missed!", "⚽ Pateó... ¡y falló!"] },
-      { d: 1.4, think: ["nublada", ["Errei...", "I missed...", "Fallé..."]], a: { me: { pose: "sad" } } },
-      { d: 2, cap: ["🔁 Tenta de novo!", "🔁 Try again!", "🔁 ¡Intenta otra vez!"], think: ["capitao", ["Errar faz parte. De novo!", "Missing is normal. Again!", "Fallar es normal. ¡Otra vez!"]], ball: { to: "me", h: 50, t0: 0.4, t1: 1 }, a: { me: { pose: "ready" } } },
-      { ...cqsShoot(), think: null },
-      cqsParty(["Consegui!", "I did it!", "¡Lo logré!"], ["🎉 Quem tenta de novo melhora!", "🎉 Trying again makes you better!", "🎉 ¡Quien lo intenta otra vez mejora!"]),
-    ],
-  },
-
-  // Rotina: sempre os mesmos passos antes do lance.
-  rotina: {
-    props: { goal: true, crowd: true },
-    cast: { keeper: { kit: "keeper", x: 290, dir: -1, pose: "ready" }, me: { x: 150 } },
-    ball: [215, CQ_GROUND - 5],
-    beats: [
-      { d: 1.8, cap: ["⚽ Pênalti!", "⚽ Penalty!", "⚽ ¡Penal!"], think: ["tremelique", ["Todo mundo olhando...", "Everyone's watching...", "Todos mirando..."]] },
-      { ...cqsRun("me", 199, 0.6), cap: ["😰 Chutou correndo, sem pensar...", "😰 Rushed the kick...", "😰 Pateó apurado, sin pensar..."], think: null },
-      cqsMiss("me", "over"),
-      cqsRewind,
-      { ...cqsRun("me", 204, 1.4, { pose: "bend" }), cap: ["1️⃣ Bola no lugar", "1️⃣ Ball in place", "1️⃣ Balón en su lugar"], think: ["capitao", ["Meus passos de sempre.", "My usual steps.", "Mis pasos de siempre."]] },
-      { d: 1.4, cap: ["2️⃣ Olho o canto 👀", "2️⃣ Pick the corner 👀", "2️⃣ Miro el rincón 👀"], a: { me: { x: 172, pose: "stand", glide: true } } },
-      { d: 1.4, cap: ["3️⃣ Respiro fundo", "3️⃣ Deep breath", "3️⃣ Respiro hondo"], big: "🌬️", bigFor: 1.2, think: null },
-      cqsRun("me", 199, 0.6),
-      cqsShoot("me", { a: { keeper: { pose: "air", lift: 16, t0: 0.4 } } }),
-      cqsParty(["Gooool!", "Goooal!", "¡Gooool!"], ["🎉 Os mesmos passos acalmam!", "🎉 Same steps, calm head!", "🎉 ¡Los mismos pasos calman!"], ["me"], { a: { keeper: { pose: "sit", lift: 0 } } }),
-    ],
-  },
-
-  // Termômetro: nem frio, nem fervendo, ligado e calmo.
-  termometro: {
-    props: { goal: true },
-    cast: { rival: { kit: "rival", x: 270, dir: -1 }, me: { x: 60, pose: "ready" } },
-    ball: "rival",
-    beats: [
-      { d: 1.8, cap: ["🔥 Termômetro fervendo...", "🔥 Thermometer boiling...", "🔥 Termómetro hirviendo..."], think: ["faisca", ["Vou com tudo em todo mundo!", "I'm going all-in on everyone!", "¡Voy con todo contra todos!"]], a: { me: { pose: "argue" } } },
-      { d: 1, a: { rival: { x: 175 }, me: { x: 140 } } },
-      { d: 0.9, big: ["🎵 FALTA!", "🎵 FOUL!", "🎵 ¡FALTA!"], bigAt: 0.5, bigFor: 1.4, cap: ["😬 Entrou com tudo... falta!", "😬 Went in too hard... foul!", "😬 Entró con todo... ¡falta!"], a: { me: { x: 165, pose: "slide", glide: true }, rival: { pose: "sit", t0: 0.5 } }, ball: { to: [200, CQ_GROUND - 5], t0: 0.5, t1: 1 } },
-      { d: 1.4, big: "🟨", bigFor: 1.3, think: null },
-      cqsRewind,
-      { d: 2, cap: ["🌡️ Ligado e calmo", "🌡️ Switched on and calm", "🌡️ Activo y tranquilo"], think: ["capitao", ["Ligado e calmo. Espera a hora certa.", "On and calm. Wait for the moment.", "Activo y tranquilo. Espera el momento."]] },
-      { d: 1, think: null, a: { rival: { x: 175 }, me: { x: 140 } } },
-      { d: 0.9, ball: { give: "me", t0: 0.45 }, big: "💪", bigAt: 0.45, a: { rival: { pose: "sad", t0: 0.45 } } },
-      cqsRun("me", 245, 1.3),
-      cqsShoot(),
-      cqsParty(["Na medida certa!", "Just right!", "¡En su punto!"], ["🎉 Ligado e calmo joga melhor!", "🎉 On and calm plays better!", "🎉 ¡Activo y tranquilo juega mejor!"]),
-    ],
-  },
-
-  // A atenção é uma lanterna: na hora do chute, só a bola.
-  lanterna: {
-    props: { goal: true, crowd: true },
-    cast: { keeper: { kit: "keeper", x: 290, dir: -1, pose: "ready" }, me: { x: 130 } },
-    ball: "me",
-    beats: [
-      { ...cqsRun("me", 205, 1.2), cap: ["⚽ Hora de chutar!", "⚽ Time to shoot!", "⚽ ¡Hora de patear!"] },
-      { d: 2.2, props: { bird: true }, cap: ["🐦 Uma distração...", "🐦 A distraction...", "🐦 Una distracción..."], think: ["zumzum", ["Olha o passarinho!", "Look, a bird!", "¡Mira el pajarito!"]], a: { me: { pose: "think" } } },
-      { ...cqsMiss("me", "wide"), cap: ["😕 Chutou sem olhar...", "😕 Shot without looking...", "😕 Pateó sin mirar..."], think: null },
-      cqsRewind,
-      { ...cqsRun("me", 205, 1.2), cap: ["⚽ Hora de chutar!", "⚽ Time to shoot!", "⚽ ¡Hora de patear!"] },
-      { d: 1.2, props: { bird: true }, think: ["zumzum", ["Olha o passarinho!", "Look, a bird!", "¡Mira el pajarito!"]] },
-      { d: 2, props: { spot: true }, cap: ["🔦 Lanterna só na bola", "🔦 Torch on the ball only", "🔦 Linterna solo en el balón"], think: ["capitao", ["Lanterna na bola!", "Torch on the ball!", "¡Linterna en el balón!"]], a: { me: { pose: "ready" } } },
-      cqsShoot("me", { think: null, a: { keeper: { pose: "air", lift: 16, t0: 0.4 } } }),
-      cqsParty(["Gol!", "Goal!", "¡Gol!"], ["🎉 Atenção na bola = gol!", "🎉 Eyes on the ball = goal!", "🎉 ¡Atención en el balón = gol!"], ["me"], { props: { spot: false, bird: false }, a: { keeper: { pose: "sit", lift: 0 } } }),
-    ],
-  },
-
-  // Sonho grande, degrau pequeno.
-  metas: {
-    props: { stairs: true },
-    cast: { me: { x: 110 } },
-    ball: null,
-    beats: [
-      { d: 2, cap: ["🏆 Um sonho bem grande!", "🏆 A really big dream!", "🏆 ¡Un sueño bien grande!"], think: ["pulinho", ["Quero jogar na seleção!", "I want to play for my country!", "¡Quiero jugar en la selección!"]] },
-      { d: 1.2, think: null, cap: ["🦘 Pulou direto pro alto...", "🦘 Jumped straight to the top...", "🦘 Saltó directo arriba..."], a: { me: { x: 180, hop: 50, pose: "stand" } } },
-      { d: 1.6, big: "💥", cap: ["😵 ...e caiu!", "😵 ...and fell!", "😵 ...¡y se cayó!"], a: { me: { pose: "sit" } } },
-      cqsRewind,
-      { d: 2, cap: ["🪜 Um degrau de cada vez", "🪜 One step at a time", "🪜 Un escalón a la vez"], think: ["capitao", ["Sonho grande, degrau pequeno!", "Big dream, small step!", "¡Sueño grande, escalón pequeño!"]] },
-      { d: 1.3, think: null, cap: ["1️⃣ Treinar toda semana", "1️⃣ Train every week", "1️⃣ Entrenar cada semana"], a: { me: { x: 205, lift: 12, hop: 14, t0: 0.15, t1: 0.75 } } },
-      { d: 1.3, cap: ["2️⃣ 20 embaixadinhas", "2️⃣ 20 keepy-ups", "2️⃣ 20 jueguitos"], a: { me: { x: 235, lift: 24, hop: 14, t0: 0.15, t1: 0.75 } } },
-      { d: 1.3, cap: ["3️⃣ Jogar no time", "3️⃣ Make the team", "3️⃣ Jugar en el equipo"], a: { me: { x: 265, lift: 36, hop: 14, t0: 0.15, t1: 0.75 } } },
-      { d: 1.2, a: { me: { x: 292, lift: 48, hop: 14, t0: 0.15, t1: 0.75 } } },
-      { d: 2.4, sparks: true, cap: ["🏆 Chegou lá, degrau por degrau!", "🏆 Got there, step by step!", "🏆 ¡Llegó, escalón por escalón!"], a: { me: { pose: "cheer" } } },
-    ],
-  },
-
-  // Quem fala em campo ajuda o time.
-  timeunido: {
-    props: { goal: true },
-    cast: { rival: { kit: "rival", x: 300, dir: -1 }, mate: { kit: "mate", x: 170, dir: -1 }, me: { x: 60 } },
-    ball: "mate",
-    beats: [
-      { ...cqsRun("rival", 235, 1.4), cap: ["👀 O amigo está de costas...", "👀 Your friend has his back turned...", "👀 El amigo está de espaldas..."] },
-      { d: 1.6, cap: ["🤐 Ninguém avisou...", "🤐 Nobody warned him...", "🤐 Nadie le avisó..."], ball: { give: "rival", t0: 0.75 }, a: { rival: { x: 190, dir: -1 }, mate: { pose: "sad", t0: 0.75 } } },
-      { ...cqsRun("rival", 340, 1.4, { dir: 1 }), cap: ["😕 Perdeu a bola...", "😕 Lost the ball...", "😕 Perdió el balón..."] },
-      cqsRewind,
-      { ...cqsRun("rival", 235, 1.4), think: ["capitao", ["Avisa o amigo!", "Warn your friend!", "¡Avisa al amigo!"]], cap: ["👀 O amigo está de costas...", "👀 Your friend has his back turned...", "👀 El amigo está de espaldas..."] },
-      { d: 1.5, think: null, say: ["me", ["LADRÃO! 📣", "MAN ON! 📣", "¡TE MARCAN! 📣"]], cap: ["📣 Você avisou!", "📣 You warned him!", "📣 ¡Le avisaste!"], a: { me: { pose: "shout" } } },
-      { d: 1.1, a: { mate: { pose: "kick", t1: 0.35 }, rival: { x: 195, t0: 0.3 }, me: { pose: "stand" } }, ball: { to: "me", h: 8, t0: 0.3, t1: 0.95 } },
-      cqsParty(["Time unido!", "United team!", "¡Equipo unido!"], ["🤝 Juntos, ninguém perde a bola!", "🤝 Together, nobody loses the ball!", "🤝 ¡Juntos, nadie pierde el balón!"], ["me", "mate"], { a: { me: { pose: "cheer" }, mate: { pose: "cheer" }, rival: { pose: "sad" } } }),
-    ],
-  },
-
-  // A gente joga porque é divertido.
-  porque: {
-    props: {},
-    cast: { mate: { kit: "mate", x: 250, dir: -1 }, me: { x: 120 } },
-    ball: "me",
-    beats: [
-      { d: 2.2, cap: ["😰 Jogar só pra não perder...", "😰 Playing just not to lose...", "😰 Jugar solo para no perder..."], think: ["nublada", ["Tenho que ganhar, senão...", "I have to win, or else...", "Tengo que ganar, si no..."]], a: { me: { pose: "sad" } } },
-      { d: 1.6, cap: ["😕 ...perdeu a graça", "😕 ...isn't fun anymore", "😕 ...perdió la gracia"], a: { me: { pose: "kick", t1: 0.35 } }, ball: { to: [175, CQ_GROUND - 5], t0: 0.3, t1: 1 } },
-      cqsRewind,
-      { d: 2.2, cap: ["😄 Lembra por que você joga?", "😄 Remember why you play?", "😄 ¿Recuerdas por qué juegas?"], think: ["pulinho", ["A gente joga porque é divertido!", "We play because it's fun!", "¡Jugamos porque es divertido!"]] },
-      { d: 2.4, think: null, cap: ["⚽ Brincar de bola é demais!", "⚽ Playing ball is awesome!", "⚽ ¡Jugar a la pelota es genial!"], ball: { juggle: "me" }, a: { me: { pose: "juggle" } } },
-      { d: 1.1, ball: { to: "mate", h: 30, t0: 0.1, t1: 0.9 }, a: { me: { pose: "stand" } } },
-      { d: 2.4, sparks: true, cap: ["🎉 Diversão é o combustível!", "🎉 Fun is the fuel!", "🎉 ¡La diversión es el combustible!"], ball: { juggle: "mate" }, a: { mate: { pose: "juggle" }, me: { pose: "cheer" } } },
-    ],
-  },
-
-  // Dormir bem também é treino.
-  descanso: {
-    bg: "night",
-    props: { bed: true, phone: true },
-    cast: { mate: { kit: "mate", x: 40, hide: true }, me: { x: 100, pose: "sit", lift: 15 } },
-    ball: null,
-    beats: [
-      { d: 2.2, cap: ["📱 Meia-noite no celular...", "📱 Midnight on the phone...", "📱 Medianoche con el celular..."], think: ["zumzum", ["Só mais um vídeo...", "Just one more video...", "Solo un video más..."]] },
-      { d: 1.4, fx: "cut", bg: "pitch", think: null, props: { bed: false, phone: false, goal: true }, cap: ["🥱 No jogo, no dia seguinte...", "🥱 At the game, next day...", "🥱 En el partido, al día siguiente..."], ball: { give: "mate" }, a: { mate: { hide: false }, me: { x: 150, pose: "sad", lift: 0 } } },
-      { d: 1.6, props: { zzz: true }, big: "🥱", bigAt: 0.5, cap: ["🐢 Com sono, ficou lento...", "🐢 Sleepy and slow...", "🐢 Con sueño, quedó lento..."], a: { mate: { pose: "kick", t1: 0.35 } }, ball: { to: [340, CQ_GROUND - 5], t0: 0.3, t1: 1 } },
-      cqsRewind,
-      { d: 2.2, props: { phone: false }, cap: ["🌙 Celular desligado, cama cedo", "🌙 Phone off, early bed", "🌙 Celular apagado, cama temprano"], think: ["capitao", ["Hora de dormir!", "Bedtime!", "¡Hora de dormir!"]], a: { me: { pose: "lie", lift: 18 } } },
-      { d: 1.8, think: null, props: { zzz: true }, cap: ["😴 Dormiu bem...", "😴 Slept well...", "😴 Durmió bien..."] },
-      { d: 1, fx: "cut", bg: "pitch", props: { bed: false, zzz: false, goal: true }, cap: ["⚡ No jogo, no dia seguinte...", "⚡ At the game, next day...", "⚡ En el partido, al día siguiente..."], ball: { give: "mate" }, a: { mate: { hide: false }, me: { x: 150, pose: "ready", lift: 0 } } },
-      { d: 1.1, a: { mate: { pose: "kick", t1: 0.35 } }, ball: { to: "me", h: 6, t0: 0.3, t1: 0.95 } },
-      cqsRun("me", 245, 1.1),
-      cqsShoot(),
-      cqsParty(["Descansado é outra coisa!", "Rested makes all the difference!", "¡Descansado es otra cosa!"], ["🎉 Dormir bem também é treino!", "🎉 Sleeping well is training too!", "🎉 ¡Dormir bien también es entrenar!"], ["me", "mate"]),
-    ],
-  },
-
-  // Dor é aviso do corpo: parar e avisar um adulto.
-  lesao: {
-    props: { goal: true },
-    cast: { coach: { kit: "coach", x: 28 }, me: { x: 100 } },
-    ball: "me",
-    beats: [
-      { ...cqsRun("me", 160, 1.2), cap: ["⚽ Treino...", "⚽ Training...", "⚽ Entrenamiento..."] },
-      { d: 1.4, big: "⚡", cap: ["🤕 Ai! Doeu o joelho...", "🤕 Ouch! My knee hurts...", "🤕 ¡Ay! Me duele la rodilla..."], ball: { to: [188, CQ_GROUND - 5], t1: 0.4 }, a: { me: { pose: "pain" } } },
-      { d: 2, cap: ["😬 Escondeu a dor e continuou...", "😬 Hid the pain and kept going...", "😬 Escondió el dolor y siguió..."], think: ["pavao", ["Ninguém pode ver que doeu!", "Nobody can see it hurts!", "¡Nadie puede ver que dolió!"]], ball: { give: "me" }, a: { me: { x: 225, pose: "stand" } } },
-      { d: 1.6, big: "💥", think: null, cap: ["😣 ...e piorou", "😣 ...and it got worse", "😣 ...y empeoró"], ball: { to: [258, CQ_GROUND - 5], t1: 0.5 }, a: { me: { pose: "sit" } } },
-      cqsRewind,
-      { ...cqsRun("me", 160, 1.2), cap: ["⚽ Treino...", "⚽ Training...", "⚽ Entrenamiento..."] },
-      { d: 1.2, big: "⚡", cap: ["🤕 Ai! Doeu o joelho...", "🤕 Ouch! My knee hurts...", "🤕 ¡Ay! Me duele la rodilla..."], ball: { to: [188, CQ_GROUND - 5], t1: 0.4 }, a: { me: { pose: "pain" } } },
-      { d: 2, cap: ["🙋 Parou e avisou o técnico", "🙋 Stopped and told the coach", "🙋 Paró y avisó al entrenador"], think: ["capitao", ["Parei. Vou avisar um adulto.", "I'll stop and tell an adult.", "Paro y aviso a un adulto."]], a: { me: { x: 60, dir: -1, pose: "sit" } } },
-      { d: 2, think: null, props: { ice: true }, cap: ["🧊 Gelo e descanso", "🧊 Ice and rest", "🧊 Hielo y descanso"], a: { coach: { pose: "bend" } } },
-      { d: 1, fx: "cut", props: { ice: false }, cap: ["📅 Dias depois...", "📅 Days later...", "📅 Días después..."], ball: { give: "me" }, a: { me: { x: 150, dir: 1, pose: "stand" }, coach: { pose: "stand" } } },
-      cqsRun("me", 245, 1.1),
-      cqsShoot(),
-      { ...cqsParty(null, ["🎉 Cuidou do corpo e voltou!", "🎉 Looked after the body and came back!", "🎉 ¡Cuidó el cuerpo y volvió!"], ["me"]), think: ["vovo", ["Paciência: voltou mais forte!", "Patience: back stronger!", "Paciencia: ¡volvió más fuerte!"]], a: { me: { pose: "cheer" }, coach: { pose: "wave" } } },
-    ],
-  },
+  card: { ...CQ_POSE.stand, armF: [-172, -6] },
+  push: { ...CQ_POSE.stand, lean: 14, legF: [-22, 10], legB: [18, 8], armF: [-88, -4], armB: [-82, -4] },
+  hands: { ...CQ_POSE.stand, armF: [-128, -50], armB: [-118, -50] },
+  point: { ...CQ_POSE.stand, armF: [-92, -4] },
 };
 
 cqRegisterAnim("historia", (box, opts) => {
-  const st = CQ_STORIES[opts.args.id];
+  const src = opts.args.story;
+  const then = opts.args.then;
+  const st = then ? { ...src, beats: [...src.beats, ...then.beats] } : src;
+  const skip = then ? src.beats.reduce((s, b) => s + b.d, 0) : 0;
   const G = CQ_GROUND;
   const P = CQ_POSE;
   const uid = "hs" + Math.random().toString(36).slice(2, 8);
@@ -359,6 +62,20 @@ cqRegisterAnim("historia", (box, opts) => {
     const y = 86 + (i % 2) * 4;
     return `<rect x="${i * 12 + 1}" y="${y + 3}" width="10" height="10" rx="3" fill="${c}" /><circle cx="${i * 12 + 6}" cy="${y}" r="4" fill="${["#f6d3b3", "#a86b3c", "#d9a273"][i % 3]}" />`;
   }).join("");
+  const fans = Array.from({ length: 80 }, (_, i) => {
+    const row = i % 4;
+    const x = (Math.floor(i / 4) * 16 + row * 5 + 3) % 322;
+    const c = ["#64748b", "#94a3b8", "#475569", "#7f1d1d", "#1e3a8a", "#a16207"][(i * 7) % 6];
+    return `<circle cx="${x}" cy="${58 + row * 9}" r="3.2" fill="${c}" />`;
+  }).join("");
+  const stripes = Array.from({ length: 10 }, (_, i) => `<rect x="${i * 32}" y="104" width="32" height="${180 - 104}" fill="${i % 2 ? "#15803d" : "#16a34a"}" />`).join("");
+  const light = (x) => `<rect x="${x - 1.5}" y="14" width="3" height="40" fill="#334155" /><rect x="${x - 11}" y="6" width="22" height="9" rx="2" fill="#e2e8f0" /><circle cx="${x}" cy="10" r="20" fill="#fef9c3" opacity=".12" />`;
+  // Each drop is drawn twice, 180 apart, so the falling loop has no seam.
+  const drops = Array.from({ length: 36 }, (_, i) => {
+    const x = (i * 47) % 336 + 4;
+    const y = (i * 71) % 180;
+    return [y, y - 180].map((v) => `<line x1="${x}" y1="${v}" x2="${x - 4}" y2="${v + 11}" />`).join("");
+  }).join("");
   const stairs = [0, 1, 2, 3].map((i) => {
     const h = 12 * (i + 1);
     return `<rect x="${190 + i * 30}" y="${G - h}" width="30" height="${h}" fill="#d97706" stroke="#92400e" /><text x="${205 + i * 30}" y="${G - h + 10}" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">${i + 1}</text>`;
@@ -382,6 +99,15 @@ cqRegisterAnim("historia", (box, opts) => {
         <circle cx="270" cy="40" r="9" fill="#fef9c3" /><circle cx="274" cy="37" r="8" fill="#0f172a" />
         <g fill="#fff"><circle cx="235" cy="35" r="1.2" /><circle cx="248" cy="60" r="1" /><circle cx="282" cy="64" r="1.2" /></g>
         <rect y="${G}" width="320" height="${180 - G}" fill="#1e1b4b" />
+      </g>
+      <g class="s-bg" data-bg="stadium">
+        <rect width="320" height="104" fill="#0b1324" />
+        ${light(40)}${light(280)}
+        <rect y="50" width="320" height="42" fill="#1e293b" />${fans}
+        <rect y="92" width="320" height="12" fill="#0f172a" />
+        <g font-size="7" font-weight="800" fill="#e2e8f0" opacity=".7">${[20, 120, 220].map((x) => `<text x="${x}" y="100.5">CRAQUE DE BOLA</text>`).join("")}</g>
+        ${stripes}
+        <line x1="0" y1="106" x2="320" y2="106" stroke="#f8fafc" stroke-width="1.2" opacity=".7" />
       </g>
       <g class="s-prop" data-p="crowd">${crowd}</g>
       <g class="s-clouds">${[0, 1, 2].map(() => `<g class="s-cloud" opacity="0"><g fill="#fff" stroke="#cbd5e1"><ellipse rx="42" ry="11" /><circle cx="-20" cy="-6" r="9" /><circle cx="2" cy="-9" r="11" /><circle cx="22" cy="-5" r="8" /></g><text y="3.5" text-anchor="middle" font-size="9" font-weight="700" fill="#334155"></text></g>`).join("")}</g>
@@ -408,6 +134,9 @@ cqRegisterAnim("historia", (box, opts) => {
       <g class="s-prop s-dyn" data-p="phone"><circle r="13" fill="#67e8f9" opacity=".35" /><text y="5" font-size="13" text-anchor="middle">📱</text></g>
       <text class="s-prop s-dyn" data-p="zzz" font-size="15" text-anchor="middle">💤</text>
       <text class="s-prop s-dyn" data-p="bird" font-size="16" text-anchor="middle">🐦</text>
+      <rect class="s-prop s-dyn" data-p="card" width="7" height="10" rx="1" fill="#facc15" stroke="#a16207" stroke-width=".6" />
+      <text class="s-prop s-dyn" data-p="icon" font-size="18" text-anchor="middle"></text>
+      <g class="s-prop" data-p="rain"><rect width="320" height="180" fill="#475569" opacity=".3" /><g class="s-rain" stroke="#cbd5e1" stroke-width="1.1" opacity=".75">${drops}</g></g>
       <rect class="s-prop s-dyn" data-p="spot" width="320" height="180" fill="#020617" opacity=".6" mask="url(#${uid}-m)" />
       <g class="s-sparks" opacity="0" font-size="16">
         <text x="40" y="40">✨</text><text x="270" y="30">✨</text><text x="120" y="22">⭐</text><text x="210" y="60">✨</text><text x="70" y="80">⭐</text>
@@ -430,6 +159,16 @@ cqRegisterAnim("historia", (box, opts) => {
       <rect class="s-dim" width="320" height="180" fill="#0f172a" opacity="0" />
       <text class="s-big" x="160" y="86" text-anchor="middle" font-size="34" font-weight="800" fill="#facc15" stroke="#111" stroke-width="1.5" opacity="0"></text>
       <text class="s-cap" x="160" y="167" text-anchor="middle" font-size="12" font-weight="700" fill="#fff"></text>
+      ${st.hud ? `<g class="s-hud" font-size="9" font-weight="800" fill="#f8fafc">
+        <rect x="6" y="6" width="132" height="17" rx="3" fill="#020617" opacity=".88" />
+        <rect x="11" y="10.5" width="8" height="8" rx="1.5" fill="${kits.me.shirt}" stroke="#f8fafc" stroke-width=".6" />
+        <text x="23" y="17.5">${txt(["NÓS", "US", "NOS"])}</text>
+        <text class="s-hud-score" x="68" y="17.5" text-anchor="middle"></text>
+        <text x="113" y="17.5" text-anchor="end">${txt(["ELES", "THEM", "ELLOS"])}</text>
+        <rect x="117" y="10.5" width="8" height="8" rx="1.5" fill="${kits.rival.shirt}" stroke="#f8fafc" stroke-width=".6" />
+        <rect x="140" y="6" width="${typeof st.hud.min === "number" ? 28 : 46}" height="17" rx="3" fill="#16a34a" />
+        <text x="${typeof st.hud.min === "number" ? 154 : 163}" y="17.5" text-anchor="middle">${typeof st.hud.min === "number" ? `${st.hud.min}'` : txt(st.hud.min)}</text>
+      </g>` : ""}
     </svg>`;
 
   const svg = box.querySelector("svg");
@@ -472,6 +211,7 @@ cqRegisterAnim("historia", (box, opts) => {
     think: null,
     cap: null,
     sparks: false,
+    score: st.hud?.score || [0, 0],
   };
   const REWIND_CAP = ["⏪ Vamos de novo?", "⏪ Let's try again?", "⏪ ¿Otra vez?"];
   const next = (s, b) => {
@@ -492,6 +232,7 @@ cqRegisterAnim("historia", (box, opts) => {
       think: b.think !== undefined ? b.think : s.think,
       cap: b.cap ?? s.cap,
       sparks: b.sparks ?? s.sparks,
+      score: b.score ?? s.score,
     };
   };
   const T = [];
@@ -622,8 +363,13 @@ cqRegisterAnim("historia", (box, opts) => {
     }
     const w = +sayBox.dataset.w;
     const h = 22;
-    const bx = Math.max(4, Math.min(316 - w, p.x - w / 2 + 20));
-    const by = Math.max(4, G - 112 - p.lift - h);
+    let by = Math.max(4, G - 112 - p.lift - h);
+    let bx = Math.max(4, Math.min(316 - w, p.x - w / 2 + 20));
+    // Keep the bubble off the scoreboard (top-left, up to x 186).
+    if (st.hud && by < 26 && bx < 190) {
+      if (w <= 126) bx = 190;
+      else by = 26;
+    }
     sayBox.setAttribute("x", bx);
     sayBox.setAttribute("y", by);
     sayBox.setAttribute("width", w);
@@ -637,7 +383,10 @@ cqRegisterAnim("historia", (box, opts) => {
 
   let ended = false;
   let lastCap = null;
-  return cqLoop((tt) => {
+  const hudScore = q(".s-hud-score");
+  const rainEl = q(".s-rain");
+  return cqLoop((t) => {
+    const tt = t + skip;
     if (!ended && tt >= total) {
       ended = true;
       opts.onEnd?.();
@@ -695,6 +444,19 @@ cqRegisterAnim("historia", (box, opts) => {
       dyn.bird.setAttribute("x", (340 - ((tt * 55) % 400)).toFixed(1));
       dyn.bird.setAttribute("y", (64 + Math.sin(tt * 3) * 6).toFixed(1));
     }
+    if (view.props.card && pos.ref) {
+      dyn.card.setAttribute("x", (pos.ref.x - 2 + 3 * pos.ref.dir).toFixed(1));
+      dyn.card.setAttribute("y", (G - 100 - pos.ref.lift).toFixed(1));
+    }
+    if (view.props.icon) {
+      const [emo, x, y] = view.props.icon;
+      const who = pos[x];
+      dyn.icon.textContent = emo;
+      dyn.icon.setAttribute("x", who ? who.x : x);
+      dyn.icon.setAttribute("y", (who ? G - 104 - who.lift + Math.sin(tt * 3) * 2 : y).toFixed(1));
+    }
+    if (view.props.rain) rainEl.setAttribute("transform", `translate(0 ${((tt * 220) % 180).toFixed(1)})`);
+    if (hudScore) hudScore.textContent = view.score.join(" x ");
     if (view.props.spot) {
       const c = bp || me;
       hole.setAttribute("cx", c.x);

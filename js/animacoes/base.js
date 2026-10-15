@@ -57,12 +57,15 @@ function cqRegisterAnim(id, scene) {
   CQ_ANIMS[id] = scene;
 }
 
+// Animation files load with the same ?v= as this file, so a new release never mixes in a cached old scene.
+const CQ_ANIM_V = (document.currentScript?.src.match(/\?v=[^&]+/) || [""])[0];
+
 function cqLoadAnim(id) {
   if (CQ_ANIMS[id]) return Promise.resolve(CQ_ANIMS[id]);
   if (!CQ_ANIM_LOADING[id]) {
     CQ_ANIM_LOADING[id] = new Promise((resolve, reject) => {
       const s = document.createElement("script");
-      s.src = `js/animacoes/${id}.js`;
+      s.src = `js/animacoes/${id}.js${CQ_ANIM_V}`;
       s.onload = () => (CQ_ANIMS[id] ? resolve(CQ_ANIMS[id]) : reject(new Error(`anim ${id} not registered`)));
       s.onerror = () => {
         delete CQ_ANIM_LOADING[id];
