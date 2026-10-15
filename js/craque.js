@@ -58,6 +58,152 @@ const CQ_MOUTHS = {
 };
 const CQ_LOOK_DEFAULT = { hair: "short", hairColor: CQ_HAIR_COLORS[0], eyes: "dot", mouth: "smile" };
 
+// Street championships: points per place in each dynamic (8th place and below get 1).
+const CQ_CUP_POINTS = [10, 8, 6, 5, 4, 3, 2, 1];
+const CQ_CUP_EMOJIS = ["⚡", "🔥", "⭐", "🦁", "🐯", "🦅", "🚀", "💎", "👑", "🐉", "🦈", "🌪️"];
+const CQ_TEAM_MAX = 200;
+
+const CQ_CUP_TEXT = {
+  pt: {
+    cups: "Campeonatos",
+    create: "➕ Criar campeonato",
+    trophies: "🏆 Sala de troféus",
+    team: "👥 Minha turma",
+    none: "Nenhum campeonato rolando. Crie um e chame a turma!",
+    name: "Nome do campeonato",
+    defaultName: "Copa da Rua",
+    players: "Quem vai jogar",
+    addFriend: "Adicionar amigo",
+    friendName: "Nome do amigo",
+    add: "Adicionar",
+    tries: "Tentativas por dinâmica (vale a melhor)",
+    missions: "Dinâmicas",
+    start: "Começar campeonato",
+    needPlayers: "Escolha pelo menos 2 jogadores.",
+    needMissions: "Escolha pelo menos 1 dinâmica.",
+    back: "← Voltar",
+    table: "Classificação",
+    matches: "Partidas",
+    progress: "{done} de {total} jogadas",
+    triesInfo: "{n} tentativa(s) cada",
+    pts: "pts",
+    turn: "🏆 Vez de {name}",
+    tryOf: "tentativa {i} de {n}",
+    result: "{name} fez {v} {unit}",
+    best: "Melhor de {name} nessa dinâmica: {v}",
+    place: "Posição nessa dinâmica: {p}º",
+    ended: "🏆 Campeonato encerrado!",
+    champion: "Campeão",
+    leader: "Líder",
+    end: "Encerrar campeonato",
+    endConfirm: "Encerrar agora? Vale a classificação como está.",
+    del: "Apagar campeonato",
+    delConfirm: "Apagar esse campeonato? Os títulos dele somem da Sala de troféus.",
+    gallery: "Galeria de campeões",
+    noTitles: "Ainda não teve nenhum campeão. Bora jogar!",
+    teamEmpty: "Sua turma está vazia. Adicione os amigos que jogam com você.",
+    teamFull: "A turma já está cheia.",
+    removeConfirm: "Tirar {name} da turma? Os títulos antigos continuam guardados.",
+    me: "você",
+    lower: "menor é melhor",
+    backToCup: "Voltar ao campeonato",
+    medalsHint: "🥇 = dinâmicas vencidas · 🥈 = segundos lugares (servem para desempatar)",
+    groups: { games: "Joguinhos", ball: "Com bola", move: "Movimento", mind: "Concentração" },
+  },
+  en: {
+    cups: "Championships",
+    create: "➕ Create championship",
+    trophies: "🏆 Trophy room",
+    team: "👥 My crew",
+    none: "No championship going on. Create one and call your crew!",
+    name: "Championship name",
+    defaultName: "Street Cup",
+    players: "Who's playing",
+    addFriend: "Add a friend",
+    friendName: "Friend's name",
+    add: "Add",
+    tries: "Tries per dynamic (the best one counts)",
+    missions: "Dynamics",
+    start: "Start championship",
+    needPlayers: "Pick at least 2 players.",
+    needMissions: "Pick at least 1 dynamic.",
+    back: "← Back",
+    table: "Standings",
+    matches: "Matches",
+    progress: "{done} of {total} played",
+    triesInfo: "{n} try(s) each",
+    pts: "pts",
+    turn: "🏆 {name}'s turn",
+    tryOf: "try {i} of {n}",
+    result: "{name} got {v} {unit}",
+    best: "{name}'s best in this dynamic: {v}",
+    place: "Place in this dynamic: #{p}",
+    ended: "🏆 Championship over!",
+    champion: "Champion",
+    leader: "Leader",
+    end: "End championship",
+    endConfirm: "End it now? The standings stay as they are.",
+    del: "Delete championship",
+    delConfirm: "Delete this championship? Its titles leave the Trophy room.",
+    gallery: "Champions gallery",
+    noTitles: "No champion yet. Let's play!",
+    teamEmpty: "Your crew is empty. Add the friends who play with you.",
+    teamFull: "Your crew is full.",
+    removeConfirm: "Remove {name} from the crew? Old titles stay saved.",
+    me: "you",
+    lower: "lower is better",
+    backToCup: "Back to the championship",
+    medalsHint: "🥇 = dynamics won · 🥈 = second places (used to break ties)",
+    groups: { games: "Games", ball: "With the ball", move: "Movement", mind: "Focus" },
+  },
+  es: {
+    cups: "Campeonatos",
+    create: "➕ Crear campeonato",
+    trophies: "🏆 Sala de trofeos",
+    team: "👥 Mi grupo",
+    none: "No hay ningún campeonato en juego. ¡Crea uno y llama a tu grupo!",
+    name: "Nombre del campeonato",
+    defaultName: "Copa del Barrio",
+    players: "Quién va a jugar",
+    addFriend: "Agregar amigo",
+    friendName: "Nombre del amigo",
+    add: "Agregar",
+    tries: "Intentos por dinámica (vale el mejor)",
+    missions: "Dinámicas",
+    start: "Empezar campeonato",
+    needPlayers: "Elige al menos 2 jugadores.",
+    needMissions: "Elige al menos 1 dinámica.",
+    back: "← Volver",
+    table: "Clasificación",
+    matches: "Partidas",
+    progress: "{done} de {total} jugadas",
+    triesInfo: "{n} intento(s) cada uno",
+    pts: "pts",
+    turn: "🏆 Turno de {name}",
+    tryOf: "intento {i} de {n}",
+    result: "{name} hizo {v} {unit}",
+    best: "Mejor de {name} en esta dinámica: {v}",
+    place: "Puesto en esta dinámica: {p}º",
+    ended: "🏆 ¡Campeonato terminado!",
+    champion: "Campeón",
+    leader: "Líder",
+    end: "Terminar campeonato",
+    endConfirm: "¿Terminar ahora? Vale la clasificación como está.",
+    del: "Borrar campeonato",
+    delConfirm: "¿Borrar este campeonato? Sus títulos salen de la Sala de trofeos.",
+    gallery: "Galería de campeones",
+    noTitles: "Todavía no hay campeón. ¡A jugar!",
+    teamEmpty: "Tu grupo está vacío. Agrega a los amigos que juegan contigo.",
+    teamFull: "Tu grupo ya está lleno.",
+    removeConfirm: "¿Sacar a {name} del grupo? Los títulos antiguos quedan guardados.",
+    me: "tú",
+    lower: "menos es mejor",
+    backToCup: "Volver al campeonato",
+    medalsHint: "🥇 = dinámicas ganadas · 🥈 = segundos puestos (sirven para desempatar)",
+    groups: { games: "Jueguitos", ball: "Con balón", move: "Movimiento", mind: "Concentración" },
+  },
+};
+
 const CQ_TEXT = {
   pt: {
     title: "Craque de Bola",
@@ -410,9 +556,12 @@ function renderCraque() {
   let saveTimer = null;
   let stopAnim = null;
   let audio = null;
+  // cupPlay: whose turn it is when a mission is opened from a championship; view: the championship screen shown instead of the home.
+  let cupPlay = null;
+  let view = null;
 
   function emptyState() {
-    return { player: null, records: {}, tries: {}, xp: 0, streak: { last: "", count: 0, best: 0 }, today: { date: "", counts: {} } };
+    return { player: null, records: {}, tries: {}, xp: 0, streak: { last: "", count: 0, best: 0 }, today: { date: "", counts: {} }, turma: [], cups: [] };
   }
 
   function save() {
@@ -456,6 +605,8 @@ function renderCraque() {
     const base = emptyState();
     const saved = data.progress || {};
     state = { ...base, ...saved, streak: { ...base.streak, ...saved.streak }, player: data.card || null };
+    if (!Array.isArray(state.turma)) state.turma = [];
+    if (!Array.isArray(state.cups)) state.cups = [];
     draw();
   }
 
@@ -599,10 +750,16 @@ function renderCraque() {
     const balls = ofType("ball", "move").filter((m) => isGk || !isGkMission(m));
     const weakest = balls
       .map((m, i) => ({ m, score: m.subs.reduce((a, s) => a + subValue(s), 0) / m.subs.length, order: (i + seed) % balls.length }))
-      .sort((a, b) => a.score - b.score || a.order - b.order)[0].m;
-    const quizzes = ofType("quiz");
-    const minds = ofType("mind");
-    return [weakest.id, quizzes[seed % quizzes.length].id, minds[seed % minds.length].id];
+      .sort((a, b) => a.score - b.score || a.order - b.order)[0]?.m;
+    // A new player may have no quiz or mind mission open yet; any other open mission takes the slot.
+    const others = open.filter((m) => m !== weakest && m.type !== "auto");
+    const pickOf = (list) => {
+      const pool = list.length ? list : others;
+      return pool[seed % pool.length];
+    };
+    const quiz = pickOf(ofType("quiz"));
+    const mind = pickOf(ofType("mind").filter((m) => m !== quiz).length ? ofType("mind") : others.filter((m) => m !== quiz));
+    return [...new Set([weakest, quiz, mind].filter(Boolean).map((m) => m.id))];
   }
 
   // Card data comes from the database, so only known values ever reach the SVG.
@@ -838,8 +995,10 @@ function renderCraque() {
     const daily = dailyIds();
     const lvl = level();
     const pct = (state.xp % CQ_XP.perLevel) / CQ_XP.perLevel * 100;
+    const jumps = [["daily", "⭐", tx.daily], ["trails", "🗺️", tx.trails], ["cups", "🏆", ct().cups], ["games", "🎮", tx.games], ["free", "⚽", tx.freeTraining]];
     app.innerHTML = `
       <div class="cq-home">
+        <nav class="cq-jump">${jumps.map(([id, icon, label]) => `<button type="button" data-jump="${id}"><span aria-hidden="true">${icon}</span> ${label}</button>`).join("")}</nav>
         <div class="cq-card-col">
           ${cardHtml(state.player, { up })}
           <small class="cq-hint">${tx.flipHint}</small>
@@ -855,16 +1014,18 @@ function renderCraque() {
             </div>
             <div class="cq-streak"><b>🔥 ${state.streak.count}</b><small>${tx.streak}</small></div>
           </div>
-          <h2 class="cq-h is-group"><span aria-hidden="true">⭐</span> ${tx.daily}</h2>
+          <h2 class="cq-h is-group" data-sec="daily"><span aria-hidden="true">⭐</span> ${tx.daily}</h2>
           <div class="cq-missions">${daily.map((id) => missionCard(mission(id), true)).join("")}</div>
-          <h2 class="cq-h is-group"><span aria-hidden="true">🗺️</span> ${tx.trails}</h2>
+          <h2 class="cq-h is-group" data-sec="trails"><span aria-hidden="true">🗺️</span> ${tx.trails}</h2>
           <div class="cq-trails">${CQ_TRAILS.map(trailRow).join("")}</div>
-          <h2 class="cq-h is-group"><span aria-hidden="true">🎮</span> ${tx.games}</h2>
+          ${cupHomeSection()}
+          <h2 class="cq-h is-group" data-sec="games"><span aria-hidden="true">🎮</span> ${tx.games}</h2>
           <div class="cq-missions is-compact">${CQ_MISSIONS.filter(isGame).map((m) => missionCard(m, false)).join("")}</div>
-          <h2 class="cq-h is-group"><span aria-hidden="true">⚽</span> ${tx.freeTraining}</h2>
+          <h2 class="cq-h is-group" data-sec="free"><span aria-hidden="true">⚽</span> ${tx.freeTraining}</h2>
           <div class="cq-missions is-compact">${openMissions().filter((m) => !daily.includes(m.id) && !isGame(m)).map((m) => missionCard(m, false)).join("")}</div>
         </div>
       </div>`;
+    placeJump();
     // Long trails scroll sideways; start each one at the phase being played.
     app.querySelectorAll(".cq-trail-nodes").forEach((row) => {
       const current = row.querySelector(".is-current");
@@ -912,6 +1073,7 @@ function renderCraque() {
     stopTimer();
     if (!cloud) app.innerHTML = `<p class="cq-loading">${t().noCloud}</p>`;
     else if (!user) renderAuth();
+    else if (state.player && view) renderCupView();
     else if (state.player) renderHome(up);
     else renderSetup();
   }
@@ -929,6 +1091,10 @@ function renderCraque() {
     endAnim();
     modal.hidden = true;
     document.body.classList.remove("cq-lock");
+    if (cupPlay) {
+      cupPlay = null;
+      draw();
+    }
   }
 
   function stopTimer() {
@@ -964,7 +1130,7 @@ function renderCraque() {
 
   function missionHeader(m) {
     const tx = t();
-    const idx = medalIndex(m, state.records[m.id]);
+    const idx = medalIndex(m, shownRecord(m));
     return `
       <span class="cq-mission-tag">${tx.types[m.type]}${m.helper ? ` · ${tx.helper}` : ""}</span>
       <h3>${m.icon} ${tr(m.title)}</h3>
@@ -997,18 +1163,19 @@ function renderCraque() {
       <div class="cq-timer"><b>0</b><span class="cq-grid-next"></span><button type="button" class="cq-btn is-ghost" data-grid>${tx.start}</button></div>
       <div class="cq-grid" style="--n:${m.grid.cols}"></div></div>`;
     if (m.rain) tool = `<div class="cq-play">
-      <div class="cq-timer"><span class="cq-rain-score">🏆 0 · ${tx.record} ${state.records[m.id] ?? 0}</span><button type="button" class="cq-btn is-ghost" data-rain>${tx.start}</button></div>
+      <div class="cq-timer"><span class="cq-rain-score">🏆 0 · ${tx.record} ${shownRecord(m) ?? 0}</span><button type="button" class="cq-btn is-ghost" data-rain>${tx.start}</button></div>
       <div class="cq-rain-wrap${m.rain.sides ? " is-duo" : ""}"><span class="cq-game-count is-faint">0</span>${(m.rain.sides || [0]).map(() => `<div class="cq-rain"><div class="cq-rain-rule"></div></div>`).join("")}</div></div>`;
     if (m.dodge) tool = `<div class="cq-play">
-      <div class="cq-timer"><span class="cq-rain-score">🏆 0 · ${tx.record} ${state.records[m.id] ?? 0}</span><button type="button" class="cq-btn is-ghost" data-dodge>${tx.start}</button></div>
+      <div class="cq-timer"><span class="cq-rain-score">🏆 0 · ${tx.record} ${shownRecord(m) ?? 0}</span><button type="button" class="cq-btn is-ghost" data-dodge>${tx.start}</button></div>
       <div class="cq-rain-wrap is-duo"><span class="cq-game-count" aria-live="off">0</span>${[0, 1].map(() => `<div class="cq-rain cq-dodge"><div class="cq-rain-rule">${tx.dodgeHint}</div><span class="cq-dodge-ball">⚽</span></div>`).join("")}</div></div>`;
     if (m.blok) tool = `<div class="cq-play">
-      <div class="cq-timer"><span class="cq-rain-score">🏆 0 · ${tx.record} ${state.records[m.id] ?? 0}</span><button type="button" class="cq-btn is-ghost" data-blok>${tx.start}</button></div>
+      <div class="cq-timer"><span class="cq-rain-score">🏆 0 · ${tx.record} ${shownRecord(m) ?? 0}</span><button type="button" class="cq-btn is-ghost" data-blok>${tx.start}</button></div>
       <div class="cq-rain-wrap"><span class="cq-game-count is-faint is-high">0</span><div class="cq-rain cq-blok"><div class="cq-blok-rows">
             ${CQ_BLOK_COLORS.map((c, i) => `<div class="cq-blok-row" style="--c:${CQ_RAIN_COLORS[c]}"><span class="cq-blok-block" style="left:${[72, 50, 28, 44][i]}%"><i class="cq-blok-eyes"></i><i class="cq-blok-mouth"></i></span></div>`).join("")}
       </div></div></div></div>`;
 
     openModal(`
+      ${cupPlay ? cupTurnBanner(m) : ""}
       ${missionHeader(m)}
       ${m.anim ? `<div class="cq-anim" hidden></div><button type="button" class="cq-btn is-ghost cq-anim-btn">${tx.watch}</button>` : ""}
       ${steps}
@@ -1045,7 +1212,8 @@ function renderCraque() {
     dialog.querySelector(".cq-result-form").addEventListener("submit", (e) => {
       e.preventDefault();
       const v = Math.max(0, Math.min(m.max ?? 999, parseInt(input.value, 10) || 0));
-      finishMission(m, v);
+      if (cupPlay) finishCupPlay(m, v);
+      else finishMission(m, v);
     });
   }
 
@@ -1307,7 +1475,7 @@ function renderCraque() {
     btn.closest(".cq-play").classList.add("is-full");
     const colors = Object.keys(CQ_RAIN_COLORS);
     const other = (c) => pick(colors.filter((x) => x !== c));
-    const record = state.records[m.id] ?? 0;
+    const record = shownRecord(m) ?? 0;
     let startAt = Date.now();
     const pause = gamePause(wrap, m, record);
     let streak = 0;
@@ -1507,7 +1675,7 @@ function renderCraque() {
     btn.closest(".cq-play").classList.add("is-full");
     const BALL_Y = 44;
     const HIT = 36;
-    const record = state.records[m.id] ?? 0;
+    const record = shownRecord(m) ?? 0;
     let startAt = Date.now();
     const pause = gamePause(wrap, m, record);
     let streak = 0;
@@ -1654,7 +1822,7 @@ function renderCraque() {
     btn.textContent = tx.stop;
     btn.closest(".cq-play").classList.add("is-full");
     const R = 18;
-    const record = state.records[m.id] ?? 0;
+    const record = shownRecord(m) ?? 0;
     let startAt = Date.now();
     let streak = 0;
     let best = 0;
@@ -2120,6 +2288,432 @@ function renderCraque() {
     setTimeout(() => el.remove(), 3300);
   }
 
+  /* ---------- Street championships ----------
+     Everyone plays on the creator's phone, passing it around; friends don't need an account. Each player has
+     a few tries per dynamic and the best one counts. The place in each dynamic turns into points, and the
+     championship ends when every player has used every try. Nothing here touches the card, XP or records. */
+  const ct = () => CQ_CUP_TEXT[I18N.lang] || CQ_CUP_TEXT.pt;
+  const cupOk = (m) => m.type === "move" || m.type === "ball" || isGame(m) || (m.type === "mind" && m.timer?.mode === "up");
+  const cupGroup = (m) => (isGame(m) ? "games" : m.type === "mind" ? "mind" : m.type);
+  const cupById = (id) => state.cups.find((c) => c.id === id);
+  const cupMissions = (cup) => cup.missions.map(mission).filter(Boolean);
+  const cupEmoji = (e) => (CQ_CUP_EMOJIS.includes(e) ? e : "⚽");
+  const newId = (prefix) => prefix + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const placeIcon = (p) => (p <= 3 ? ["🥇", "🥈", "🥉"][p - 1] : `${p}º`);
+
+  function cupWho(cup, pid) {
+    if (pid === "me") return { me: true, name: state.player?.name || cup.who.me?.name || "—" };
+    const friend = state.turma.find((f) => f.id === pid);
+    return friend || cup.who[pid] || { name: "—", emoji: "⚽" };
+  }
+
+  function whoTag(w) {
+    const face = w.me ? faceSvg(state.player) : `<span class="cq-cup-emoji">${cupEmoji(w.emoji)}</span>`;
+    return `<span class="cq-cup-who">${face}<b>${esc(w.name)}</b></span>`;
+  }
+
+  const cupTries = (cup, pid, m) => cup.results[pid]?.[m.id] || [];
+  const cupBest = (cup, pid, m) => {
+    const vals = cupTries(cup, pid, m);
+    if (!vals.length) return null;
+    return m.lower ? Math.min(...vals) : Math.max(...vals);
+  };
+  const cupLeft = (cup) => cupMissions(cup).reduce((a, m) => a + cup.players.filter((pid) => cupTries(cup, pid, m).length < cup.tries).length, 0);
+  const cupDone = (cup) => cupMissions(cup).reduce((a, m) => a + cup.players.filter((pid) => cupTries(cup, pid, m).length >= cup.tries).length, 0);
+
+  // Same result, same place and same points (1, 1, 3...).
+  function cupMissionRank(cup, m) {
+    const rows = cup.players.map((pid) => ({ pid, best: cupBest(cup, pid, m) })).filter((r) => r.best != null);
+    rows.sort((a, b) => (m.lower ? a.best - b.best : b.best - a.best));
+    rows.forEach((r, i) => {
+      r.place = i > 0 && rows[i - 1].best === r.best ? rows[i - 1].place : i + 1;
+      r.pts = CQ_CUP_POINTS[Math.min(r.place, CQ_CUP_POINTS.length) - 1];
+    });
+    return rows;
+  }
+
+  // Ties on points are broken by more 1st places, then more 2nd places.
+  function cupStandings(cup) {
+    if (cup.podium) return cup.podium;
+    const tot = Object.fromEntries(cup.players.map((pid) => [pid, { pid, pts: 0, golds: 0, silvers: 0 }]));
+    cupMissions(cup).forEach((m) => cupMissionRank(cup, m).forEach((r) => {
+      const row = tot[r.pid];
+      row.pts += r.pts;
+      if (r.place === 1) row.golds++;
+      if (r.place === 2) row.silvers++;
+    }));
+    const rows = Object.values(tot).sort((a, b) => b.pts - a.pts || b.golds - a.golds || b.silvers - a.silvers);
+    const same = (a, b) => a.pts === b.pts && a.golds === b.golds && a.silvers === b.silvers;
+    rows.forEach((r, i) => { r.place = i > 0 && same(rows[i - 1], r) ? rows[i - 1].place : i + 1; });
+    return rows;
+  }
+
+  // The final table is frozen when the championship ends, so the titles never change later.
+  function endCup(cup) {
+    cup.podium = cupStandings(cup);
+    cup.endedAt = Date.now();
+  }
+
+  const shownRecord = (m) => {
+    if (!cupPlay) return state.records[m.id];
+    const cup = cupById(cupPlay.cupId);
+    return cup ? cupBest(cup, cupPlay.pid, m) ?? undefined : undefined;
+  };
+
+  function cupTurnBanner(m) {
+    const cup = cupById(cupPlay.cupId);
+    const used = cupTries(cup, cupPlay.pid, m).length;
+    return `<div class="cq-cup-turn">${fill(ct().turn, { name: whoTag(cupWho(cup, cupPlay.pid)) })}<small>${esc(cup.name)} · ${fill(ct().tryOf, { i: used + 1, n: cup.tries })}</small></div>`;
+  }
+
+  function finishCupPlay(m, value) {
+    const cx = ct();
+    const { cupId, pid } = cupPlay;
+    const cup = cupById(cupId);
+    cup.results[pid] = cup.results[pid] || {};
+    cup.results[pid][m.id] = [...cupTries(cup, pid, m), value];
+    const ended = !cup.podium && cupLeft(cup) === 0;
+    if (ended) endCup(cup);
+    save();
+    const w = cupWho(cup, pid);
+    const rank = cupMissionRank(cup, m).find((r) => r.pid === pid);
+    sound.whistle();
+    openModal(`
+      <div class="cq-done">
+        <span class="cq-cup-big">${ended ? "🏆" : rank?.place === 1 ? "🥇" : "⚽"}</span>
+        <h3>${fill(cx.result, { name: esc(w.name), v: value, unit: tr(m.unit) })}</h3>
+        <p>${fill(cx.best, { name: esc(w.name), v: cupBest(cup, pid, m) })}</p>
+        ${rank ? `<p><b>${fill(cx.place, { p: rank.place })}</b></p>` : ""}
+        ${ended ? `<p class="cq-unlocked">${cx.ended}</p>` : ""}
+        <button type="button" class="cq-btn" data-back>${cx.backToCup}</button>
+      </div>`);
+    dialog.querySelector("[data-back]").addEventListener("click", closeModal);
+  }
+
+  function cupHomeSection() {
+    const cx = ct();
+    const active = state.cups.filter((c) => !c.podium);
+    const cards = active.map((cup) => {
+      const lead = cupDone(cup) ? cupStandings(cup)[0] : null;
+      return `
+        <button type="button" class="cq-cup-card" data-cup-open="${cup.id}">
+          <b>🏆 ${esc(cup.name)}</b>
+          <small>${fill(cx.progress, { done: cupDone(cup), total: cup.players.length * cupMissions(cup).length })}${lead ? ` · ${cx.leader}: ${esc(cupWho(cup, lead.pid).name)} (${lead.pts} ${cx.pts})` : ""}</small>
+        </button>`;
+    }).join("");
+    return `
+      <h2 class="cq-h is-group" data-sec="cups"><span aria-hidden="true">🏆</span> ${cx.cups}</h2>
+      <div class="cq-cups">
+        ${cards || `<p class="cq-hint">${cx.none}</p>`}
+        <div class="cq-cup-actions">
+          <button type="button" class="cq-btn" data-cup-new>${cx.create}</button>
+          <button type="button" class="cq-btn is-ghost" data-cup-trophies>${cx.trophies}</button>
+          <button type="button" class="cq-btn is-ghost" data-cup-team>${cx.team}</button>
+        </div>
+      </div>`;
+  }
+
+  function openCupView(v) {
+    view = v;
+    draw();
+    root.scrollIntoView({ block: "start" });
+  }
+
+  function cupClick(e) {
+    const cx = ct();
+    const hit = (sel) => e.target.closest(sel);
+    let el;
+    if ((el = hit("[data-cup-open]"))) return openCupView({ cup: el.dataset.cupOpen });
+    if (hit("[data-cup-new]")) return openCupView({ screen: "new" });
+    if (hit("[data-cup-trophies]")) return openCupView({ screen: "trophies" });
+    if (hit("[data-cup-team]")) return openCupView({ screen: "team" });
+    if (hit(".cq-cup-back")) {
+      view = null;
+      draw();
+      app.querySelector(".cq-cups")?.previousElementSibling?.scrollIntoView({ block: "start" });
+      return;
+    }
+    if ((el = hit("[data-cup-play]:not([disabled])"))) {
+      const [pid, mid] = el.dataset.cupPlay.split(":");
+      cupPlay = { cupId: view.cup, pid };
+      return openMission(mid);
+    }
+    const cup = view?.cup && cupById(view.cup);
+    if (cup && hit("[data-cup-end]") && confirm(cx.endConfirm)) {
+      endCup(cup);
+      save();
+      return draw();
+    }
+    if (cup && hit("[data-cup-del]") && confirm(cx.delConfirm)) {
+      state.cups = state.cups.filter((c) => c !== cup);
+      save();
+      view = null;
+      return draw();
+    }
+    if ((el = hit("[data-team-del]"))) {
+      const f = state.turma.find((x) => x.id === el.dataset.teamDel);
+      if (f && confirm(fill(cx.removeConfirm, { name: f.name }))) {
+        state.turma = state.turma.filter((x) => x !== f);
+        save();
+        draw();
+      }
+    }
+  }
+
+  function renderCupView() {
+    if (view.cup) {
+      const cup = cupById(view.cup);
+      if (cup) return renderCup(cup);
+      view = null;
+      return renderHome();
+    }
+    if (view.screen === "new") return renderCupNew();
+    if (view.screen === "trophies") return renderTrophies();
+    return renderTeam();
+  }
+
+  const cupShell = (title, body) => `
+    <div class="cq-cupview">
+      <button type="button" class="cq-cup-back">${ct().back}</button>
+      <h2 class="cq-h is-group">${title}</h2>
+      ${body}
+    </div>`;
+
+  // Adding a friend: the name and emoji fields used on the new-championship screen and on the crew screen.
+  const friendFields = () => `
+    <div class="cq-cup-add">
+      <input name="fname" maxlength="12" placeholder="${ct().friendName}" autocomplete="off">
+      <select name="femoji">${CQ_CUP_EMOJIS.map((e) => `<option>${e}</option>`).join("")}</select>
+      <button type="button" class="cq-btn is-ghost" data-friend-add>${ct().add}</button>
+    </div>`;
+
+  function addFriend(box) {
+    const input = box.querySelector('[name="fname"]');
+    const name = input.value.trim().slice(0, 12);
+    if (!name) return input.focus();
+    if (state.turma.length >= CQ_TEAM_MAX) return alert(ct().teamFull);
+    const friend = { id: newId("f"), name, emoji: cupEmoji(box.querySelector('[name="femoji"]').value) };
+    state.turma.push(friend);
+    save();
+    return friend;
+  }
+
+  function renderCupNew(draft = { name: ct().defaultName, players: new Set(["me"]), tries: 2, missions: new Set() }) {
+    const cx = ct();
+    const pick = (pid, w) => `<label class="cq-cup-pick"><input type="checkbox" name="p" value="${pid}" ${draft.players.has(pid) ? "checked" : ""}><span>${whoTag(w)}${w.me ? ` <small>(${cx.me})</small>` : ""}</span></label>`;
+    const groups = ["games", "ball", "move", "mind"].map((g) => {
+      const list = CQ_MISSIONS.filter((m) => cupOk(m) && cupGroup(m) === g);
+      return `<div class="cq-cup-group"><h4>${cx.groups[g]}</h4>${list.map((m) => `
+        <label class="cq-cup-pick"><input type="checkbox" name="m" value="${m.id}" ${draft.missions.has(m.id) ? "checked" : ""}><span>${m.icon} ${tr(m.title)}${m.lower ? ` <small>(${cx.lower})</small>` : ""}</span></label>`).join("")}</div>`;
+    }).join("");
+    app.innerHTML = cupShell(`<span aria-hidden="true">🏆</span> ${cx.create.replace("➕ ", "")}`, `
+      <form class="cq-form cq-cup-form">
+        <label><span>${cx.name}</span><input name="name" maxlength="24" value="${esc(draft.name)}" required autocomplete="off"></label>
+        <fieldset><legend>${cx.players} (<span data-count-p>0</span>)</legend>
+          <div class="cq-cup-picks">${pick("me", { me: true, name: state.player.name })}${state.turma.map((f) => pick(f.id, f)).join("")}</div>
+          <small class="cq-hint">${cx.addFriend}</small>
+          ${friendFields()}
+        </fieldset>
+        <fieldset><legend>${cx.tries}</legend>
+          ${[1, 2, 3].map((n) => `<label class="cq-cup-try"><input type="radio" name="tries" value="${n}" ${draft.tries === n ? "checked" : ""}><span>${n}</span></label>`).join("")}
+        </fieldset>
+        <fieldset><legend>${cx.missions} (<span data-count-m>0</span>)</legend>
+          <div class="cq-cup-groups">${groups}</div>
+        </fieldset>
+        <p class="cq-auth-msg" hidden></p>
+        <button type="submit" class="cq-btn">${cx.start}</button>
+      </form>`);
+
+    const form = app.querySelector(".cq-cup-form");
+    const read = () => {
+      const f = new FormData(form);
+      return {
+        name: (f.get("name") || "").trim().slice(0, 24),
+        players: new Set(f.getAll("p")),
+        tries: Number(f.get("tries")) || 1,
+        missions: new Set(f.getAll("m")),
+      };
+    };
+    const count = () => {
+      form.querySelector("[data-count-p]").textContent = form.querySelectorAll('input[name="p"]:checked').length;
+      form.querySelector("[data-count-m]").textContent = form.querySelectorAll('input[name="m"]:checked').length;
+    };
+    form.addEventListener("change", count);
+    count();
+    form.querySelector("[data-friend-add]").addEventListener("click", (e) => {
+      const d = read();
+      const friend = addFriend(e.target.closest(".cq-cup-add"));
+      if (!friend) return;
+      d.players.add(friend.id);
+      renderCupNew(d);
+    });
+    form.querySelector('[name="fname"]').addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      form.querySelector("[data-friend-add]").click();
+    });
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const d = read();
+      const msg = form.querySelector(".cq-auth-msg");
+      const error = d.players.size < 2 ? cx.needPlayers : !d.missions.size ? cx.needMissions : "";
+      msg.textContent = error;
+      msg.hidden = !error;
+      if (error) return;
+      const players = [...d.players];
+      const who = Object.fromEntries(players.map((pid) => {
+        const w = cupWho({ who: {} }, pid);
+        return [pid, w.me ? { name: w.name } : { name: w.name, emoji: w.emoji }];
+      }));
+      const cup = { id: newId("c"), name: d.name || cx.defaultName, created: Date.now(), tries: d.tries, missions: [...d.missions], players, who, results: {} };
+      state.cups.push(cup);
+      save();
+      openCupView({ cup: cup.id });
+    });
+  }
+
+  function podiumHtml(rows, cup) {
+    const cx = ct();
+    const col = (place) => {
+      const list = rows.filter((r) => r.place === place);
+      if (!list.length) return `<div class="cq-cup-step p-${place} is-empty"></div>`;
+      return `
+        <div class="cq-cup-step p-${place}">
+          ${place === 1 ? `<span class="cq-cup-crown">👑</span>` : ""}
+          ${list.map((r) => whoTag(cupWho(cup, r.pid))).join("")}
+          <span class="cq-cup-block"><b>${placeIcon(place)}</b><small>${list[0].pts} ${cx.pts}</small></span>
+        </div>`;
+    };
+    return `<div class="cq-cup-podium" aria-label="${cx.champion}">${col(2)}${col(1)}${col(3)}</div>`;
+  }
+
+  function standingsHtml(cup, rows) {
+    const cx = ct();
+    return `<ol class="cq-cup-table">${rows.map((r) => `
+      <li class="${r.place <= 3 ? `is-top p-${r.place}` : ""}">
+        <span class="cq-cup-pos">${r.place}º</span>
+        ${whoTag(cupWho(cup, r.pid))}
+        <small>${r.golds ? `🥇${r.golds}` : ""} ${r.silvers ? `🥈${r.silvers}` : ""}</small>
+        <b>${r.pts} ${cx.pts}</b>
+      </li>`).join("")}</ol>
+      <small class="cq-hint cq-cup-legend">${cx.medalsHint}</small>`;
+  }
+
+  function renderCup(cup) {
+    const cx = ct();
+    const ended = Boolean(cup.podium);
+    const rows = cupStandings(cup);
+    const total = cup.players.length * cupMissions(cup).length;
+    const matches = cupMissions(cup).map((m) => {
+      const rank = Object.fromEntries(cupMissionRank(cup, m).map((r) => [r.pid, r]));
+      const chips = cup.players.map((pid) => {
+        const used = cupTries(cup, pid, m).length;
+        const r = rank[pid];
+        const full = used >= cup.tries;
+        return `
+          <button type="button" class="cq-cup-chip${full ? " is-full" : ""}${r?.place === 1 ? " is-first" : ""}" data-cup-play="${pid}:${m.id}" ${full || ended ? "disabled" : ""}>
+            ${whoTag(cupWho(cup, pid))}
+            <small>${r ? `${placeIcon(r.place)} ${r.best}` : "—"} · ${used}/${cup.tries}${!full && !ended ? " ▶" : ""}</small>
+          </button>`;
+      }).join("");
+      return `
+        <div class="cq-cup-match">
+          <h4>${m.icon} ${tr(m.title)}${m.lower ? ` <small>(${cx.lower})</small>` : ""}</h4>
+          <div class="cq-cup-chips">${chips}</div>
+        </div>`;
+    }).join("");
+    app.innerHTML = cupShell(`<span aria-hidden="true">🏆</span> ${esc(cup.name)}`, `
+      <p class="cq-hint">${fill(cx.progress, { done: cupDone(cup), total })} · ${fill(cx.triesInfo, { n: cup.tries })}</p>
+      ${ended ? `<p class="cq-cup-ended">${cx.ended}</p>${podiumHtml(rows, cup)}` : ""}
+      <h3 class="cq-cup-sub">${cx.table}</h3>
+      ${standingsHtml(cup, rows)}
+      <h3 class="cq-cup-sub">${cx.matches}</h3>
+      ${matches}
+      <div class="cq-cup-actions">
+        ${ended ? "" : `<button type="button" class="cq-btn is-ghost" data-cup-end>${cx.end}</button>`}
+        <button type="button" class="cq-cup-del" data-cup-del>${cx.del}</button>
+      </div>`);
+  }
+
+  // Titles, 2nd and 3rd places of every player over all finished championships.
+  function renderTrophies() {
+    const cx = ct();
+    const done = state.cups.filter((c) => c.podium).sort((a, b) => b.endedAt - a.endedAt);
+    const tally = {};
+    done.forEach((cup) => cup.podium.forEach((r) => {
+      if (r.place > 3) return;
+      const row = tally[r.pid] || (tally[r.pid] = { pid: r.pid, cup, medals: [0, 0, 0] });
+      row.medals[r.place - 1]++;
+    }));
+    const rows = Object.values(tally).sort((a, b) => b.medals[0] - a.medals[0] || b.medals[1] - a.medals[1] || b.medals[2] - a.medals[2]);
+    rows.forEach((r, i) => { r.place = i > 0 && rows[i - 1].medals.join() === r.medals.join() ? rows[i - 1].place : i + 1; });
+    const date = (ts) => new Date(ts).toLocaleDateString(I18N.lang);
+    const gallery = done.map((cup) => {
+      const champs = cup.podium.filter((r) => r.place === 1).map((r) => esc(cupWho(cup, r.pid).name)).join(", ");
+      return `
+        <button type="button" class="cq-cup-card" data-cup-open="${cup.id}">
+          <b>🏆 ${esc(cup.name)}</b>
+          <small>${date(cup.endedAt)} · ${cx.champion}: ${champs}</small>
+        </button>`;
+    }).join("");
+    app.innerHTML = cupShell(cx.trophies, rows.length ? `
+      <ol class="cq-cup-table is-trophies">${rows.map((r) => `
+        <li class="${r.place <= 3 ? `is-top p-${r.place}` : ""}">
+          <span class="cq-cup-pos">${r.place}º</span>
+          ${whoTag(cupWho(r.cup, r.pid))}
+          <small>🥈 ${r.medals[1]} · 🥉 ${r.medals[2]}</small>
+          <b>🏆 ${r.medals[0]}</b>
+        </li>`).join("")}</ol>
+      <h3 class="cq-cup-sub">${cx.gallery}</h3>
+      <div class="cq-cups">${gallery}</div>` : `<p class="cq-hint">${cx.noTitles}</p>`);
+  }
+
+  function renderTeam() {
+    const cx = ct();
+    app.innerHTML = cupShell(cx.team, `
+      ${state.turma.length ? `<ul class="cq-cup-team">${state.turma.map((f) => `
+        <li>${whoTag(f)}<button type="button" class="cq-close-x" data-team-del="${f.id}" aria-label="×">×</button></li>`).join("")}</ul>` : `<p class="cq-hint">${cx.teamEmpty}</p>`}
+      <h3 class="cq-cup-sub">${cx.addFriend}</h3>
+      ${friendFields()}`);
+    const box = app.querySelector(".cq-cup-add");
+    box.querySelector("[data-friend-add]").addEventListener("click", () => {
+      if (addFriend(box)) draw();
+    });
+    box.querySelector('[name="fname"]').addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      box.querySelector("[data-friend-add]").click();
+    });
+  }
+
+  /* Shortcut bar on the home: it sticks under the site header and jumps to each group of the page,
+     lighting up the group currently on screen. */
+  function placeJump() {
+    const bar = app.querySelector(".cq-jump");
+    if (!bar) return;
+    const top = document.querySelector(".site-header")?.offsetHeight || 0;
+    root.style.setProperty("--cq-jump-top", `${top}px`);
+    root.style.setProperty("--cq-jump-gap", `${top + bar.offsetHeight + 12}px`);
+    markJump();
+  }
+
+  function markJump() {
+    const bar = app.querySelector(".cq-jump");
+    if (!bar) return;
+    const line = (parseFloat(root.style.getPropertyValue("--cq-jump-gap")) || 0) + 40;
+    let current = null;
+    app.querySelectorAll("[data-sec]").forEach((h) => { if (h.getBoundingClientRect().top <= line) current = h.dataset.sec; });
+    bar.querySelectorAll("[data-jump]").forEach((b) => {
+      const on = b.dataset.jump === current;
+      // An instant scroll: a smooth one here would cancel the page's own smooth scroll in Chrome.
+      if (on && !b.classList.contains("is-on")) bar.scrollLeft = b.offsetLeft - 16;
+      b.classList.toggle("is-on", on);
+    });
+  }
+
+  window.addEventListener("scroll", markJump, { passive: true });
+  window.addEventListener("resize", placeJump);
+
   root.innerHTML = `
     <section class="page-hero cq-hero">
       <div class="wrap">
@@ -2149,8 +2743,11 @@ function renderCraque() {
     const ph = e.target.closest("[data-phase]:not([disabled])");
     if (ph) openPhase(ph.dataset.phase);
     if (e.target.closest(".cq-edit-look")) openLookEditor();
+    const jump = e.target.closest("[data-jump]");
+    if (jump) app.querySelector(`[data-sec="${jump.dataset.jump}"]`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    cupClick(e);
     if (e.target.closest(".cq-reset") && confirm(t().resetConfirm)) {
-      state = emptyState();
+      state = { ...emptyState(), turma: state.turma, cups: state.cups };
       cloud.from("mission_results").delete().eq("user_id", user.id).then(({ error }) => {
         if (error) console.warn("Craque: history not cleared", error);
       });
@@ -2161,6 +2758,7 @@ function renderCraque() {
       if (saveTimer) pushCloud();
       cloud.auth.signOut();
       user = null;
+      view = null;
       state = emptyState();
       draw();
     }
