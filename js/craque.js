@@ -236,6 +236,7 @@ const CQ_TEXT = {
     lowerHint: "Aqui, quanto menor o número, melhor.",
     helper: "👥 Precisa de outra pessoa",
     games: "Joguinhos",
+    gamesHint: "Aqui você treina concentração, foco, raciocínio rápido e decisão.",
     freeTraining: "Treino livre",
     phase: "Fase {n}",
     lockedHint: "Bloqueada: faça a missão da fase anterior.",
@@ -328,6 +329,7 @@ const CQ_TEXT = {
     lowerHint: "Here, the lower the number, the better.",
     helper: "👥 Needs another person",
     games: "Mini-games",
+    gamesHint: "Here you train concentration, focus, quick thinking and decisions.",
     freeTraining: "Free training",
     phase: "Stage {n}",
     lockedHint: "Locked: do the mission of the previous stage.",
@@ -420,6 +422,7 @@ const CQ_TEXT = {
     lowerHint: "Aquí, cuanto menor el número, mejor.",
     helper: "👥 Necesita otra persona",
     games: "Minijuegos",
+    gamesHint: "Aquí entrenas concentración, foco, pensamiento rápido y decisión.",
     freeTraining: "Entrenamiento libre",
     phase: "Fase {n}",
     lockedHint: "Bloqueada: haz la misión de la fase anterior.",
@@ -1029,6 +1032,7 @@ function renderCraque() {
           <div class="cq-trails">${CQ_TRAILS.map(trailRow).join("")}</div>
           ${cupHomeSection()}
           <h2 class="cq-h is-group" data-sec="games"><span aria-hidden="true">🎮</span> ${tx.games}</h2>
+          <p class="cq-sec-lead">${tx.gamesHint}</p>
           <div class="cq-missions is-compact">${CQ_MISSIONS.filter(isGame).map((m) => missionCard(m, false)).join("")}</div>
           <h2 class="cq-h is-group" data-sec="free"><span aria-hidden="true">⚽</span> ${tx.freeTraining}</h2>
           <div class="cq-missions is-compact">${openMissions().filter((m) => !daily.includes(m.id) && !isGame(m)).map((m) => missionCard(m, false)).join("")}</div>
@@ -2313,6 +2317,7 @@ function renderCraque() {
       closeModal();
       draw(up);
       animateXp(state.xp - xp);
+      gainsToast(state.xp - xp, before, up);
     });
   }
 
@@ -2332,27 +2337,51 @@ function renderCraque() {
       popPoints(box, box.clientWidth / 2, 0, state.xp - from, "XP");
     }, 350);
     box.querySelectorAll(":scope > span:first-child, :scope > small").forEach((el) => el.classList.add("is-up"));
-    xpToast(from);
   }
 
-  // The XP gain also shows in a floating notice at the bottom of the screen, so the page never has to
-  // scroll up to the level bar and the child stays where they were playing on the trail.
-  function xpToast(from) {
+  // Floating notice with the attribute sum (and XP), so the child sees the gains without the page scrolling up.
+  function gainsToast(fromXp, before, up) {
     const tx = t();
+    const groups = CQ_ATTRS.filter((g) => up.has(g.id));
+    const xpGain = state.xp - fromXp;
+    if (!groups.length && xpGain <= 0) return;
+
     const per = CQ_XP.perLevel;
-    const lvlUp = Math.floor(from / per) < Math.floor(state.xp / per);
+    const lvlUp = xpGain > 0 && Math.floor(fromXp / per) < Math.floor(state.xp / per);
     root.querySelector(".cq-xp-toast")?.remove();
     const el = document.createElement("div");
     el.className = "cq-xp-toast";
+    const rows = groups.map((g) =>
+      `<li><span>${tx.attrs[g.id][0]}</span><b data-count-from="${before[g.id]}" data-count-to="${groupValue(g)}">${before[g.id]}</b></li>`
+    ).join("");
     el.innerHTML = `
-      <b>⭐ +${state.xp - from} XP</b>
-      <span class="cq-xpbar"><i style="width:${lvlUp ? 0 : (from % per) / per * 100}%"></i></span>
-      <small>${lvlUp ? "🎉 " : ""}${tx.level} ${level()}${lvlUp ? "!" : ` · ${state.xp % per} / ${per} XP`}</small>`;
+      ${rows ? `<ul class="cq-toast-sum">${rows}</ul>` : ""}
+      ${xpGain > 0 ? `<b>⭐ +${xpGain} XP</b>
+      <span class="cq-xpbar"><i style="width:${lvlUp ? 0 : (fromXp % per) / per * 100}%"></i></span>
+      <small>${lvlUp ? "🎉 " : ""}${tx.level} ${level()}${lvlUp ? "!" : ` · ${state.xp % per} / ${per} XP`}</small>` : ""}`;
     root.appendChild(el);
-    const bar = el.querySelector("i");
-    setTimeout(() => (bar.style.width = `${(state.xp % per) / per * 100}%`), 400);
-    setTimeout(() => el.classList.add("is-out"), 2800);
-    setTimeout(() => el.remove(), 3300);
+
+    const nums = [...el.querySelectorAll("[data-count-to]")];
+    const start = performance.now();
+    const dur = 900;
+    const tick = (now) => {
+      const p = Math.min(1, (now - start) / dur);
+      const ease = 1 - (1 - p) ** 3;
+      nums.forEach((n) => {
+        const a = Number(n.dataset.countFrom);
+        const b = Number(n.dataset.countTo);
+        n.textContent = Math.round(a + (b - a) * ease);
+        if (p === 1) n.classList.add("is-up");
+      });
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+
+    const bar = el.querySelector(".cq-xpbar i");
+    if (bar) setTimeout(() => (bar.style.width = `${(state.xp % per) / per * 100}%`), 400);
+    const hold = 2800 + groups.length * 200;
+    setTimeout(() => el.classList.add("is-out"), hold);
+    setTimeout(() => el.remove(), hold + 500);
   }
 
   /* ---------- Street championships ----------
