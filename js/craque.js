@@ -1403,6 +1403,14 @@ function renderCraque() {
   const CQ_PAUSE = 2000;
   const CQ_LIVES = 3;
   const CQ_LIFE_GRACE = 800;
+  // In a championship a turn is one life: losing the last heart ends the match after the 💥 screen,
+  // instead of restarting from 0. The check skips matches already stopped or closed meanwhile.
+  const CQ_CUP_OVER_DELAY = 1500;
+  function endCupTurn(btn, finish) {
+    setTimeout(() => {
+      if (btn.cqStop === finish && !modal.hidden) finish();
+    }, CQ_CUP_OVER_DELAY);
+  }
   function gamePause(wrap, m, record) {
     const tx = t();
     const el = document.createElement("div");
@@ -1555,6 +1563,7 @@ function renderCraque() {
       if (navigator.vibrate) navigator.vibrate(120);
       if (lost === "heart") return;
       const p = pause.hit(streak, best);
+      if (cupPlay) return endCupTurn(btn, finish);
       startAt += p;
       lanes.forEach((l) => {
         l.ruleAt += p;
@@ -1744,6 +1753,7 @@ function renderCraque() {
       if (navigator.vibrate) navigator.vibrate(150);
       if (lost === "heart") return;
       const p = pause.hit(streak, best);
+      if (cupPlay) return endCupTurn(btn, finish);
       startAt += p;
       lanes.forEach((l) => (l.spawnAt += p));
       streak = 0;
@@ -1915,6 +1925,7 @@ function renderCraque() {
       if (navigator.vibrate) navigator.vibrate(150);
       if (lost === "heart") return;
       const p = pause.hit(streak, best);
+      if (cupPlay) return endCupTurn(btn, finish);
       startAt += p;
       spawnAt += p;
       swapAt += p;

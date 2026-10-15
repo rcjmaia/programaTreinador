@@ -50,10 +50,13 @@ function renderLayout() {
           </div>
         </div>
       </nav>
-      <div class="lang-switch" role="group">
-        <button type="button" data-lang="pt">PT</button>
-        <button type="button" data-lang="en">EN</button>
-        <button type="button" data-lang="es">ES</button>
+      <div class="lang-switch" id="lang-switch">
+        <button type="button" class="lang-current" aria-haspopup="true" aria-expanded="false"><span data-lang-now></span><span aria-hidden="true">▾</span></button>
+        <div class="lang-menu" role="menu">
+          <button type="button" role="menuitem" data-lang="pt">PT · Português</button>
+          <button type="button" role="menuitem" data-lang="en">EN · English</button>
+          <button type="button" role="menuitem" data-lang="es">ES · Español</button>
+        </div>
       </div>
       <a class="header-cta" id="header-wa" target="_blank" rel="noopener" data-i18n="nav.contact"></a>
     </div>
@@ -98,9 +101,15 @@ function renderLayout() {
   bindLayout();
   syncLinks();
   I18N.apply();
-  document.querySelectorAll(".lang-switch button").forEach((btn) => {
+  markLang();
+}
+
+function markLang() {
+  document.querySelectorAll(".lang-switch [data-lang]").forEach((btn) => {
     btn.classList.toggle("is-active", btn.dataset.lang === I18N.lang);
   });
+  const now = document.querySelector("[data-lang-now]");
+  if (now) now.textContent = I18N.lang.toUpperCase();
 }
 
 function bindLayout() {
@@ -115,10 +124,31 @@ function bindLayout() {
     e.stopPropagation();
     drop.classList.toggle("is-open");
   });
-  document.addEventListener("click", () => drop?.classList.remove("is-open"));
+  const lang = document.getElementById("lang-switch");
+  const langBtn = lang?.querySelector(".lang-current");
+  const closeLang = () => {
+    lang?.classList.remove("is-open");
+    langBtn?.setAttribute("aria-expanded", "false");
+  };
+  langBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const open = !lang.classList.contains("is-open");
+    lang.classList.toggle("is-open", open);
+    langBtn.setAttribute("aria-expanded", String(open));
+  });
+  document.addEventListener("click", () => {
+    drop?.classList.remove("is-open");
+    closeLang();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeLang();
+  });
 
-  document.querySelectorAll(".lang-switch button").forEach((btn) => {
-    btn.addEventListener("click", () => I18N.setLang(btn.dataset.lang));
+  document.querySelectorAll(".lang-switch [data-lang]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      I18N.setLang(btn.dataset.lang);
+      closeLang();
+    });
   });
 }
 
@@ -150,7 +180,5 @@ function bindHotmart(key) {
 
 document.addEventListener("rs:lang", () => {
   syncLinks();
-  document.querySelectorAll(".lang-switch button").forEach((btn) => {
-    btn.classList.toggle("is-active", btn.dataset.lang === I18N.lang);
-  });
+  markLang();
 });
