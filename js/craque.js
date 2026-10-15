@@ -106,6 +106,8 @@ const CQ_CUP_TEXT = {
     removeConfirm: "Tirar {name} da turma? Os títulos antigos continuam guardados.",
     me: "você",
     lower: "menor é melhor",
+    all: "Marcar todos",
+    none: "Desmarcar todos",
     backToCup: "Voltar ao campeonato",
     medalsHint: "🥇 = dinâmicas vencidas · 🥈 = segundos lugares (servem para desempatar)",
     groups: { games: "Joguinhos", ball: "Com bola", move: "Movimento", mind: "Concentração" },
@@ -152,6 +154,8 @@ const CQ_CUP_TEXT = {
     removeConfirm: "Remove {name} from the crew? Old titles stay saved.",
     me: "you",
     lower: "lower is better",
+    all: "Select all",
+    none: "Clear all",
     backToCup: "Back to the championship",
     medalsHint: "🥇 = dynamics won · 🥈 = second places (used to break ties)",
     groups: { games: "Games", ball: "With the ball", move: "Movement", mind: "Focus" },
@@ -198,6 +202,8 @@ const CQ_CUP_TEXT = {
     removeConfirm: "¿Sacar a {name} del grupo? Los títulos antiguos quedan guardados.",
     me: "tú",
     lower: "menos es mejor",
+    all: "Marcar todos",
+    none: "Desmarcar todos",
     backToCup: "Volver al campeonato",
     medalsHint: "🥇 = dinámicas ganadas · 🥈 = segundos puestos (sirven para desempatar)",
     groups: { games: "Jueguitos", ball: "Con balón", move: "Movimiento", mind: "Concentración" },
@@ -2503,7 +2509,7 @@ function renderCraque() {
     const pick = (pid, w) => `<label class="cq-cup-pick"><input type="checkbox" name="p" value="${pid}" ${draft.players.has(pid) ? "checked" : ""}><span>${whoTag(w)}${w.me ? ` <small>(${cx.me})</small>` : ""}</span></label>`;
     const groups = ["games", "ball", "move", "mind"].map((g) => {
       const list = CQ_MISSIONS.filter((m) => cupOk(m) && cupGroup(m) === g);
-      return `<div class="cq-cup-group"><h4>${cx.groups[g]}</h4>${list.map((m) => `
+      return `<div class="cq-cup-group"><h4>${cx.groups[g]} <button type="button" class="cq-cup-all" data-cup-all>${cx.all}</button></h4>${list.map((m) => `
         <label class="cq-cup-pick"><input type="checkbox" name="m" value="${m.id}" ${draft.missions.has(m.id) ? "checked" : ""}><span>${m.icon} ${tr(m.title)}${m.lower ? ` <small>(${cx.lower})</small>` : ""}</span></label>`).join("")}</div>`;
     }).join("");
     app.innerHTML = cupShell(`<span aria-hidden="true">🏆</span> ${cx.create.replace("➕ ", "")}`, `
@@ -2537,8 +2543,18 @@ function renderCraque() {
     const count = () => {
       form.querySelector("[data-count-p]").textContent = form.querySelectorAll('input[name="p"]:checked').length;
       form.querySelector("[data-count-m]").textContent = form.querySelectorAll('input[name="m"]:checked').length;
+      form.querySelectorAll(".cq-cup-group").forEach((g) => {
+        const boxes = [...g.querySelectorAll('input[name="m"]')];
+        g.querySelector("[data-cup-all]").textContent = boxes.every((b) => b.checked) ? cx.none : cx.all;
+      });
     };
     form.addEventListener("change", count);
+    form.querySelectorAll("[data-cup-all]").forEach((btn) => btn.addEventListener("click", () => {
+      const boxes = [...btn.closest(".cq-cup-group").querySelectorAll('input[name="m"]')];
+      const on = !boxes.every((b) => b.checked);
+      boxes.forEach((b) => { b.checked = on; });
+      count();
+    }));
     count();
     form.querySelector("[data-friend-add]").addEventListener("click", (e) => {
       const d = read();

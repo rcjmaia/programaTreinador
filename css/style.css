@@ -2225,6 +2225,12 @@ section {
 
 .cq-jump {
   grid-column: 1 / -1;
+  justify-self: stretch;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  touch-action: pan-x pan-y;
+  overscroll-behavior-x: contain;
   position: sticky;
   top: var(--cq-jump-top, 0px);
   z-index: 30;
@@ -3738,6 +3744,26 @@ body.cq-lock {
   width: 100%;
   margin: 0;
   color: var(--hero-gold);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.cq-cup-all {
+  padding: 5px 12px;
+  border: 1px solid rgba(240, 180, 41, 0.5);
+  border-radius: 999px;
+  background: rgba(240, 180, 41, 0.12);
+  color: var(--hero-gold);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cq-cup-all:hover {
+  background: rgba(240, 180, 41, 0.25);
 }
 
 .cq-cup-pick > input,

@@ -83,8 +83,9 @@ function renderLayout() {
     </div>
   `;
 
+  // The kids' app has no floating button: it covered the games and the bottom of the screen.
   let float = document.querySelector(".wa-float");
-  if (!float) {
+  if (!float && document.body.dataset.page !== "craque") {
     float = document.createElement("a");
     float.className = "wa-float";
     float.target = "_blank";
