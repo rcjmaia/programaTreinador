@@ -63,6 +63,8 @@ const CQ_TEXT = {
     howMany: "Seu resultado ({unit})",
     save: "Salvar resultado",
     start: "Iniciar",
+    meetCrew: "Conheça a turma",
+    blokSwap: "🔀 TROCOU! 🔀",
     stop: "Parar",
     restart: "Recomeçar",
     rainOnly: "Toque só nas bolas {c}",
@@ -146,6 +148,8 @@ const CQ_TEXT = {
     howMany: "How many {unit} did you get?",
     save: "Save result",
     start: "Start",
+    meetCrew: "Meet the crew",
+    blokSwap: "🔀 SWAP! 🔀",
     stop: "Stop",
     restart: "Restart",
     rainOnly: "Tap only the {c} balls",
@@ -229,6 +233,8 @@ const CQ_TEXT = {
     howMany: "Tu resultado ({unit})",
     save: "Guardar resultado",
     start: "Iniciar",
+    meetCrew: "Conoce a la pandilla",
+    blokSwap: "🔀 ¡CAMBIO! 🔀",
     stop: "Parar",
     restart: "Reiniciar",
     rainOnly: "Toca solo los balones {c}",
@@ -842,7 +848,7 @@ function renderCraque() {
 
   function openMission(id) {
     const m = mission(id);
-    if (m.type === "quiz") return openQuiz(m);
+    if (m.type === "quiz") return m.cast ? openCast(m) : openQuiz(m);
     const tx = t();
     if (m.type === "auto") {
       return openModal(`
@@ -867,6 +873,11 @@ function renderCraque() {
     if (m.dodge) tool = `<div class="cq-play">
       <div class="cq-timer"><span class="cq-rain-score">🏆 0 · ${tx.record} ${state.records[m.id] ?? 0}</span><button type="button" class="cq-btn is-ghost" data-dodge>${tx.start}</button></div>
       <div class="cq-rain-wrap is-duo"><span class="cq-game-count" aria-live="off">0</span>${[0, 1].map(() => `<div class="cq-rain cq-dodge"><div class="cq-rain-rule">${tx.dodgeHint}</div><span class="cq-dodge-ball">⚽</span></div>`).join("")}</div></div>`;
+    if (m.blok) tool = `<div class="cq-play">
+      <div class="cq-timer"><span class="cq-rain-score">🏆 0 · ${tx.record} ${state.records[m.id] ?? 0}</span><button type="button" class="cq-btn is-ghost" data-blok>${tx.start}</button></div>
+      <div class="cq-rain-wrap"><span class="cq-game-count is-faint is-high">0</span><div class="cq-rain cq-blok"><div class="cq-blok-rows">
+            ${CQ_BLOK_COLORS.map((c, i) => `<div class="cq-blok-row" style="--c:${CQ_RAIN_COLORS[c]}"><span class="cq-blok-block" style="left:${[72, 50, 28, 44][i]}%"><i class="cq-blok-eyes"></i><i class="cq-blok-mouth"></i></span></div>`).join("")}
+      </div></div></div></div>`;
 
     openModal(`
       ${missionHeader(m)}
@@ -888,6 +899,8 @@ function renderCraque() {
     if (rainBtn) rainBtn.addEventListener("click", () => startRain(m, rainBtn, input));
     const dodgeBtn = dialog.querySelector("[data-dodge]");
     if (dodgeBtn) dodgeBtn.addEventListener("click", () => startDodge(m, dodgeBtn, input));
+    const blokBtn = dialog.querySelector("[data-blok]");
+    if (blokBtn) blokBtn.addEventListener("click", () => startBlok(m, blokBtn, input));
     const soundBtn = dialog.querySelector("[data-sound]");
     if (soundBtn) soundBtn.addEventListener("click", () => {
       state.mute = !state.mute;
@@ -949,7 +962,7 @@ function renderCraque() {
 
   // Game results come from the game itself: the field is read-only and the result is saved as soon as
   // the match ends, so a bad match can't be skipped.
-  const isGame = (m) => Boolean(m.grid || m.rain || m.dodge);
+  const isGame = (m) => Boolean(m.grid || m.rain || m.dodge || m.blok);
   const gameResult = (input, v) => {
     input.value = v ?? "";
     // A plain submit event skips the browser's min/max check; the handler clamps the value itself.
@@ -1023,19 +1036,20 @@ function renderCraque() {
   ];
 
   // cross[i]: seconds an item takes to cross the pitch at level i; gap[i]: ms between items.
-  // Each level change eases in over 1.5 s.
-  function gameSpeed(elapsed, cross, gap) {
-    const li = CQ_SPEED.reduce((acc, l, i) => (elapsed >= l.from ? i : acc), 0);
-    const ease = cqClamp01((elapsed - CQ_SPEED[li].from) / 1.5);
+  // at[i]: second when level i starts (a game may use its own). Each level change eases in over 1.5 s.
+  function gameSpeed(elapsed, cross, gap, at = CQ_SPEED.map((l) => l.from)) {
+    const li = at.reduce((acc, from, i) => (elapsed >= from ? i : acc), 0);
+    const ease = cqClamp01((elapsed - at[li]) / 1.5);
     const p = Math.max(0, li - 1);
     return { li, points: li + 1, cross: cqLerp(cross[p], cross[li], ease), gap: cqLerp(gap[p], gap[li], ease) };
   }
 
-  function showSpeedLevel(wrap, li) {
+  // Games with more levels than CQ_SPEED (Blokolor) keep counting: TURBO x4, x5...
+  function showSpeedLevel(wrap, li, banner = CQ_SPEED[li]?.banner ?? `⚡ TURBO x${li} ⚡`) {
     wrap.classList.remove("is-turbo");
     void wrap.offsetWidth;
     wrap.classList.add("is-turbo");
-    wrap.dataset.turbo = CQ_SPEED[li].banner;
+    wrap.dataset.turbo = banner;
     sound.go();
     if (navigator.vibrate) navigator.vibrate([100, 60, 100]);
   }
@@ -1380,6 +1394,227 @@ function renderCraque() {
     }, 30);
   }
 
+  /* Blokolor: coloured lines at the bottom, each with a block of its colour that slides along it.
+     Tapping (or dragging) on a line moves its block there. Balls fall from the top through the lines and
+     must be eaten by the block of their own colour: touching another block, or getting through uneaten,
+     resets the points. Speed and points per ball follow CQ_BLOK_AT.
+     Rainbow balls can be eaten by any block and are worth double; bombs must touch no block, and letting
+     one through scores. From TURBO x2 on, the colours swap between the lines every few seconds. */
+  const CQ_BLOK_COLORS = ["yellow", "green", "blue", "red"];
+  // Blokolor speeds up sooner and in bigger steps than the other games.
+  const CQ_BLOK_AT = [0, 10, 35, 60, 85, 110, 135];
+  const CQ_BLOK_CROSS = [5.5, 4.0, 3.0, 2.4, 2.0, 1.7, 1.5];
+  const CQ_BLOK_GAP = [2300, 1600, 1200, 1000, 850, 730, 640];
+
+  function startBlok(m, btn, input) {
+    if (btn.cqStop) return btn.cqStop();
+    stopTimer();
+    gameResult(input);
+    const tx = t();
+    const wrap = dialog.querySelector(".cq-rain-wrap");
+    const area = wrap.querySelector(".cq-blok");
+    const out = wrap.querySelector(".cq-game-count");
+    const scoreEl = btn.closest(".cq-timer").querySelector(".cq-rain-score");
+    area.querySelectorAll(".cq-rain-ball").forEach((el) => el.remove());
+    wrap.classList.remove("is-turbo");
+    area.classList.remove("is-crash");
+    btn.textContent = tx.stop;
+    btn.closest(".cq-play").classList.add("is-full");
+    const R = 18;
+    const record = state.records[m.id] ?? 0;
+    const startAt = Date.now();
+    let streak = 0;
+    let best = 0;
+    let speed = gameSpeed(0, CQ_BLOK_CROSS, CQ_BLOK_GAP, CQ_BLOK_AT);
+    let spawnAt = startAt + 900;
+    let swapAt = startAt + (CQ_BLOK_AT[2] + 6) * 1000;
+    let balls = [];
+    const rows = [...area.querySelectorAll(".cq-blok-row")].map((row, i) => {
+      const el = row.querySelector(".cq-blok-block");
+      // offsetLeft is the block centre: it is placed by `left` and centred with `translate`.
+      return { row, el, color: CQ_BLOK_COLORS[i], x: el.offsetLeft, target: el.offsetLeft };
+    });
+    // Lines and blocks are measured on every frame, as the layout changes with the full screen.
+    const geo = () => {
+      const top = area.getBoundingClientRect().top;
+      return rows.map((r) => {
+        const b = r.row.getBoundingClientRect();
+        return { top: b.top - top, bottom: b.bottom - top, y: (b.top + b.bottom) / 2 - top, half: r.el.offsetWidth / 2, hh: r.el.offsetHeight / 2 };
+      });
+    };
+    const showScore = () => {
+      out.textContent = streak;
+      scoreEl.textContent = `🏆 ${best} · ${tx.record} ${Math.max(record, best)}`;
+    };
+    showScore();
+    let last = startAt;
+    sound.go();
+
+    const finish = () => {
+      btn.cqStop = null;
+      btn.textContent = tx.restart;
+      btn.closest(".cq-play").classList.remove("is-full");
+      stopTimer();
+      wrap.classList.remove("is-turbo");
+      area.onpointerdown = area.onpointermove = area.onpointerup = area.onpointercancel = null;
+      area.classList.remove("is-on");
+      balls.forEach((b) => b.el.remove());
+      balls = [];
+      out.textContent = best;
+      sound.whistle();
+      gameResult(input, best);
+    };
+    btn.cqStop = finish;
+
+    // Each finger drags the line it pressed on. Releasing a finger also counts as a tap where it lifts,
+    // so a press that started off the lines still moves the block of the line it ends on.
+    const drags = new Map();
+    const rowAt = (e) => {
+      const y = e.clientY - area.getBoundingClientRect().top;
+      return geo().findIndex((r) => y >= r.top && y <= r.bottom);
+    };
+    const moveTo = (i, e) => {
+      const half = rows[i].el.offsetWidth / 2;
+      rows[i].target = Math.max(half, Math.min(area.clientWidth - half, e.clientX - area.getBoundingClientRect().left));
+    };
+    area.classList.add("is-on");
+    area.onpointerdown = (e) => {
+      e.preventDefault();
+      try { area.setPointerCapture(e.pointerId); } catch { /* the pointer is already gone */ }
+      const i = rowAt(e);
+      drags.set(e.pointerId, i);
+      if (i >= 0) moveTo(i, e);
+    };
+    area.onpointermove = (e) => {
+      const i = drags.get(e.pointerId);
+      if (i >= 0) moveTo(i, e);
+    };
+    area.onpointerup = (e) => {
+      const i = drags.get(e.pointerId) >= 0 ? drags.get(e.pointerId) : rowAt(e);
+      if (i >= 0) moveTo(i, e);
+      drags.delete(e.pointerId);
+    };
+    area.onpointercancel = (e) => drags.delete(e.pointerId);
+
+    const crash = () => {
+      streak = 0;
+      showScore();
+      area.classList.remove("is-crash");
+      void area.offsetWidth;
+      area.classList.add("is-crash");
+      tone(150, 0.3, { type: "sawtooth", vol: 0.1 });
+      if (navigator.vibrate) navigator.vibrate(150);
+    };
+
+    timer = setInterval(() => {
+      const now = Date.now();
+      const dt = (now - last) / 1000;
+      last = now;
+      const next = gameSpeed((now - startAt) / 1000, CQ_BLOK_CROSS, CQ_BLOK_GAP, CQ_BLOK_AT);
+      if (next.li !== speed.li) showSpeedLevel(wrap, next.li);
+      speed = next;
+      const w = area.clientWidth;
+      const h = area.clientHeight;
+      const g = geo();
+      // Blocks glide to where the finger is, crossing the whole screen in about 0.4 s.
+      const step = w * 2.5 * dt;
+      rows.forEach((r) => {
+        const d = r.target - r.x;
+        r.x += Math.sign(d) * Math.min(Math.abs(d), step);
+        r.el.style.left = `${r.x.toFixed(1)}px`;
+      });
+      // A swap first stops new balls and waits for the screen to clear, so no ball is caught
+      // halfway by the new colours; balls come back once the child has seen the new lines.
+      const swapping = speed.li >= 2 && now >= swapAt;
+      if (swapping && !balls.length) {
+        swapAt = now + 9000 + Math.random() * 4000;
+        spawnAt = now + 1500;
+        // Rotating the colours guarantees every line gets a new one.
+        const shift = 1 + Math.floor(Math.random() * (rows.length - 1));
+        const next = rows.map((_, i) => rows[(i + shift) % rows.length].color);
+        rows.forEach((r, i) => {
+          r.color = next[i];
+          r.row.style.setProperty("--c", CQ_RAIN_COLORS[r.color]);
+          r.row.classList.remove("is-swap");
+          void r.row.offsetWidth;
+          r.row.classList.add("is-swap");
+        });
+        showSpeedLevel(wrap, speed.li, tx.blokSwap);
+      }
+      // The block's face: chomping when it eats, a scowl when the ball is not its colour.
+      const mood = (el, cls) => {
+        el.classList.remove("is-eat", "is-yuck");
+        void el.offsetWidth;
+        el.classList.add(cls);
+        clearTimeout(el.cqMood);
+        el.cqMood = setTimeout(() => el.classList.remove(cls), 700);
+      };
+      const score = (n, x, y) => {
+        streak += n;
+        if (streak > best) best = streak;
+        showScore();
+        popPoints(area, x, y, n);
+        sound.tick();
+      };
+      if (!swapping && now >= spawnAt) {
+        spawnAt = now + speed.gap * (0.85 + Math.random() * 0.3);
+        // Specials only show up after the first seconds, once the child has got the idea.
+        const roll = now - startAt > 5000 ? Math.random() : 1;
+        const kind = roll < 0.08 ? "rainbow" : roll < 0.18 ? "bomb" : "color";
+        const color = kind === "color" ? pick(rows.map((r) => r.color)) : kind;
+        const el = document.createElement("span");
+        el.className = `cq-rain-ball${kind === "color" ? "" : ` is-${kind}`}`;
+        if (kind === "color") el.style.background = CQ_RAIN_COLORS[color];
+        if (kind === "bomb") el.textContent = "💣";
+        const x = R + 8 + Math.random() * (w - 2 * R - 16);
+        el.style.transform = `translate(${x.toFixed(1)}px, ${-R}px)`;
+        area.appendChild(el);
+        balls.push({ el, color, x, y: -R });
+      }
+      const v = h / speed.cross;
+      const hungry = new Set();
+      balls = balls.filter((b) => {
+        b.y += v * dt;
+        for (let i = 0; i < rows.length; i++) {
+          // A sliding block passes through balls; it only eats or crashes once it has stopped.
+          if (rows[i].x !== rows[i].target) continue;
+          // Any overlap counts, also when a block stops under a ball that is already level with it.
+          const top = g[i].y - g[i].hh - R * 0.6;
+          if (b.y < top || b.y > g[i].y + g[i].hh + R * 0.6) continue;
+          if (Math.abs(b.x - rows[i].x) >= g[i].half + R * 0.6) continue;
+          if (b.color === "rainbow" || rows[i].color === b.color) {
+            score(b.color === "rainbow" ? speed.points * 2 : speed.points, b.x, top - 14);
+            // The ball drops into the mouth.
+            b.el.style.transform = `translate(${rows[i].x.toFixed(1)}px, ${g[i].y.toFixed(1)}px) scale(0.2)`;
+            b.el.classList.add("is-eaten");
+            mood(rows[i].el, "is-eat");
+          } else {
+            if (b.color === "bomb") b.el.textContent = "💥";
+            b.el.classList.add("is-miss");
+            mood(rows[i].el, "is-yuck");
+            crash();
+          }
+          setTimeout(() => b.el.remove(), 300);
+          return false;
+        }
+        if (b.y > h + R) {
+          b.el.remove();
+          if (b.color === "bomb") score(speed.points, b.x, h - 30);
+          else crash();
+          return false;
+        }
+        // A block opens its mouth wide when a ball it can eat is coming straight at it.
+        rows.forEach((r, i) => {
+          const edible = b.color === "rainbow" || b.color === r.color;
+          if (edible && b.y > g[i].y - h * 0.3 && Math.abs(b.x - r.x) < g[i].half + R) hungry.add(i);
+        });
+        b.el.style.transform = `translate(${b.x.toFixed(1)}px, ${b.y.toFixed(1)}px)`;
+        return true;
+      });
+      rows.forEach((r, i) => r.el.classList.toggle("is-open", hungry.has(i)));
+    }, 30);
+  }
+
   function toggleTimer(m, btn, input) {
     const tx = t();
     const box = btn.closest(".cq-timer");
@@ -1458,6 +1693,29 @@ function renderCraque() {
         run();
       }
     }, 100);
+  }
+
+  // Before the questions: meet each character of the crew and the emotion it stands for.
+  function openCast(m) {
+    const tx = t();
+    openModal(`
+      ${missionHeader(m)}
+      ${m.cast.some((c) => c.emo) ? `<h4 class="cq-cast-title">${tx.meetCrew}</h4>` : ""}
+      <ul class="cq-cast"><li class="cq-loading">${tx.loading}</li></ul>
+      ${m.castNote ? `<p class="cq-note">${tr(m.castNote)}</p>` : ""}
+      <button type="button" class="cq-btn" data-quiz>${tx.start}</button>`);
+    dialog.querySelector("[data-quiz]").addEventListener("click", () => openQuiz(m));
+    const list = dialog.querySelector(".cq-cast");
+    // The faces and names live in the crew's animation file, loaded on demand.
+    cqLoadAnim("cabine").then(() => {
+      if (!list.isConnected) return;
+      list.innerHTML = m.cast.map((c) => `
+        <li><svg viewBox="-20 -34 40 56" aria-hidden="true">${cqMindFace(c.id)}</svg>
+          <span><b>${tr(CQ_MIND_CAST[c.id].name)}</b>${c.emo ? ` · <em>${tr(c.emo)}</em><small>${tr(c.line)}</small>` : `<q>${tr(c.say)}</q>`}</span></li>`).join("");
+    }).catch((err) => {
+      console.warn("Craque:", err);
+      list.remove();
+    });
   }
 
   function openQuiz(m) {

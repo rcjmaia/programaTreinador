@@ -2652,6 +2652,54 @@ body.cq-lock {
   gap: 4px;
 }
 
+.cq-cast-title {
+  margin: 4px 0 8px;
+  font-family: Oswald, sans-serif;
+  font-size: 1.05rem;
+}
+
+.cq-cast {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.cq-cast li {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.cq-cast svg {
+  width: 44px;
+  height: 62px;
+}
+
+.cq-cast em {
+  font-style: normal;
+  color: var(--hero-gold);
+  font-weight: 700;
+}
+
+.cq-cast q {
+  display: block;
+  margin-top: 2px;
+  line-height: 1.35;
+}
+
+.cq-cast small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
 .cq-timer {
   display: flex;
   align-items: center;
@@ -2865,6 +2913,11 @@ body.cq-lock {
   color: rgba(255, 255, 255, 0.5);
 }
 
+/* Above the Blokolor lines. */
+.cq-game-count.is-high {
+  top: 28%;
+}
+
 .cq-dodge .cq-rain-rule {
   top: auto;
   bottom: 10px;
@@ -2914,6 +2967,198 @@ body.cq-lock {
 .cq-dodge-obs.is-hit {
   scale: 1.7;
   opacity: 0;
+}
+
+/* Blokolor */
+.cq-rain.cq-blok {
+  background: #0f172a;
+  touch-action: none;
+}
+
+.cq-rain-wrap.is-turbo .cq-rain.cq-blok {
+  background: #1e1b4b;
+}
+
+.cq-blok .cq-rain-ball {
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  cursor: default;
+}
+
+.cq-blok-rows {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2%;
+  height: 44%;
+  display: grid;
+  grid-auto-rows: 1fr;
+}
+
+.cq-blok-row {
+  position: relative;
+}
+
+.cq-blok-row::before {
+  content: "";
+  position: absolute;
+  left: 3%;
+  right: 3%;
+  top: 50%;
+  height: 4px;
+  margin-top: -2px;
+  border-radius: 2px;
+  background: var(--c);
+  opacity: 0.8;
+}
+
+.cq-blok-block {
+  position: absolute;
+  top: 50%;
+  width: 20%;
+  max-width: 84px;
+  height: 64%;
+  max-height: 48px;
+  translate: -50% -50%;
+  border-radius: 10px;
+  background: var(--c);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3), 0 4px 10px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+/* The block's hungry face: eyes looking up at the balls and a wide-open mouth. */
+.cq-blok-eyes {
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  top: 10%;
+  height: 38%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.cq-blok-eyes::before,
+.cq-blok-eyes::after {
+  content: "";
+  height: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 32%, #111 0 30%, #fff 33%);
+  box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.25);
+  transition: scale 0.15s, rotate 0.15s;
+}
+
+.cq-blok-mouth {
+  position: absolute;
+  left: 34%;
+  right: 34%;
+  top: 54%;
+  height: 34%;
+  border-radius: 45% 45% 999px 999px;
+  background: #3b0a0a;
+  box-shadow: inset 0 -4px 0 #f87171;
+  transition: all 0.15s;
+}
+
+/* A ball it can eat is coming: mouth and eyes wide open. */
+.cq-blok-block.is-open .cq-blok-mouth {
+  scale: 1.6 1.4;
+}
+
+.cq-blok-block.is-open .cq-blok-eyes::before,
+.cq-blok-block.is-open .cq-blok-eyes::after {
+  scale: 1.15;
+}
+
+/* Eating: the ball drops into the mouth, which chews three times while the body squashes. */
+.cq-blok .cq-rain-ball.is-eaten {
+  transition: transform 0.2s, opacity 0.2s 0.1s;
+  opacity: 0;
+}
+
+.cq-blok-block.is-eat {
+  animation: cq-eat 0.7s;
+}
+
+@keyframes cq-eat {
+  15% { scale: 1.15 0.85; }
+  35% { scale: 0.95 1.08; }
+  50% { scale: 1.1 0.9; }
+  70% { scale: 0.98 1.04; }
+  85% { scale: 1.05 0.95; }
+}
+
+.cq-blok-block.is-eat .cq-blok-mouth {
+  animation: cq-chomp 0.7s;
+}
+
+.cq-blok-block.is-eat .cq-blok-eyes::before,
+.cq-blok-block.is-eat .cq-blok-eyes::after {
+  scale: 1 0.25;
+}
+
+@keyframes cq-chomp {
+  0% { scale: 1.7 1.5; }
+  15%, 50%, 85% { scale: 1.4 0.1; }
+  35%, 70% { scale: 1.3 1; }
+}
+
+/* Wrong colour: a scowl, angry eyes and a shake of the head. */
+.cq-blok-block.is-yuck {
+  animation: cq-yuck 0.5s;
+  filter: saturate(0.6) brightness(0.85);
+}
+
+.cq-blok-block.is-yuck .cq-blok-eyes::before {
+  scale: 1 0.45;
+  rotate: 18deg;
+}
+
+.cq-blok-block.is-yuck .cq-blok-eyes::after {
+  scale: 1 0.45;
+  rotate: -18deg;
+}
+
+.cq-blok-block.is-yuck .cq-blok-mouth {
+  top: 68%;
+  height: 16%;
+  left: 30%;
+  right: 30%;
+  border-radius: 999px 999px 0 0;
+  box-shadow: none;
+}
+
+@keyframes cq-yuck {
+  20% { rotate: -8deg; }
+  40% { rotate: 8deg; }
+  60% { rotate: -5deg; }
+  80% { rotate: 4deg; }
+}
+
+/* Any block can eat the rainbow ball; the bomb must touch none. */
+.cq-blok .cq-rain-ball.is-rainbow {
+  background: conic-gradient(#ef4444, #facc15, #22c55e, #3b82f6, #a855f7, #ef4444);
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.7);
+}
+
+.cq-blok .cq-rain-ball.is-bomb {
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  font-size: 30px;
+  line-height: 1;
+}
+
+/* Crazy Blokolor: the lines flash when their colours swap. */
+.cq-blok-row.is-swap::before {
+  animation: cq-swap 0.9s;
+}
+
+@keyframes cq-swap {
+  0%, 50% { opacity: 1; height: 10px; margin-top: -5px; box-shadow: 0 0 16px var(--c); }
 }
 
 .cq-rain.is-crash {

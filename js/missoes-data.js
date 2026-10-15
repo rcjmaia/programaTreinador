@@ -24,7 +24,7 @@ const CQ_CHAIN = {
   fis: ["hops", "jacks", "squats", "jump", "plank", "shield", "rope", "stepup", "onefoot", "situps", "lunges"],
   int: [
     "quiz", "voltou", "chuva", "tecnica", "leitura", "esquemas", "offball", "chuvanao", "contra", "espaco", "setpiece", "bloco",
-    "rules", "impedimento", "chuvaconfusa", "tirometa", "chuvadupla", "lateralarea", "escanteio", "transicao", "chuvamaluca", "funcoes", "poscb", "posfb", "desvio", "posmid", "posst",
+    "rules", "impedimento", "chuvaconfusa", "tirometa", "chuvadupla", "lateralarea", "escanteio", "transicao", "chuvamaluca", "funcoes", "poscb", "posfb", "desvio", "blokolor", "posmid", "posst",
   ],
   cab: [
     "turma", "statue", "nuvens", "nuvemcount", "breath", "agora", "grade", "nomear", "termometro", "blindstatue",

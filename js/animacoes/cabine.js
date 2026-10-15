@@ -18,6 +18,8 @@ const CQ_MIND_CAST = {
   zumzum: { color: "#fb923c", dark: "#c2410c", name: ["Zum-Zum", "Buzz", "Zum-Zum"] },
   sofa: { color: "#a3a3a3", dark: "#525252", name: ["Sr. Sofá", "Mr. Couch", "Sr. Sofá"] },
   pavao: { color: "#e879f9", dark: "#a21caf", name: ["Pavão", "Peacock", "Pavo Real"] },
+  // Not an emotion: an old wise man from India who teaches the crew.
+  vovo: { color: "#d6a06b", dark: "#8a5a2b", name: ["Vovô Sábio", "Wise Grandpa", "Abuelo Sabio"] },
 };
 
 const CQ_MIND_SLOTS = [[62, 150], [258, 150], [22, 158], [298, 158]];
@@ -27,6 +29,7 @@ function cqMindFace(id) {
   const c = CQ_MIND_CAST[id];
   const eye = (x) => {
     if (id === "sofa") return `<path d="M${x - 4} -2 q4 3 8 0" stroke="#111" stroke-width="1.6" fill="none" />`;
+    if (id === "vovo") return `<path d="M${x - 3.5} -1 q3.5 -3.5 7 0" stroke="#111" stroke-width="1.6" fill="none" stroke-linecap="round" />`;
     const r = id === "tremelique" ? 3.6 : 2.6;
     return `<circle cx="${x}" cy="-2" r="${r}" fill="#fff" /><circle cx="${x}" cy="-1.5" r="${r * 0.5}" fill="#111" />`;
   };
@@ -39,11 +42,13 @@ function cqMindFace(id) {
     zumzum: "M-6 8 l3 -2 l3 2 l3 -2 l3 2",
     sofa: "M-4 8 h8",
     pavao: "M-5 6 q6 3 9 -1",
+    vovo: "M-4 6 q4 3 8 0",
   };
   const extras = {
     capitao: `<path d="M-14 -16 q14 -10 28 0 v4 h-28 z" fill="#0f172a" /><rect x="-15" y="-13" width="30" height="3" fill="#facc15" />`,
     pulinho: `<path d="M0 -26 l2.5 5 5.5 .8 -4 3.8 1 5.4 -5 -2.6 -5 2.6 1 -5.4 -4 -3.8 5.5 -.8z" fill="#fde047" stroke="#a16207" stroke-width=".8" />`,
     tremelique: "",
+    vovo: `<g fill="#f1f5f9"><path d="M-13 5 q0 19 13 23 q13 -4 13 -23 q-6 6 -13 6 q-7 0 -13 -6z" /><ellipse cx="-14.5" cy="-4" rx="3" ry="5" /><ellipse cx="14.5" cy="-4" rx="3" ry="5" /></g>`,
     faisca: `<path d="M-8 -16 q2 -10 6 -6 q1 -9 5 -4 q4 -7 5 2 q4 -2 2 8 z" fill="#f97316" />`,
     nublada: `<g fill="#cbd5e1"><circle cx="-6" cy="-26" r="5" /><circle cx="1" cy="-29" r="6" /><circle cx="8" cy="-26" r="5" /></g>`,
     zumzum: `<g stroke="${c.dark}" stroke-width="1.6"><line x1="-8" y1="-15" x2="-11" y2="-22" /><line x1="0" y1="-17" x2="0" y2="-25" /><line x1="8" y1="-15" x2="11" y2="-22" /></g>`,
@@ -54,6 +59,7 @@ function cqMindFace(id) {
     faisca: `<path d="M-10 -8 l7 3 M10 -8 l-7 3" stroke="#111" stroke-width="1.8" />`,
     nublada: `<path d="M-10 -5 l7 -3 M10 -5 l-7 -3" stroke="#111" stroke-width="1.4" />`,
     pavao: `<path d="M-10 -8 l7 -1 M10 -8 l-7 -1" stroke="#111" stroke-width="1.4" />`,
+    vovo: `<path d="M-10 -7 l6 -1.5 M10 -7 l-6 -1.5" stroke="#f8fafc" stroke-width="2.2" stroke-linecap="round" />`,
   };
   return `
     ${id === "pavao" ? extras.pavao : ""}
