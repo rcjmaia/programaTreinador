@@ -133,8 +133,14 @@ a {
   align-items: center;
   gap: 6px;
   margin-left: auto;
+  flex: 1 1 0;
+  min-width: 0;
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+
+.header-cta {
+  flex-shrink: 0;
 }
 
 .nav a {
@@ -281,6 +287,20 @@ a {
   font-size: clamp(1.4rem, 3vw, 2.2rem);
   color: var(--hero-gold);
   margin: 0 0 4px;
+}
+
+.hero-badge {
+  display: inline-block;
+  font-family: Oswald, Impact, sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: clamp(1.1rem, 2.4vw, 1.6rem);
+  color: #062b14;
+  background: #25d366;
+  border-radius: 999px;
+  padding: 4px 18px;
+  margin: 6px 0 10px;
 }
 
 .hero h1 {

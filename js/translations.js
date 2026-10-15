@@ -31,6 +31,7 @@ const TRANSLATIONS = {
     },
     hero: {
       kicker: "Scout profissional",
+      badge: "Peneira On-Line",
       title: "Descobrindo talentos do futebol.",
       lead: "Envie seu vídeo. Eu analiso, oriento e mostro a empresários e clubes parceiros para avaliação.",
       ctaWa: "Falar no WhatsApp",
@@ -192,6 +193,7 @@ const TRANSLATIONS = {
     },
     hero: {
       kicker: "Professional scout",
+      badge: "Online Trial",
       title: "Discovering football talent.",
       lead: "Send your video. I analyse it, guide you and show it to partner agents and clubs for evaluation.",
       ctaWa: "Message on WhatsApp",
@@ -353,6 +355,7 @@ const TRANSLATIONS = {
     },
     hero: {
       kicker: "Scout profesional",
+      badge: "Prueba Online",
       title: "Descubriendo talentos del fútbol.",
       lead: "Envía tu video. Yo lo analizo, te oriento y lo muestro a representantes y clubes socios para su evaluación.",
       ctaWa: "Hablar por WhatsApp",
