@@ -27,7 +27,7 @@ const CQ_CHAIN = {
     "rules", "impedimento", "chuvaconfusa", "tirometa", "chuvadupla", "lateralarea", "escanteio", "transicao", "chuvamaluca", "funcoes", "poscb", "posfb", "desvio", "blokolor", "posmid", "posst",
   ],
   cab: [
-    "turma", "statue", "nuvens", "nuvemcount", "breath", "agora", "grade", "nomear", "termometro", "blindstatue",
+    "turma", "statue", "nuvens", "nuvemcount", "breath", "agora", "grade", "termometro", "blindstatue",
     "rotina", "minharotina", "estoico", "countdown", "lanterna", "sofa", "cincomin", "metas", "metasemana", "grade40",
     "vigia", "gratidao", "cinema", "pavao", "timeunido", "vozcampo", "porque", "descanso", "sono", "lesao", "melhor", "streak",
   ],

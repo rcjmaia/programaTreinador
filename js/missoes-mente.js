@@ -121,26 +121,6 @@ CQ_MISSIONS.push(
     },
   },
   {
-    id: "nomear", type: "mind", icon: "🔎", subs: ["concentration", "composure"], tiers: [2, 4, 6, 10], max: 20,
-    title: ["Quem está no comando?", "Who's in charge?", "¿Quién está al mando?"],
-    desc: ["Durante o dia, perceba as emoções que aparecem e dê nome a elas. Quantas vezes você percebeu?", "During the day, notice the emotions that show up and name them. How many times did you notice?", "Durante el día, nota las emociones que aparecen y ponles nombre. ¿Cuántas veces lo notaste?"],
-    steps: [
-      ["Sentiu algo forte? Pare 1 segundo.", "Felt something strong? Pause for 1 second.", "¿Sentiste algo fuerte? Para 1 segundo."],
-      ["Dê o nome: 'É a Faísca', 'É o Tremelique', 'É o Pulinho'...", "Name it: 'That's Spark', 'That's Shaky', 'That's Bouncy'...", "Ponle nombre: 'Es Chispa', 'Es Tembleque', 'Es Saltito'..."],
-      ["Respire e devolva o comando ao Capitão. À noite, conte quantas vezes fez isso.", "Breathe and hand the controls back to the Captain. At night, count how many times you did it.", "Respira y devuelve el mando al Capitán. A la noche, cuenta cuántas veces lo hiciste."],
-    ],
-    unit: ["emoções percebidas", "emotions noticed", "emociones notadas"],
-    anim: "cabine",
-    animArgs: {
-      cast: ["capitao", "faisca", "tremelique", "pulinho"],
-      steps: [
-        { d: 2.4, boss: "faisca", mood: { faisca: "big" }, say: ["faisca", ["Grrr! Que raiva!", "Grrr! So angry!", "¡Grrr! ¡Qué rabia!"]], text: ["Uma emoção forte apareceu", "A strong emotion showed up", "Apareció una emoción fuerte"] },
-        { d: 2.6, say: ["capitao", ["Opa, é a Faísca. Te vi!", "Oh, it's Spark. I see you!", "Ah, es Chispa. ¡Te vi!"]], text: ["Dar nome à emoção", "Name the emotion", "Ponerle nombre a la emoción"] },
-        { d: 2.6, boss: "capitao", mood: { faisca: "" }, say: ["capitao", ["Respira... Agora deixa comigo.", "Breathe... I've got it now.", "Respira... Ahora déjamelo a mí."]], text: ["O comando volta ao Capitão", "The Captain takes back control", "El mando vuelve al Capitán"] },
-      ],
-    },
-  },
-  {
     id: "cincomin", type: "mind", icon: "⏱️", subs: ["discipline"], tiers: [1, 2, 3, 5], max: 10, timer: { mode: "down", s: 300 },
     title: ["Desafio dos 5 minutos", "5-minute challenge", "Desafío de los 5 minutos"],
     desc: ["Escolha algo que você está deixando para depois e faça só 5 minutos. Quantas tarefas adiadas você começou hoje?", "Pick something you keep putting off and do just 5 minutes. How many postponed tasks did you start today?", "Elige algo que vienes dejando para después y hazlo solo 5 minutos. ¿Cuántas tareas postergadas empezaste hoy?"],

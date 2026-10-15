@@ -2227,6 +2227,67 @@ section {
   color: var(--muted);
 }
 
+.cq-edit-look {
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: inherit;
+  cursor: pointer;
+}
+
+.cq-edit-look:hover {
+  border-color: var(--hero-gold);
+}
+
+.cq-look input {
+  position: absolute;
+  opacity: 0;
+}
+
+.cq-look span {
+  display: block;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  border: 3px solid transparent;
+  box-shadow: 0 0 0 1px var(--line);
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+}
+
+.cq-look svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.cq-look input:checked + span {
+  border-color: var(--hero-gold);
+}
+
+.cq-look input:focus-visible + span {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.cq-look-preview {
+  display: grid;
+  justify-items: center;
+}
+
+.cq-look-preview .cq-avatar {
+  margin: 0;
+}
+
+.cq-look-form {
+  display: grid;
+  gap: 14px;
+}
+
 .cq-status {
   display: grid;
   grid-template-columns: 1fr auto;

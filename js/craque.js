@@ -22,7 +22,41 @@ const CQ_ATTRS = [
 const CQ_GK_GROUP = "gol";
 
 const CQ_SHIRTS = ["#2563eb", "#dc2626", "#16a34a", "#f59e0b", "#111827"];
-const CQ_SKINS = ["#f6d3b3", "#d9a273", "#a86b3c", "#6b4226"];
+const CQ_SKINS = ["#f6d3b3", "#d9a273", "#a86b3c", "#6b4226", "#3d2314"];
+// On the darker skins the lip line gets lighter and dark pupils get eye whites, so the face stays visible.
+const CQ_DARK_SKINS = ["#6b4226", "#3d2314"];
+const CQ_EYE_WHITES = { dot: [[44, 37], [56, 37]], brave: [[44, 37.5], [56, 37.5]], wink: [[44, 37]] };
+const CQ_HAIR_COLORS = ["#1f1610", "#6b3e1f", "#e3b04b", "#b5471f", "#3b82f6", "#ec4899"];
+// Each hair has a back part (drawn behind the head) and a front part (over the forehead).
+const CQ_HAIRS = {
+  short: ["", `<path d="M34 35 Q34 18 50 18 Q66 18 66 35 Q60 26 50 27 Q40 26 34 35 Z" />`],
+  buzz: ["", `<path d="M35 32 Q36 19 50 19 Q64 19 65 32 Q58 24 50 24 Q42 24 35 32 Z" opacity="0.55" />`],
+  spiky: ["", `<path d="M34 34 L33 24 L39 27 L40 16 L46 23 L50 13 L54 23 L60 16 L61 27 L67 24 L66 34 Q60 26 50 27 Q40 26 34 34 Z" />`],
+  afro: [`<circle cx="50" cy="30" r="22" />`, `<path d="M34 33 Q36 22 50 22 Q64 22 66 33 Q60 27 50 28 Q40 27 34 33 Z" />`],
+  long: [`<path d="M32 36 Q30 16 50 16 Q70 16 68 36 L70 62 Q62 65 57 56 L43 56 Q38 65 30 62 Z" />`, `<path d="M34 38 Q32 18 50 18 Q68 18 66 38 Q64 28 56 26 Q48 30 38 28 Q35 32 34 38 Z" />`],
+  longer: [`<path d="M32 36 Q30 16 50 16 Q70 16 68 36 L73 84 Q63 89 58 79 L57 56 L43 56 L42 79 Q37 89 27 84 Z" />`, `<path d="M34 38 Q32 18 50 18 Q68 18 66 38 Q64 28 56 26 Q48 30 38 28 Q35 32 34 38 Z" />`],
+  braids: [`<path d="M33 36 Q31 17 50 17 Q69 17 67 36 Z" />${[44, 51, 58, 65, 72].map((y) => `<circle cx="33" cy="${y}" r="3.6" /><circle cx="67" cy="${y}" r="3.6" />`).join("")}`, `<path d="M34 35 Q34 18 50 18 Q66 18 66 35 Q60 26 50 27 Q40 26 34 35 Z" />`],
+  bun: [`<circle cx="50" cy="15" r="7" />`, `<path d="M34 35 Q34 19 50 19 Q66 19 66 35 Q62 25 50 25 Q38 25 34 35 Z" />`],
+  mohawk: ["", `<path d="M35 32 Q36 19 50 19 Q64 19 65 32 Q58 24 50 24 Q42 24 35 32 Z" opacity="0.4" /><path d="M45 29 L44 13 L50 8 L56 13 L55 29 Q50 26 45 29 Z" />`],
+  bald: ["", ""],
+};
+const CQ_EYES = {
+  dot: `<circle cx="44" cy="37" r="2.2" fill="#1f1610" /><circle cx="56" cy="37" r="2.2" fill="#1f1610" /><g fill="#fff"><circle cx="44.7" cy="36.3" r="0.7" /><circle cx="56.7" cy="36.3" r="0.7" /></g>`,
+  big: `<g fill="#fff"><circle cx="44" cy="37" r="3.8" /><circle cx="56" cy="37" r="3.8" /></g><g fill="#1f1610"><circle cx="44.6" cy="37.6" r="2" /><circle cx="56.6" cy="37.6" r="2" /></g><g fill="#fff"><circle cx="45.2" cy="36.8" r="0.7" /><circle cx="57.2" cy="36.8" r="0.7" /></g>`,
+  happy: `<path d="M41 38 Q44 34 47 38 M53 38 Q56 34 59 38" fill="none" stroke="#1f1610" stroke-width="1.8" stroke-linecap="round" />`,
+  wink: `<circle cx="44" cy="37" r="2.2" fill="#1f1610" /><circle cx="44.7" cy="36.3" r="0.7" fill="#fff" /><path d="M53 37.5 Q56 35 59 37.5" fill="none" stroke="#1f1610" stroke-width="1.8" stroke-linecap="round" />`,
+  brave: `<path d="M40 32 L47 34 M60 32 L53 34" stroke="#1f1610" stroke-width="1.8" stroke-linecap="round" /><circle cx="44" cy="37.5" r="2" fill="#1f1610" /><circle cx="56" cy="37.5" r="2" fill="#1f1610" /><g fill="#fff"><circle cx="44.6" cy="36.9" r="0.7" /><circle cx="56.6" cy="36.9" r="0.7" /></g>`,
+  shades: `<path d="M38 34 H62 V36" fill="none" stroke="#111" stroke-width="1.4" /><rect x="38.5" y="34" width="10" height="5.5" rx="2.5" fill="#111" /><rect x="51.5" y="34" width="10" height="5.5" rx="2.5" fill="#111" /><path d="M40.5 35.5 L43 35.5" stroke="#fff" stroke-width="0.8" opacity="0.7" />`,
+};
+const CQ_MOUTHS = {
+  smile: `<path d="M44 44 Q50 49 56 44" fill="none" stroke="#5a2a1a" stroke-width="1.8" stroke-linecap="round" />`,
+  grin: `<path d="M43 43 Q50 52 57 43 Z" fill="#7a1f1f" /><path d="M44.5 43.6 H55.5 L55 45 H45 Z" fill="#fff" />`,
+  tongue: `<path d="M44 44 Q50 49 56 44" fill="none" stroke="#5a2a1a" stroke-width="1.8" stroke-linecap="round" /><path d="M48 46.2 Q50 50.5 52 46.2 Z" fill="#f472b6" />`,
+  neutral: `<path d="M46 45 H54" stroke="#5a2a1a" stroke-width="1.8" stroke-linecap="round" />`,
+  wow: `<ellipse cx="50" cy="45.5" rx="2.4" ry="3" fill="#7a1f1f" />`,
+  smirk: `<path d="M45 45.5 Q51 47.5 56 42.5" fill="none" stroke="#5a2a1a" stroke-width="1.8" stroke-linecap="round" />`,
+};
+const CQ_LOOK_DEFAULT = { hair: "short", hairColor: CQ_HAIR_COLORS[0], eyes: "dot", mouth: "smile" };
 
 const CQ_TEXT = {
   pt: {
@@ -33,6 +67,12 @@ const CQ_TEXT = {
     position: "Posição",
     shirt: "Cor da camisa",
     skin: "Cor da pele",
+    hair: "Cabelo",
+    hairColor: "Cor do cabelo",
+    eyes: "Olhos",
+    mouth: "Boca",
+    editLook: "✏️ Mudar visual",
+    saveLook: "Salvar",
     promise: "Prometo marcar só o que eu fizer de verdade. Palavra de craque!",
     create: "Criar minha carta",
     level: "Nível",
@@ -118,6 +158,12 @@ const CQ_TEXT = {
     position: "Position",
     shirt: "Shirt colour",
     skin: "Skin tone",
+    hair: "Hair",
+    hairColor: "Hair colour",
+    eyes: "Eyes",
+    mouth: "Mouth",
+    editLook: "✏️ Change look",
+    saveLook: "Save",
     promise: "I promise to log only what I really did. Player's word!",
     create: "Create my card",
     level: "Level",
@@ -203,6 +249,12 @@ const CQ_TEXT = {
     position: "Posición",
     shirt: "Color de camiseta",
     skin: "Tono de piel",
+    hair: "Pelo",
+    hairColor: "Color del pelo",
+    eyes: "Ojos",
+    mouth: "Boca",
+    editLook: "✏️ Cambiar look",
+    saveLook: "Guardar",
     promise: "Prometo anotar solo lo que hice de verdad. ¡Palabra de crack!",
     create: "Crear mi carta",
     level: "Nivel",
@@ -553,15 +605,97 @@ function renderCraque() {
     return [weakest.id, quizzes[seed % quizzes.length].id, minds[seed % minds.length].id];
   }
 
+  // Card data comes from the database, so only known values ever reach the SVG.
+  function look(p) {
+    const ok = (list, v, def) => (Array.isArray(list) ? list.includes(v) : Object.hasOwn(list, v)) ? v : def;
+    return {
+      shirt: ok(CQ_SHIRTS, p.shirt, CQ_SHIRTS[0]),
+      skin: ok(CQ_SKINS, p.skin, CQ_SKINS[1]),
+      hair: ok(CQ_HAIRS, p.hair, CQ_LOOK_DEFAULT.hair),
+      hairColor: ok(CQ_HAIR_COLORS, p.hairColor, CQ_LOOK_DEFAULT.hairColor),
+      eyes: ok(CQ_EYES, p.eyes, CQ_LOOK_DEFAULT.eyes),
+      mouth: ok(CQ_MOUTHS, p.mouth, CQ_LOOK_DEFAULT.mouth),
+    };
+  }
+
+  function headSvg(l) {
+    const [back, front] = CQ_HAIRS[l.hair];
+    const dark = CQ_DARK_SKINS.includes(l.skin);
+    const whites = dark ? (CQ_EYE_WHITES[l.eyes] || []).map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3.4" fill="#fff" />`).join("") : "";
+    return {
+      back: `<g fill="${l.hairColor}">${back}</g>`,
+      head: `<circle cx="50" cy="36" r="16" fill="${l.skin}" />${whites}${CQ_EYES[l.eyes]}${dark ? CQ_MOUTHS[l.mouth].replaceAll("#5a2a1a", "#e0a08a") : CQ_MOUTHS[l.mouth]}<g fill="${l.hairColor}">${front}</g>`,
+    };
+  }
+
   function avatarSvg(p) {
+    const l = look(p);
+    const h = headSvg(l);
     return `
       <svg class="cq-avatar" viewBox="0 0 100 100" aria-hidden="true">
-        <path d="M18 100 L22 72 Q25 60 38 56 L50 63 L62 56 Q75 60 78 72 L82 100 Z" fill="${p.shirt}" />
-        <path d="M44 56 L50 63 L56 56 L56 50 L44 50 Z" fill="${p.skin}" />
-        <circle cx="50" cy="36" r="16" fill="${p.skin}" />
-        <path d="M34 35 Q34 18 50 18 Q66 18 66 35 Q60 26 50 27 Q40 26 34 35 Z" fill="#1f1610" />
+        <path d="M18 100 L22 72 Q25 60 38 56 L50 63 L62 56 Q75 60 78 72 L82 100 Z" fill="${l.shirt}" />
+        ${h.back}
+        <path d="M44 56 L50 63 L56 56 L56 50 L44 50 Z" fill="${l.skin}" />
+        ${h.head}
         <text x="50" y="90" text-anchor="middle" class="cq-avatar-num">${esc(p.number)}</text>
       </svg>`;
+  }
+
+  function faceSvg(p) {
+    const h = headSvg(look(p));
+    return `<svg viewBox="27 6 46 46" aria-hidden="true">${h.back}${h.head}</svg>`;
+  }
+
+  // Colour swatches plus face pickers; every face option previews the player's current look.
+  function lookFields(p) {
+    const tx = t();
+    const l = look(p);
+    const colors = (name, list) => `
+      <fieldset><legend>${tx[name]}</legend>
+        ${list.map((c) => `<label class="cq-swatch"><input type="radio" name="${name}" value="${c}" ${c === l[name] ? "checked" : ""}><span style="background:${c}"></span></label>`).join("")}
+      </fieldset>`;
+    const faces = (name, list) => `
+      <fieldset><legend>${tx[name]}</legend>
+        ${Object.keys(list).map((v) => `<label class="cq-look"><input type="radio" name="${name}" value="${v}" ${v === l[name] ? "checked" : ""}><span data-look="${name}:${v}">${faceSvg({ ...l, [name]: v })}</span></label>`).join("")}
+      </fieldset>`;
+    return colors("shirt", CQ_SHIRTS) + colors("skin", CQ_SKINS) + faces("hair", CQ_HAIRS) + colors("hairColor", CQ_HAIR_COLORS) + faces("eyes", CQ_EYES) + faces("mouth", CQ_MOUTHS);
+  }
+
+  function readLook(form) {
+    const f = new FormData(form);
+    return look(Object.fromEntries(["shirt", "skin", "hair", "hairColor", "eyes", "mouth"].map((k) => [k, f.get(k)])));
+  }
+
+  function refreshLookFaces(form, l) {
+    form.querySelectorAll("[data-look]").forEach((el) => {
+      const [k, v] = el.dataset.look.split(":");
+      el.innerHTML = faceSvg({ ...l, [k]: v });
+    });
+  }
+
+  function openLookEditor() {
+    const tx = t();
+    openModal(`
+      <h3>${tx.editLook}</h3>
+      <div class="cq-look-preview">${avatarSvg(state.player)}</div>
+      <form class="cq-form cq-look-form">
+        ${lookFields(state.player)}
+        <button type="submit" class="cq-btn">${tx.saveLook}</button>
+      </form>`);
+    const form = dialog.querySelector(".cq-look-form");
+    const preview = dialog.querySelector(".cq-look-preview");
+    form.addEventListener("change", () => {
+      const l = readLook(form);
+      preview.innerHTML = avatarSvg({ ...state.player, ...l });
+      refreshLookFaces(form, l);
+    });
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      state.player = { ...state.player, ...readLook(form) };
+      save();
+      closeModal();
+      draw();
+    });
   }
 
   function cardHtml(p, opts = {}) {
@@ -653,7 +787,7 @@ function renderCraque() {
 
   function renderSetup() {
     const tx = t();
-    const draft = { name: "", number: 10, pos: "am", foot: "right", shirt: CQ_SHIRTS[0], skin: CQ_SKINS[1] };
+    const draft = { name: "", number: 10, pos: "am", foot: "right", shirt: CQ_SHIRTS[0], skin: CQ_SKINS[1], ...CQ_LOOK_DEFAULT };
     const suggested = user ? esc(user.username.slice(0, 12)) : "";
     app.innerHTML = `
       <div class="cq-setup">
@@ -670,12 +804,7 @@ function renderCraque() {
               <select name="foot">${Object.entries(tx.feet).map(([id, n]) => `<option value="${id}">${n}</option>`).join("")}</select>
             </label>
           </div>
-          <fieldset><legend>${tx.shirt}</legend>
-            ${CQ_SHIRTS.map((c, i) => `<label class="cq-swatch"><input type="radio" name="shirt" value="${c}" ${i === 0 ? "checked" : ""}><span style="background:${c}"></span></label>`).join("")}
-          </fieldset>
-          <fieldset><legend>${tx.skin}</legend>
-            ${CQ_SKINS.map((c, i) => `<label class="cq-swatch"><input type="radio" name="skin" value="${c}" ${i === 1 ? "checked" : ""}><span style="background:${c}"></span></label>`).join("")}
-          </fieldset>
+          ${lookFields(draft)}
           <label class="cq-promise"><input type="checkbox" name="promise" required><span>${tx.promise}</span></label>
           <button type="submit" class="cq-btn">${tx.create}</button>
         </form>
@@ -689,8 +818,8 @@ function renderCraque() {
       draft.number = Math.max(1, Math.min(99, parseInt(f.get("number"), 10) || 1));
       draft.pos = f.get("pos");
       draft.foot = f.get("foot");
-      draft.shirt = f.get("shirt");
-      draft.skin = f.get("skin");
+      Object.assign(draft, readLook(form));
+      refreshLookFaces(form, draft);
       preview.innerHTML = cardHtml(draft, { static: true });
     };
     form.addEventListener("input", readForm);
@@ -714,6 +843,7 @@ function renderCraque() {
         <div class="cq-card-col">
           ${cardHtml(state.player, { up })}
           <small class="cq-hint">${tx.flipHint}</small>
+          <button type="button" class="cq-edit-look">${tx.editLook}</button>
         </div>
         <div class="cq-side">
           ${user ? `<div class="cq-user"><span>@${esc(user.username)}</span><button type="button" class="cq-logout">${tx.logout}</button></div>` : ""}
@@ -2019,6 +2149,7 @@ function renderCraque() {
     if (ms) openMission(ms.dataset.mission);
     const ph = e.target.closest("[data-phase]:not([disabled])");
     if (ph) openPhase(ph.dataset.phase);
+    if (e.target.closest(".cq-edit-look")) openLookEditor();
     if (e.target.closest(".cq-reset") && confirm(t().resetConfirm)) {
       state = emptyState();
       cloud.from("mission_results").delete().eq("user_id", user.id).then(({ error }) => {
