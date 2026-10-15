@@ -6,6 +6,7 @@
      bg       "pitch" | "stadium" | "room" | "night"
      hud      { score: [nós, eles], min } liga o placar (min número vira 70'; texto aparece como está)
      props    objetos visíveis no início: goal, goalL, crowd, sofa, bed, stairs, bird, spot, zzz, phone, ice, card, rain,
+              breathe (círculo que cresce e encolhe em volta da criança, como uma respiração),
               icon: [emoji, x, y] ou [emoji, ator] (o emoji flutua sobre a cabeça do ator)
      cast     { ator: { kit, x, dir, pose, lift, hide } }; "me" é a criança e veste a camisa da carta dela.
               kits: me, mate, rival, keeper, ref, coach (outros atores podem repetir um kit: rival2: { kit: "rival" })
@@ -34,8 +35,10 @@ const CQS_POSES = {
 };
 
 cqRegisterAnim("historia", (box, opts) => {
-  const src = opts.args.story;
-  const then = opts.args.then;
+  // Beats with thought clouds get stretched so each cloud stays long enough to be read.
+  const readable = (sc) => sc && { ...sc, beats: sc.beats.map((b) => (b.clouds ? { ...b, d: Math.max(b.d, 1.2 + b.clouds.length * 1.3) } : b)) };
+  const src = readable(opts.args.story);
+  const then = readable(opts.args.then);
   const st = then ? { ...src, beats: [...src.beats, ...then.beats] } : src;
   const skip = then ? src.beats.reduce((s, b) => s + b.d, 0) : 0;
   const G = CQ_GROUND;
@@ -135,6 +138,7 @@ cqRegisterAnim("historia", (box, opts) => {
       <text class="s-prop s-dyn" data-p="zzz" font-size="15" text-anchor="middle">💤</text>
       <text class="s-prop s-dyn" data-p="bird" font-size="16" text-anchor="middle">🐦</text>
       <rect class="s-prop s-dyn" data-p="card" width="7" height="10" rx="1" fill="#facc15" stroke="#a16207" stroke-width=".6" />
+      <circle class="s-prop s-dyn" data-p="breathe" r="28" fill="#67e8f9" fill-opacity=".14" stroke="#67e8f9" stroke-width="1.4" />
       <text class="s-prop s-dyn" data-p="icon" font-size="18" text-anchor="middle"></text>
       <g class="s-prop" data-p="rain"><rect width="320" height="180" fill="#475569" opacity=".3" /><g class="s-rain" stroke="#cbd5e1" stroke-width="1.1" opacity=".75">${drops}</g></g>
       <rect class="s-prop s-dyn" data-p="spot" width="320" height="180" fill="#020617" opacity=".6" mask="url(#${uid}-m)" />
@@ -448,6 +452,11 @@ cqRegisterAnim("historia", (box, opts) => {
       dyn.card.setAttribute("x", (pos.ref.x - 2 + 3 * pos.ref.dir).toFixed(1));
       dyn.card.setAttribute("y", (G - 100 - pos.ref.lift).toFixed(1));
     }
+    if (view.props.breathe) {
+      dyn.breathe.setAttribute("cx", me.x);
+      dyn.breathe.setAttribute("cy", G - 50 - me.lift);
+      dyn.breathe.setAttribute("r", (34 + Math.sin(tt * 1.8) * 9).toFixed(1));
+    }
     if (view.props.icon) {
       const [emo, x, y] = view.props.icon;
       const who = pos[x];
@@ -463,16 +472,31 @@ cqRegisterAnim("historia", (box, opts) => {
       hole.setAttribute("cy", c.y ?? G - 5);
     }
 
-    // Thought clouds drifting across the sky.
+    // Thought clouds fly in one by one, stay put in the sky and fade out together at the end of the beat.
+    // Each cloud is as wide as its text; side by side when they fit, staggered in steps when they don't.
+    const clouds = mode === "rewind" ? [] : (b.clouds || []).map(txt);
+    const cw = clouds.map((s) => Math.max(84, s.length * 5.4 + 20));
+    let acc = 0;
+    const cx = cw.map((w) => {
+      const c = acc + w / 2;
+      acc += w + 6;
+      return c;
+    });
+    const span = acc - 6;
+    const tight = span > 312;
+    const first = cw[0] / 2;
+    const last = cw[cw.length - 1] / 2;
     cloudEls.forEach((el, j) => {
-      const list = mode === "rewind" ? null : b.clouds;
-      if (!list || j >= list.length) return el.setAttribute("opacity", 0);
-      const start = (j * b.d) / (list.length + 0.6);
-      const cu = (lt - start) / (b.d * 0.75);
-      if (cu < 0 || cu > 1) return el.setAttribute("opacity", 0);
-      el.querySelector("text").textContent = txt(list[j]);
-      el.setAttribute("transform", `translate(${cqLerp(360, -50, cu).toFixed(1)} ${32 + (j % 2) * 24})`);
-      el.setAttribute("opacity", Math.min(1, cu * 6, (1 - cu) * 6));
+      const enter = 0.15 + j * 0.9;
+      if (j >= clouds.length || lt < enter) return el.setAttribute("opacity", 0);
+      const cu = cqClamp01((lt - enter) / 0.6);
+      const rest = tight ? 4 + first + (cx[j] - first) * ((312 - first - last) / (span - first - last)) : 160 - span / 2 + cx[j];
+      const x = cqLerp(370, rest, cqEase(cu));
+      const y = (st.hud ? 44 : 24) + (tight ? (j % 2) * 26 : 0) + Math.sin(tt * 2 + j) * 1.5;
+      el.firstElementChild.setAttribute("transform", `scale(${(cw[j] / 84).toFixed(3)} 1)`);
+      el.querySelector("text").textContent = clouds[j];
+      el.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)})`);
+      el.setAttribute("opacity", Math.min(1, cu * 3, cqClamp01((b.d - lt) / 0.35)));
     });
 
     // Thought bubble: pops in when the one in charge changes, fades out when it goes away.

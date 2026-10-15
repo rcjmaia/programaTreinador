@@ -40,7 +40,7 @@ CQ_MISSIONS.push(
   {
     id: "estoico", type: "quiz", icon: "🛡️", subs: ["resilience", "composure"], tiers: [2, 4, 6],
     title: ["Escudo da calma", "The calm shield", "El escudo de la calma"],
-    desc: ["Juiz, torcida e chuva você não controla. A sua atitude, sim!", "You can't control the ref, the crowd or the rain. Your attitude, you can!", "El árbitro, la hinchada y la lluvia no los controlas. ¡Tu actitud, sí!"],
+    desc: ["Juiz, placar e escolhas do técnico você não controla. A sua atitude, sim!", "You can't control the ref, the score or the coach's choices. Your attitude, you can!", "El árbitro, el marcador y las decisiones del técnico no los controlas. ¡Tu actitud, sí!"],
     unit: CQ_UNIT_POINTS,
   },
   {
@@ -87,48 +87,6 @@ CQ_MISSIONS.push(
         { d: 3, say: ["capitao", ["Uma nuvem... conto 1.", "A cloud... that's 1.", "Una nube... cuento 1."]], cloud: ["e o jogo amanhã?", "tomorrow's game?", "¿y el partido?"] },
         { d: 3, say: ["capitao", ["Outra... 2. Pode passar.", "Another... 2. Let it go.", "Otra... 2. Puede pasar."]], cloud: ["tô com fome", "I'm hungry", "tengo hambre"] },
         { d: 3, say: ["capitao", ["Sem brigar. Só olhar.", "No fighting. Just watching.", "Sin pelear. Solo mirar."]], cloud: ["aquele gol...", "that goal...", "aquel gol..."], text: ["Perceber, contar e soltar", "Notice, count, let go", "Notar, contar y soltar"] },
-      ],
-    },
-  },
-  {
-    id: "cincomin", type: "mind", icon: "⏱️", subs: ["discipline"], tiers: [1, 2, 3, 5], max: 10, timer: { mode: "down", s: 300 },
-    title: ["Desafio dos 5 minutos", "5-minute challenge", "Desafío de los 5 minutos"],
-    desc: ["Escolha algo que você está deixando para depois e faça só 5 minutos. Quantas tarefas adiadas você começou hoje?", "Pick something you keep putting off and do just 5 minutes. How many postponed tasks did you start today?", "Elige algo que vienes dejando para después y hazlo solo 5 minutos. ¿Cuántas tareas postergadas empezaste hoy?"],
-    steps: [
-      ["Escolha a tarefa: lição, arrumar o quarto, treinar o pé fraco...", "Pick the task: homework, tidying your room, weak-foot practice...", "Elige la tarea: deberes, ordenar el cuarto, entrenar la pierna mala..."],
-      ["Guarde o celular e aperte Iniciar.", "Put your phone away and press Start.", "Guarda el celular y pulsa Iniciar."],
-      ["Acabou o tempo? Pode parar ou continuar. O importante foi começar.", "Time's up? Stop or keep going. What matters is you started.", "¿Se acabó el tiempo? Puedes parar o seguir. Lo importante fue empezar."],
-    ],
-    unit: ["tarefas", "tasks", "tareas"],
-    anim: "cabine",
-    animArgs: {
-      cast: ["capitao", "sofa", "pulinho"],
-      boss: "sofa",
-      steps: [
-        { d: 2.6, mood: { sofa: "big" }, say: ["sofa", ["Deixa para depois... zzz", "Leave it for later... zzz", "Déjalo para después... zzz"]], text: ["O Sr. Sofá quer adiar", "Mr. Couch wants to put it off", "El Sr. Sofá quiere postergar"] },
-        { d: 2.6, boss: "capitao", mood: { sofa: "small" }, say: ["capitao", ["Só 5 minutos. Valendo!", "Just 5 minutes. Go!", "Solo 5 minutos. ¡Vamos!"]], text: ["Começar é a parte mais difícil", "Starting is the hardest part", "Empezar es lo más difícil"] },
-        { d: 2.2, say: ["pulinho", ["Viu? Nem foi tão ruim!", "See? It wasn't that bad!", "¿Viste? ¡No fue tan malo!"]] },
-      ],
-    },
-  },
-  {
-    id: "gratidao", type: "mind", icon: "🙏", subs: ["confidence", "resilience"], tiers: [3, 5, 7, 10], max: 10,
-    title: ["Coisas boas do dia", "Good things today", "Cosas buenas del día"],
-    desc: ["Antes de dormir, lembre das coisas boas que aconteceram hoje. Quantas você encontrou?", "Before bed, remember the good things that happened today. How many did you find?", "Antes de dormir, recuerda las cosas buenas que pasaron hoy. ¿Cuántas encontraste?"],
-    steps: [
-      ["Vale tudo: um passe bonito, um amigo, uma comida gostosa, uma ajuda.", "Anything counts: a nice pass, a friend, a tasty meal, some help.", "Vale todo: un buen pase, un amigo, una comida rica, una ayuda."],
-      ["Diga em voz alta ou escreva num caderno.", "Say them out loud or write them in a notebook.", "Dilas en voz alta o escríbelas en un cuaderno."],
-      ["Para cada uma, sinta por um instante: 'que bom que aconteceu'.", "For each one, feel it for a moment: 'I'm glad that happened'.", "Por cada una, siéntela un instante: 'qué bueno que pasó'."],
-    ],
-    unit: ["coisas boas", "good things", "cosas buenas"],
-    anim: "cabine",
-    animArgs: {
-      cast: ["capitao", "pulinho", "nublada"],
-      text: ["Antes de dormir...", "Before bed...", "Antes de dormir..."],
-      steps: [
-        { d: 2.6, say: ["pulinho", ["Hoje eu fiz um passe lindo!", "I made a great pass today!", "¡Hoy hice un pase hermoso!"]], cloud: ["1. o passe", "1. the pass", "1. el pase"] },
-        { d: 2.6, say: ["nublada", ["E um amigo me ajudou na lição...", "And a friend helped with my homework...", "Y un amigo me ayudó con la tarea..."]], cloud: ["2. o amigo", "2. my friend", "2. el amigo"] },
-        { d: 2.6, say: ["capitao", ["E teve bolo no jantar. Que dia bom!", "And there was cake. What a good day!", "Y hubo torta. ¡Qué buen día!"]], cloud: ["3. o bolo", "3. the cake", "3. la torta"], text: ["Procure o bom e você encontra", "Look for the good and you'll find it", "Busca lo bueno y lo encontrarás"] },
       ],
     },
   },

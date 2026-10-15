@@ -5,7 +5,7 @@ CQ_MISSIONS.push(
   {
     id: "rotina", type: "quiz", icon: "🔁", subs: ["composure", "concentration"], tiers: [2, 4, 6],
     title: ["Rotina do campeão", "Champion's routine", "Rutina de campeón"],
-    desc: ["Craques fazem sempre os mesmos passos antes do lance e têm um 'botão de reset' para depois do erro.", "Stars always do the same steps before a big moment and have a 'reset button' for after a mistake.", "Los cracks hacen siempre los mismos pasos antes de la jugada y tienen un 'botón de reinicio' para después del error."],
+    desc: ["Craques fazem sempre os mesmos passos antes do lance e têm um gesto para voltar ao comando depois do erro.", "Stars always do the same steps before a big moment and have a gesture to take back command after a mistake.", "Los cracks hacen siempre los mismos pasos antes de la jugada y tienen un gesto para volver al mando después del error."],
     unit: CQ_UNIT_POINTS,
   },
   {
@@ -172,82 +172,17 @@ CQ_MISSIONS.push(
     anim: true,
   },
   {
-    id: "minharotina", type: "mind", icon: "🔄", subs: ["composure", "resilience"], tiers: [1, 3, 5, 8], max: 30,
-    title: ["Meu botão de reset", "My reset button", "Mi botón de reinicio"],
-    desc: ["Crie seu botão de reset e use no treino ou no jogo depois de cada erro. Quantas vezes você usou?", "Create your reset button and use it in training or games after every mistake. How many times did you use it?", "Crea tu botón de reinicio y úsalo en el entrenamiento o el partido después de cada error. ¿Cuántas veces lo usaste?"],
-    steps: [
-      ["Escolha um gesto: bater a mão na coxa, ajeitar a meia, tocar o escudo.", "Pick a gesture: slap your thigh, fix your sock, touch the badge.", "Elige un gesto: palmear el muslo, acomodar la media, tocar el escudo."],
-      ["Junte uma respiração funda e uma palavra curta: 'próxima!'.", "Add a deep breath and a short word: 'next!'.", "Súmale una respiración honda y una palabra corta: '¡próxima!'."],
-      ["Errou? Gesto, respiração, palavra. Depois do treino, conte quantas vezes usou.", "Made a mistake? Gesture, breath, word. After training, count how many times you used it.", "¿Fallaste? Gesto, respiración, palabra. Después del entrenamiento, cuenta cuántas veces lo usaste."],
+    id: "minharotina", type: "quiz", icon: "✊", subs: ["composure", "resilience"], tiers: [2, 4, 6],
+    title: ["Meu gesto de capitão", "My captain's gesture", "Mi gesto de capitán"],
+    desc: ["Um gesto simples para lembrar de respirar e voltar ao comando. Serve no jogo, na escola, em casa: para a vida toda.", "A simple gesture to remind you to breathe and take back command. It works in games, at school, at home: for life.", "Un gesto simple para acordarte de respirar y volver al mando. Sirve en el partido, en la escuela, en casa: para toda la vida."],
+    unit: CQ_UNIT_POINTS,
+    // Shown before the plays: the three steps of the gesture.
+    castTitle: ["Como funciona o gesto", "How the gesture works", "Cómo funciona el gesto"],
+    cast: [
+      { icon: "✊", name: ["Feche a mão", "Close your hand", "Cierra la mano"], emo: ["O sinal", "The signal", "La señal"], line: ["Aperte a mão com força por um segundo. É o seu aviso: 'opa, preciso assumir o comando'.", "Squeeze your hand hard for a second. It's your signal: 'hold on, I need to take command'.", "Aprieta la mano con fuerza un segundo. Es tu aviso: 'epa, tengo que tomar el mando'."] },
+      { icon: "🌬️", name: ["Respire fundo", "Breathe deeply", "Respira hondo"], emo: ["A calma", "The calm", "La calma"], line: ["Puxe o ar pelo nariz e solte devagar pela boca. O coração desacelera e a cabeça clareia.", "Breathe in through your nose and out slowly through your mouth. Your heart slows down and your head clears.", "Toma aire por la nariz y suéltalo despacio por la boca. El corazón se calma y la cabeza se aclara."] },
+      { id: "capitao", name: ["Capitão no comando", "Captain in command", "Capitán al mando"], emo: ["A decisão", "The decision", "La decisión"], line: ["Agora quem decide é você, não o medo, a raiva, a preguiça ou a pressão de fora.", "Now you decide, not fear, anger, laziness or pressure from outside.", "Ahora decides tú, no el miedo, la rabia, la pereza o la presión de afuera."] },
     ],
-    unit: ["resets", "resets", "reinicios"],
-    anim: "cabine",
-    animArgs: {
-      cast: ["capitao", "nublada", "faisca"],
-      text: ["Errou o passe...", "Bad pass...", "Fallaste el pase..."],
-      steps: [
-        { d: 2.4, boss: "nublada", mood: { nublada: "big" }, say: ["nublada", ["Errei de novo...", "Missed again...", "Fallé otra vez..."]], cloud: ["errei...", "I missed...", "fallé..."] },
-        { d: 2.6, boss: "capitao", mood: { nublada: "" }, say: ["capitao", ["Mão na coxa. Respira... Próxima!", "Hand on thigh. Breathe... Next!", "Mano al muslo. Respira... ¡Próxima!"]], text: ["Gesto, respiração, palavra", "Gesture, breath, word", "Gesto, respiración, palabra"] },
-      ],
-    },
-  },
-  {
-    id: "metasemana", type: "mind", icon: "📅", subs: ["discipline"], tiers: [2, 4, 5, 7], max: 7,
-    title: ["Meta da semana", "Goal of the week", "Meta de la semana"],
-    desc: ["Escolha uma meta de processo para a semana e cumpra um pouco por dia. Em quantos dias você cumpriu?", "Pick a process goal for the week and do a bit every day. On how many days did you do it?", "Elige una meta de proceso para la semana y cumple un poco cada día. ¿Cuántos días la cumpliste?"],
-    steps: [
-      ["Escolha algo que depende só de você: '10 minutos de pé fraco', '50 embaixadinhas'.", "Pick something that depends only on you: '10 minutes of weak foot', '50 keep-ups'.", "Elige algo que dependa solo de ti: '10 minutos de pierna mala', '50 toques'."],
-      ["Escreva num papel e cole onde você vê todo dia.", "Write it on paper and stick it where you'll see it every day.", "Escríbela en un papel y pégala donde la veas cada día."],
-      ["Marque um X em cada dia cumprido. No fim da semana, salve quantos dias foram.", "Mark an X on each day you do it. At the end of the week, save how many days.", "Marca una X cada día cumplido. Al final de la semana, guarda cuántos días fueron."],
-    ],
-    unit: ["dias", "days", "días"],
-    anim: "cabine",
-    animArgs: {
-      cast: ["capitao", "pulinho", "sofa"],
-      steps: [
-        { d: 2.6, say: ["pulinho", ["Quero ser profissional!", "I want to go pro!", "¡Quiero ser profesional!"]], text: ["O sonho mostra o destino", "The dream shows the destination", "El sueño muestra el destino"] },
-        { d: 2.8, say: ["capitao", ["Ótimo! E hoje: 10 minutos de pé fraco.", "Great! And today: 10 minutes of weak foot.", "¡Genial! Y hoy: 10 minutos de pierna mala."]], cloud: ["seg ✔ ter ✔ qua ✔", "Mon ✔ Tue ✔ Wed ✔", "lun ✔ mar ✔ mié ✔"], text: ["A meta é o degrau de hoje", "The goal is today's step", "La meta es el escalón de hoy"] },
-      ],
-    },
-  },
-  {
-    id: "vozcampo", type: "mind", icon: "📣", subs: ["fairplay", "confidence"], tiers: [5, 10, 15, 25], max: 99,
-    title: ["Voz de campo", "Voice on the pitch", "Voz en la cancha"],
-    desc: ["No treino ou no jogo, fale com o time: avise, oriente e anime. Quantas vezes você usou a voz?", "In training or a game, talk to your team: warn, guide and encourage. How many times did you use your voice?", "En el entrenamiento o el partido, háblale al equipo: avisa, orienta y anima. ¿Cuántas veces usaste la voz?"],
-    steps: [
-      ["Avise: 'ladrão!', 'vira!', 'sozinho!', 'tempo!'.", "Warn: 'man on!', 'turn!', 'you're free!', 'time!'.", "Avisa: '¡ladrón!', '¡gira!', '¡solo!', '¡tiempo!'."],
-      ["Anime: 'boa!', 'tranquilo, a próxima é nossa!'.", "Encourage: 'nice!', 'no worries, the next one's ours!'.", "Anima: '¡bien!', '¡tranquilo, la próxima es nuestra!'."],
-      ["Depois do treino, conte mais ou menos quantas vezes falou.", "After training, roughly count how many times you spoke up.", "Después del entrenamiento, cuenta más o menos cuántas veces hablaste."],
-    ],
-    unit: ["vezes", "times", "veces"],
-    anim: "cabine",
-    animArgs: {
-      cast: ["capitao", "pulinho", "tremelique"],
-      steps: [
-        { d: 2.4, say: ["tremelique", ["Melhor ficar quietinho...", "Better stay quiet...", "Mejor quedarme callado..."]], text: ["O time precisa da sua voz", "The team needs your voice", "El equipo necesita tu voz"] },
-        { d: 2.4, mood: { tremelique: "small" }, say: ["capitao", ["Ladrão! Ladrão atrás!", "Man on! Behind you!", "¡Ladrón! ¡Ladrón atrás!"]] },
-        { d: 2.4, say: ["pulinho", ["Boa! Tranquilo, a próxima é nossa!", "Nice! No worries, next one's ours!", "¡Bien! Tranquilo, ¡la próxima es nuestra!"]], text: ["Avisar e animar", "Warn and encourage", "Avisar y animar"] },
-      ],
-    },
-  },
-  {
-    id: "sono", type: "mind", icon: "🌙", subs: ["discipline", "concentration"], tiers: [2, 4, 7, 14], max: 60,
-    title: ["Sono de campeão", "Champion's sleep", "Sueño de campeón"],
-    desc: ["Quantas noites seguidas você dormiu no horário e sem tela 1 hora antes?", "How many nights in a row did you go to bed on time with no screens for 1 hour before?", "¿Cuántas noches seguidas dormiste a tu hora y sin pantallas 1 hora antes?"],
-    steps: [
-      ["Combine um horário para dormir com a sua família.", "Agree on a bedtime with your family.", "Acuerda un horario para dormir con tu familia."],
-      ["1 hora antes: celular, TV e videogame desligados.", "1 hour before: phone, TV and video games off.", "1 hora antes: celular, tele y videojuegos apagados."],
-      ["Cada noite cumprida soma 1. Falhou uma noite? Recomece do 1.", "Each night you manage adds 1. Missed one? Start again from 1.", "Cada noche cumplida suma 1. ¿Fallaste una? Vuelve a empezar del 1."],
-    ],
-    unit: ["noites seguidas", "nights in a row", "noches seguidas"],
-    anim: "cabine",
-    animArgs: {
-      cast: ["capitao", "sofa", "zumzum"],
-      steps: [
-        { d: 2.6, boss: "zumzum", mood: { zumzum: "big" }, say: ["zumzum", ["Só mais um vídeo! Só mais um jogo!", "One more video! One more game!", "¡Un video más! ¡Una partida más!"]], cloud: ["23h... 0h...", "11pm... 12am...", "23h... 0h..."], text: ["A tela rouba o sono", "Screens steal your sleep", "La pantalla roba el sueño"] },
-        { d: 2.6, boss: "capitao", mood: { zumzum: "small" }, say: ["capitao", ["Tela desligada. Amanhã tem treino.", "Screens off. Training tomorrow.", "Pantalla apagada. Mañana hay entreno."]], text: ["Dormir também é treino", "Sleep is training too", "Dormir también es entrenar"] },
-        { d: 2, say: ["sofa", ["Agora sim... boa noite... zzz", "Now that's right... good night... zzz", "Ahora sí... buenas noches... zzz"]] },
-      ],
-    },
+    castNote: ["Use sempre que perceber que ficou nervoso, com medo, ansioso, com preguiça, chateado com um erro ou pressionado. Quanto mais você usa, mais rápido ele funciona.", "Use it whenever you notice you're nervous, scared, anxious, lazy, upset about a mistake or under pressure. The more you use it, the faster it works.", "Úsalo siempre que notes que estás nervioso, con miedo, ansioso, con pereza, molesto por un error o presionado. Cuanto más lo usas, más rápido funciona."],
   },
 );

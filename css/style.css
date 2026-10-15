@@ -2988,6 +2988,13 @@ body.cq-lock {
   height: 62px;
 }
 
+.cq-cast-icon {
+  font-style: normal;
+  font-size: 2rem;
+  line-height: 62px;
+  text-align: center;
+}
+
 .cq-cast em {
   font-style: normal;
   color: var(--hero-gold);

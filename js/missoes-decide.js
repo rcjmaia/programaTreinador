@@ -8,6 +8,9 @@ const CQD_SAVE = ["DEFENDEU!", "SAVED!", "¡ATAJÓ!"];
 const CQD_END = ["FIM DE JOGO", "FULL TIME", "FINAL"];
 const CQD_PEN = ["PÊN", "PEN", "PEN"];
 const CQD_DIVE = { pose: "slide", t0: 0.4, t1: 0.75 };
+// The captain's gesture (mission "minharotina"): close the hand, breathe, take back command.
+const CQD_GESTURE = { d: 2.4, cap: ["Fecha a mão... respira fundo...", "Close your hand... breathe deeply...", "Cierra la mano... respira hondo..."], props: { icon: ["✊", "me"], breathe: true }, a: { me: { pose: "stand" } } };
+const CQD_GESTURE_OFF = { cap: "", props: { icon: false, breathe: false } };
 
 const cqdOpt = (pts, text, why, ...beats) => ({ pts, text, why, scene: { beats } });
 const cqdKick = (who, to, h, more = {}) => ({ d: 1, ...more, a: { [who]: { pose: "kick", t1: 0.35 }, ...more.a }, ball: { to, h, t0: 0.3, t1: 0.85 } });
@@ -292,14 +295,18 @@ cqdSet("agora", [
 
 cqdSet("estoico", [
   {
-    text: ["0 x 0, 55 minutos. O juiz marca pênalti contra o seu time. Para você, não foi nada.", "0-0, 55 minutes. The ref gives a penalty against your team. You're sure it was nothing.", "0 a 0, minuto 55. El árbitro cobra penal en contra de tu equipo. Para ti, no fue nada."],
+    text: ["0 x 0, 55 minutos. Você tira a bola limpa do atacante, ele se joga na área e o juiz marca pênalti contra o seu time.", "0-0, 55 minutes. You win the ball cleanly, the striker throws himself down in the box and the ref gives a penalty against your team.", "0 a 0, minuto 55. Le quitas el balón limpio al delantero, él se tira en el área y el árbitro cobra penal en contra de tu equipo."],
     scene: {
       bg: "stadium", hud: { score: [0, 0], min: 55 }, props: { goalL: true },
-      cast: { keeper: { kit: "keeper", x: 30, pose: "ready" }, ref: { kit: "ref", x: 160, dir: -1 }, rival: { kit: "rival", x: 100, dir: -1 }, me: { x: 200, dir: -1 } },
-      ball: [72, 135],
+      cast: { keeper: { kit: "keeper", x: 30, pose: "ready" }, ref: { kit: "ref", x: 250, dir: -1 }, rival: { kit: "rival", x: 210, dir: -1 }, me: { x: 76 } },
+      ball: "rival",
       beats: [
-        { d: 1.8, say: ["ref", ["Pênalti!", "Penalty!", "¡Penal!"]], a: { ref: { pose: "point" } } },
-        { d: 0.4, a: { ref: { pose: "stand" } } },
+        { d: 1.2, a: { rival: { x: 112 } } },
+        { d: 0.8, cap: ["Bola limpa...", "Clean tackle...", "Quite limpio..."], a: { me: { pose: "kick", t1: 0.35 }, rival: { pose: "sit", glide: true, x: 120, t0: 0.4 } }, ball: { to: [190, 135], h: 6, t0: 0.3, t1: 0.9 } },
+        { d: 0.5, cap: ["...e ele se jogou!", "...and he dived!", "...¡y él se tiró!"], a: { me: { pose: "stand" } } },
+        { d: 1.8, say: ["ref", ["Pênalti!", "Penalty!", "¡Penal!"]], a: { ref: { x: 170, pose: "point", t1: 0.4 } } },
+        cqdCut({ cap: "", ball: { to: [72, 135], t1: 0.01 }, a: { rival: { x: 100, pose: "stand", dir: -1 }, ref: { x: 160, pose: "stand", dir: -1 }, me: { x: 200, dir: -1 } } }),
+        { d: 0.4 },
       ],
     },
     opts: [
@@ -327,32 +334,36 @@ cqdSet("estoico", [
     ],
   },
   {
-    text: ["Chove forte. O campo virou uma piscina e a bola para nas poças. 0 x 0, 30 minutos.", "It's pouring. The pitch is a swimming pool and the ball stops in the puddles. 0-0, 30 minutes.", "Llueve fuerte. La cancha es una piscina y el balón se frena en los charcos. 0 a 0, minuto 30."],
+    text: ["Intervalo da semifinal: 0 x 3 para eles. O time volta para o campo de cabeça baixa. O placar do primeiro tempo já está feito.", "Semi-final half-time: 0-3 to them. The team walks back out with heads down. The first-half score is already done.", "Entretiempo de la semifinal: 0 a 3 para ellos. El equipo vuelve a la cancha cabizbajo. El marcador del primer tiempo ya está hecho."],
     scene: {
-      bg: "stadium", hud: { score: [0, 0], min: 30 }, props: { goal: true, rain: true },
-      cast: { keeper: { kit: "keeper", x: 292, dir: -1, pose: "ready" }, rival: { kit: "rival", x: 200, dir: -1, pose: "ready" }, mate: { kit: "mate", x: 244 }, me: { x: 100 } },
-      ball: "me",
+      bg: "stadium", hud: { score: [0, 3], min: 45 },
+      cast: { keeper: { kit: "keeper", x: 292, dir: -1, pose: "ready", hide: true }, rival: { kit: "rival", x: 260, dir: -1, hide: true }, mate: { kit: "mate", x: 160, pose: "sad" }, me: { x: 100, pose: "sad" } },
+      ball: null,
       beats: [
-        { d: 1.2, a: { me: { x: 140 } } },
-        { d: 0.5 },
+        { d: 0.8, cap: ["Intervalo", "Half-time", "Entretiempo"] },
+        { d: 2.4, clouds: [["0 x 3...", "0-3...", "0 a 3..."], ["Já perdemos...", "We've already lost...", "Ya perdimos..."]] },
+        { d: 0.3 },
       ],
     },
     opts: [
-      cqdOpt(2, ["🌧️ Me adapto: passe pelo alto e com mais força", "🌧️ Adapt: lofted pass with more power", "🌧️ Me adapto: pase por arriba y con más fuerza"],
-        ["A chuva é igual para os dois times. Quem se adapta leva vantagem: passe por cima da poça e gol!", "The rain is the same for both teams. Whoever adapts wins: pass over the puddle and goal!", "La lluvia es igual para los dos equipos. Quien se adapta gana ventaja: ¡pase por arriba del charco y gol!"],
-        { d: 1, a: { me: { pose: "kick", t1: 0.35 } }, ball: { to: "mate", h: 34, t0: 0.3, t1: 0.85 } },
-        cqdGoal("mate"), cqdParty([1, 0], ["me", "mate"])),
-      cqdOpt(1, ["😒 Reclamo da chuva e toco rasteiro mesmo assim", "😒 Moan about the rain and pass along the ground anyway", "😒 Me quejo de la lluvia y paso a ras igual"],
-        ["Reclamar da chuva não seca o campo. A bola parou na poça e o adversário ficou com ela.", "Complaining about the rain doesn't dry the pitch. The ball stopped in a puddle and the opponent took it.", "Quejarse de la lluvia no seca la cancha. El balón se frenó en el charco y el rival se lo quedó."],
-        { d: 1.2, say: ["me", ["Que chuva!", "This rain!", "¡Qué lluvia!"]] },
-        { d: 1, a: { me: { pose: "kick", t1: 0.35 } }, ball: { to: [180, 135], h: 0, t0: 0.3, t1: 1 } },
-        { d: 0.6, ball: { give: "rival", t0: 0.5 }, a: { rival: { x: 194, t1: 0.5 } } },
-        { d: 1.2, a: { rival: { x: 30 } } }),
-      cqdOpt(0, ["🙅 Desisto: assim não dá para jogar", "🙅 Give up: you can't play like this", "🙅 Me rindo: así no se puede jugar"],
-        ["Desistir por causa da chuva é deixar o tempo decidir por você. O adversário jogou e você assistiu.", "Giving up because of rain lets the weather decide for you. The opponent played and you watched.", "Rendirse por la lluvia es dejar que el clima decida por ti. El rival jugó y tú miraste."],
-        { d: 1.2, a: { me: { pose: "sad" } } },
-        { d: 0.8, ball: { give: "rival", t0: 0.6 }, a: { rival: { x: 164, t1: 0.6 } } },
-        { d: 1.2, a: { rival: { x: 30 } } }),
+      cqdOpt(2, ["🎯 Foco no que dá: ganhar cada lance do 2º tempo", "🎯 Focus on what I can: win every play of the 2nd half", "🎯 Me enfoco en lo que puedo: ganar cada jugada del 2º tiempo"],
+        ["O primeiro tempo você não muda; o segundo, sim. Você lutou cada bola, marcou e saiu de cabeça erguida.", "You can't change the first half; the second, you can. You fought for every ball, scored and walked off with your head high.", "El primer tiempo no lo cambias; el segundo, sí. Luchaste cada pelota, marcaste y saliste con la cabeza en alto."],
+        { d: 1.6, cap: "", say: ["me", ["Bora ganhar o 2º tempo!", "Let's win the second half!", "¡Ganemos el segundo tiempo!"]], a: { me: { pose: "stand" } } },
+        { d: 0.8, a: { mate: { pose: "cheer" } } },
+        cqdCut({ props: { goal: true }, ball: { give: "me" }, a: { mate: { hide: true }, keeper: { hide: false }, rival: { hide: false, x: 236 }, me: { x: 190, pose: "stand" } } }),
+        cqdGoal("me"),
+        { d: 2.2, score: [1, 3], cap: ["Perdemos, mas o 2º tempo foi nosso.", "We lost, but the 2nd half was ours.", "Perdimos, pero el 2º tiempo fue nuestro."], a: { me: { pose: "cheer" } } }),
+      cqdOpt(1, ["😐 Jogo o 2º tempo só esperando acabar", "😐 Play the 2nd half just waiting for it to end", "😐 Juego el 2º tiempo esperando que termine"],
+        ["Seu corpo voltou para o campo, mas a cabeça já tinha desistido. O segundo tempo passou e você nem apareceu.", "Your body went back out, but your head had already given up. The second half went by and you never showed up.", "Tu cuerpo volvió a la cancha, pero la cabeza ya se había rendido. El segundo tiempo pasó y ni apareciste."],
+        { d: 0.8, cap: "", a: { me: { pose: "stand" } } },
+        cqdCut({ ball: { give: "rival" }, a: { mate: { hide: true }, rival: { hide: false }, me: { x: 150 } } }),
+        { d: 1.8, cap: ["Você só viu a bola passar.", "You just watched the ball go by.", "Solo viste pasar la pelota."], a: { rival: { x: 20 } } }),
+      cqdOpt(0, ["🙅 Já perdemos, não adianta mais correr", "🙅 We've lost, there's no point running", "🙅 Ya perdimos, no sirve de nada correr"],
+        ["Desistir transformou o 0 x 3 em 0 x 5. O placar você não controlava; o esforço, sim.", "Giving up turned 0-3 into 0-5. You didn't control the score; your effort, you did.", "Rendirse convirtió el 0 a 3 en 0 a 5. El marcador no lo controlabas; el esfuerzo, sí."],
+        { d: 1.6, cap: "", say: ["me", ["Já era. Não adianta.", "It's over. No point.", "Ya fue. No sirve."]], a: { me: { pose: "sit" } } },
+        cqdCut({ ball: { give: "rival" }, a: { mate: { hide: true }, rival: { hide: false }, me: { x: 150, pose: "sad" } } }),
+        { d: 1.6, a: { rival: { x: 20 } } },
+        { d: 1.6, score: [0, 5], cap: ["Fim: 0 x 5.", "Full time: 0-5.", "Final: 0 a 5."] }),
     ],
   },
   {
@@ -838,10 +849,10 @@ cqdSet("rotina", [
       ],
     },
     opts: [
-      cqdOpt(2, ["👏 Aperto meu botão de reset: respiro, bato palma, próximo lance", "👏 Hit my reset button: breathe, clap, next play", "👏 Aprieto mi botón de reinicio: respiro, aplaudo, siguiente jugada"],
-        ["O reset leva poucos segundos e limpa a cabeça. No lance seguinte, passe perfeito.", "The reset takes a few seconds and clears your head. Next play, a perfect pass.", "El reinicio dura unos segundos y limpia la cabeza. En la jugada siguiente, pase perfecto."],
-        { d: 1.4, cap: ["Respira. Palma. Próximo.", "Breathe. Clap. Next.", "Respira. Palmas. Siguiente."], a: { me: { pose: "hands" } } },
-        { d: 0.4, cap: "", a: { me: { pose: "ready" } } },
+      cqdOpt(2, ["✊ Fecho a mão, respiro fundo e foco no próximo lance", "✊ Close my hand, breathe deeply and focus on the next play", "✊ Cierro la mano, respiro hondo y me enfoco en la próxima jugada"],
+        ["O gesto leva poucos segundos e limpa a cabeça. No lance seguinte, passe perfeito.", "The gesture takes a few seconds and clears your head. Next play, a perfect pass.", "El gesto dura unos segundos y limpia la cabeza. En la jugada siguiente, pase perfecto."],
+        CQD_GESTURE,
+        { d: 0.4, ...CQD_GESTURE_OFF, a: { me: { pose: "ready" } } },
         { d: 1, a: { mate: { pose: "kick", t1: 0.35 } }, ball: { to: "me", h: 4, t0: 0.3, t1: 0.85 } },
         { d: 1.2, cap: ["Passe na medida!", "Perfect pass!", "¡Pase a la medida!"], a: { me: { dir: 1, pose: "kick", t1: 0.35 } }, ball: { to: [340, 110], h: 24, t0: 0.3, t1: 0.9 } }),
       cqdOpt(1, ["🤬 Xingo baixinho e sigo jogando", "🤬 Swear under my breath and keep playing", "🤬 Insulto bajito y sigo jugando"],
@@ -1520,6 +1531,102 @@ cqdSet("termometro", [
         { d: 0.6, ball: { to: [214, 135], t0: 0.5 }, a: { me: { x: 170, pose: "slide", glide: true }, rival: { pose: "sit", t0: 0.5 } } },
         { d: 1, a: { ref: { x: 236 } } },
         { d: 1.8, props: { card: true }, a: { ref: { pose: "card" } } }),
+    ],
+  },
+]);
+
+cqdSet("minharotina", [
+  {
+    text: ["Final do campeonato, 0 x 0, segundo tempo. O técnico te chama para entrar. O coração dispara, as mãos suam e as pernas tremem.", "Championship final, 0-0, second half. The coach calls you on. Your heart races, your hands sweat and your legs shake.", "Final del campeonato, 0 a 0, segundo tiempo. El técnico te llama para entrar. El corazón se acelera, las manos sudan y las piernas tiemblan."],
+    scene: {
+      bg: "stadium", hud: { score: [0, 0], min: 60 }, props: { goal: true },
+      cast: { coach: { kit: "coach", x: 30 }, keeper: { kit: "keeper", x: 292, dir: -1, pose: "ready" }, mate: { kit: "mate", x: 150 }, me: { x: 62, pose: "sit" } },
+      ball: "mate",
+      beats: [
+        { d: 2, say: ["coach", ["Aquece! Você vai entrar!", "Warm up! You're going on!", "¡Calienta! ¡Vas a entrar!"]], a: { coach: { pose: "point" } } },
+        { d: 0.6, a: { coach: { pose: "stand" }, me: { pose: "stand" } } },
+        { d: 2.4, clouds: [["É a final...", "It's the final...", "Es la final..."], ["E se eu errar?", "What if I mess up?", "¿Y si me equivoco?"]] },
+        { d: 0.3 },
+      ],
+    },
+    opts: [
+      cqdOpt(2, ["✊ Fecho a mão, respiro fundo e entro para jogar", "✊ Close my hand, breathe deeply and go on to play", "✊ Cierro la mano, respiro hondo y entro a jugar"],
+        ["O nervoso não sumiu, mas quem decidiu foi você. Entrou, pediu a bola e marcou!", "The nerves didn't vanish, but you made the call. You went on, asked for the ball and scored!", "Los nervios no se fueron, pero decidiste tú. Entraste, pediste el balón ¡y marcaste!"],
+        CQD_GESTURE,
+        { d: 1.2, ...CQD_GESTURE_OFF, a: { me: { x: 200 } } },
+        { d: 1, say: ["me", ["Aqui! Toca!", "Here! Pass it!", "¡Acá! ¡Pásala!"]], a: { mate: { pose: "kick", t1: 0.35 } }, ball: { to: "me", h: 6, t0: 0.3, t1: 0.9 } },
+        cqdGoal("me"), cqdParty([1, 0])),
+      cqdOpt(1, ["🫣 Entro, mas fico escondido para não errar", "🫣 Go on, but hide so I don't make mistakes", "🫣 Entro, pero me escondo para no fallar"],
+        ["Você entrou, mas o medo continuou no comando. Não pediu a bola e o time jogou com um a menos.", "You went on, but fear stayed in command. You never asked for the ball and the team played a player short.", "Entraste, pero el miedo siguió al mando. No pediste el balón y el equipo jugó con uno menos."],
+        { d: 1, a: { me: { x: 96 } } },
+        { d: 1.4, cap: ["Ninguém pediu a bola...", "Nobody asked for the ball...", "Nadie pidió la pelota..."], a: { mate: { pose: "hands" } } },
+        { d: 1.2, cap: "", a: { mate: { pose: "kick", t1: 0.35 } }, ball: { to: "keeper", h: 10, t0: 0.3, t1: 0.9 } },
+        { d: 0.8, a: { mate: { pose: "sad" } } }),
+      cqdOpt(0, ["🤕 Digo que estou com dor para não entrar", "🤕 Say I'm hurt so I don't have to go on", "🤕 Digo que me duele para no entrar"],
+        ["O medo decidiu por você. Outro jogador entrou no seu lugar e você viu a final do banco.", "Fear decided for you. Another player went on instead and you watched the final from the bench.", "El miedo decidió por ti. Otro jugador entró en tu lugar y viste la final desde el banco."],
+        { d: 1.8, say: ["me", ["Tô com dor, professor...", "It hurts, coach...", "Me duele, profe..."]], a: { me: { pose: "sad" } } },
+        { d: 1, a: { coach: { pose: "sad" } } },
+        { d: 1.6, cap: ["A final vista do banco.", "The final, from the bench.", "La final, desde el banco."], a: { me: { pose: "sit" } } }),
+    ],
+  },
+  {
+    text: ["Jogo fora de casa, 1 x 1, 85 minutos. A torcida deles vaia toda vez que você toca na bola. Agora ela chega no seu pé, na entrada da área.", "Away game, 1-1, 85 minutes. Their fans boo every time you touch the ball. Now it's at your feet, at the edge of the box.", "Partido de visitante, 1 a 1, minuto 85. Su hinchada abuchea cada vez que tocas el balón. Ahora te llega al pie, en la puerta del área."],
+    scene: {
+      bg: "stadium", hud: { score: [1, 1], min: 85 }, props: { goal: true },
+      cast: { ref: { kit: "ref", x: 40 }, mate: { kit: "mate", x: 90 }, rival: { kit: "rival", x: 236, dir: -1 }, keeper: { kit: "keeper", x: 292, dir: -1, pose: "ready" }, me: { x: 170 } },
+      ball: "mate",
+      beats: [
+        { d: 1, a: { mate: { pose: "kick", t1: 0.35 } }, ball: { to: "me", h: 4, t0: 0.3, t1: 0.9 } },
+        { d: 2.2, cap: ["📣 UUUUUH!", "📣 BOOOOO!", "📣 ¡UUUUUH!"], clouds: [["Todo mundo vaiando...", "Everyone's booing...", "Todos abuchean..."]] },
+        { d: 0.3 },
+      ],
+    },
+    opts: [
+      cqdOpt(2, ["✊ Fecho a mão, respiro e jogo o meu jogo", "✊ Close my hand, breathe and play my game", "✊ Cierro la mano, respiro y juego mi juego"],
+        ["A vaia ficou lá fora. Com a cabeça no lance, você ajeitou e bateu no canto. Silêncio na torcida deles!", "The booing stayed outside. With your head in the play, you set it up and hit the corner. Silence in their stands!", "El abucheo se quedó afuera. Con la cabeza en la jugada, te acomodaste y pateaste al rincón. ¡Silencio en su tribuna!"],
+        CQD_GESTURE,
+        { d: 0.4, ...CQD_GESTURE_OFF },
+        cqdGoal("me"), cqdParty([2, 1])),
+      cqdOpt(1, ["⚡ Passo a bola rápido para me livrar dela", "⚡ Pass it quickly to get rid of it", "⚡ La paso rápido para sacármela de encima"],
+        ["Melhor do que perder a cabeça, mas a pressão escolheu por você. O passe saiu apressado e a chance passou.", "Better than losing your head, but the pressure chose for you. The pass was rushed and the chance was gone.", "Mejor que perder la cabeza, pero la presión eligió por ti. El pase salió apurado y la chance se fue."],
+        { d: 1, cap: "", a: { me: { dir: -1, pose: "kick", t1: 0.35 } }, ball: { to: [-20, 135], h: 4, t0: 0.3, t1: 0.95 } },
+        { d: 1.2, a: { mate: { pose: "hands" }, me: { pose: "sad" } } }),
+      cqdOpt(0, ["😤 Provoco a torcida deles com gestos", "😤 Taunt their fans with gestures", "😤 Provoco a su hinchada con gestos"],
+        ["A pressão de fora tomou o comando. O juiz viu a provocação: cartão amarelo, e a chance foi embora.", "The outside pressure took command. The ref saw the taunt: yellow card, and the chance was gone.", "La presión de afuera tomó el mando. El árbitro vio la provocación: amarilla, y la chance se fue."],
+        { d: 1.6, cap: "", a: { me: { pose: "argue", dir: -1 } } },
+        { d: 0.8, ball: { give: "rival", t0: 0.3 }, a: { rival: { x: 190, t1: 0.4 } } },
+        { d: 1, a: { ref: { x: 130 } } },
+        { d: 1.8, props: { card: true }, a: { ref: { pose: "card" }, me: { pose: "sad" } } }),
+    ],
+  },
+  {
+    text: ["Em casa, depois do treino. Seu irmão mais novo pegou sua bola nova sem pedir e ela caiu no quintal do vizinho. A raiva sobe na hora.", "At home, after training. Your little brother took your new ball without asking and it fell into the neighbour's yard. Anger rises instantly.", "En casa, después del entrenamiento. Tu hermano menor agarró tu pelota nueva sin pedirla y cayó en el patio del vecino. La rabia sube de golpe."],
+    scene: {
+      bg: "room",
+      cast: { mate: { kit: "mate", x: 210, dir: -1 }, me: { x: 110 } },
+      ball: null,
+      beats: [
+        { d: 2, say: ["mate", ["Foi sem querer!", "It was an accident!", "¡Fue sin querer!"]] },
+        { d: 2.4, clouds: [["Minha bola nova!", "My new ball!", "¡Mi pelota nueva!"], ["Ele sempre faz isso!", "He always does this!", "¡Siempre hace lo mismo!"]] },
+        { d: 0.3 },
+      ],
+    },
+    opts: [
+      cqdOpt(2, ["✊ Fecho a mão, respiro e converso com calma", "✊ Close my hand, breathe and talk calmly", "✊ Cierro la mano, respiro y hablo con calma"],
+        ["O gesto funciona fora do campo também. Com a cabeça fria, vocês combinaram de pedir a bola ao vizinho juntos.", "The gesture works off the pitch too. With a cool head, you agreed to ask the neighbour for the ball together.", "El gesto funciona fuera de la cancha también. Con la cabeza fría, acordaron pedirle la pelota al vecino juntos."],
+        CQD_GESTURE,
+        { d: 1.8, ...CQD_GESTURE_OFF, say: ["me", ["Tá bom. Vamos buscar juntos.", "OK. Let's go get it together.", "Vale. Vamos a buscarla juntos."]] },
+        { d: 1.4, a: { me: { pose: "cheer" }, mate: { pose: "cheer" } } }),
+      cqdOpt(1, ["🚪 Saio do quarto sem falar com ele", "🚪 Leave the room without talking to him", "🚪 Salgo del cuarto sin hablarle"],
+        ["Melhor do que brigar, mas a raiva foi junto com você. A bola continua lá e o clima em casa ficou ruim.", "Better than fighting, but the anger went with you. The ball is still there and the mood at home turned sour.", "Mejor que pelear, pero la rabia se fue contigo. La pelota sigue allá y el ambiente en casa quedó feo."],
+        { d: 0.4, a: { me: { dir: -1 } } },
+        { d: 1.4, a: { me: { x: -30 } } },
+        { d: 1.2, a: { mate: { pose: "sad" } } }),
+      cqdOpt(0, ["😠 Grito com ele e empurro", "😠 Shout at him and shove him", "😠 Le grito y lo empujo"],
+        ["A raiva assumiu o comando. Você gritou, ele chorou e, no fim, os dois ficaram de castigo.", "Anger took command. You shouted, he cried and, in the end, you were both grounded.", "La rabia tomó el mando. Gritaste, él lloró y, al final, los dos quedaron castigados."],
+        { d: 1.4, say: ["me", ["Você estragou tudo!", "You ruined everything!", "¡Lo arruinaste todo!"]], a: { me: { pose: "argue" } } },
+        { d: 0.6, a: { me: { x: 170, pose: "push" }, mate: { x: 236, pose: "sit", glide: true, t0: 0.3 } } },
+        { d: 1.8, cap: ["Os dois de castigo.", "Both of you grounded.", "Los dos castigados."], a: { me: { pose: "sad" } } }),
     ],
   },
 ]);

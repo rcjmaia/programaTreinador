@@ -2188,7 +2188,7 @@ function renderCraque() {
     const tx = t();
     openModal(`
       ${missionHeader(m)}
-      ${m.cast.some((c) => c.emo) ? `<h4 class="cq-cast-title">${tx.meetCrew}</h4>` : ""}
+      ${m.castTitle || m.cast.some((c) => c.emo) ? `<h4 class="cq-cast-title">${m.castTitle ? tr(m.castTitle) : tx.meetCrew}</h4>` : ""}
       <ul class="cq-cast"><li class="cq-loading">${tx.loading}</li></ul>
       ${m.castNote ? `<p class="cq-note">${tr(m.castNote)}</p>` : ""}
       <button type="button" class="cq-btn" data-quiz>${tx.start}</button>`);
@@ -2197,9 +2197,10 @@ function renderCraque() {
     // The faces and names live in the crew's animation file, loaded on demand.
     cqLoadAnim("cabine").then(() => {
       if (!list.isConnected) return;
+      // An entry is a crew member ({ id }) or a step with its own emoji and name ({ icon, name }).
       list.innerHTML = m.cast.map((c) => `
-        <li><svg viewBox="-20 -34 40 56" aria-hidden="true">${cqMindFace(c.id)}</svg>
-          <span><b>${tr(CQ_MIND_CAST[c.id].name)}</b>${c.emo ? ` · <em>${tr(c.emo)}</em><small>${tr(c.line)}</small>` : `<q>${tr(c.say)}</q>`}</span></li>`).join("");
+        <li>${c.icon ? `<i class="cq-cast-icon" aria-hidden="true">${c.icon}</i>` : `<svg viewBox="-20 -34 40 56" aria-hidden="true">${cqMindFace(c.id)}</svg>`}
+          <span><b>${tr(c.name || CQ_MIND_CAST[c.id].name)}</b>${c.emo ? ` · <em>${tr(c.emo)}</em><small>${tr(c.line)}</small>` : `<q>${tr(c.say)}</q>`}</span></li>`).join("");
     }).catch((err) => {
       console.warn("Craque:", err);
       list.remove();
