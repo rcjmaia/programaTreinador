@@ -2216,6 +2216,10 @@ section {
 }
 
 /* Home */
+#craque {
+  overflow-x: clip;
+}
+
 .cq-home {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -4091,7 +4095,7 @@ body.cq-lock {
 @media (max-width: 980px) {
   .cq-setup,
   .cq-home {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     justify-items: center;
     gap: 28px;
   }
