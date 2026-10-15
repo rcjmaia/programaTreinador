@@ -1903,7 +1903,6 @@ function renderCraque() {
       closeModal();
       draw(up);
       animateXp(state.xp - xp);
-      app.querySelector(up.size ? ".cq-card" : ".cq-status")?.scrollIntoView({ behavior: "smooth", block: "center" });
     });
   }
 
@@ -1923,6 +1922,27 @@ function renderCraque() {
       popPoints(box, box.clientWidth / 2, 0, state.xp - from, "XP");
     }, 350);
     box.querySelectorAll(":scope > span:first-child, :scope > small").forEach((el) => el.classList.add("is-up"));
+    xpToast(from);
+  }
+
+  // The XP gain also shows in a floating notice at the bottom of the screen, so the page never has to
+  // scroll up to the level bar and the child stays where they were playing on the trail.
+  function xpToast(from) {
+    const tx = t();
+    const per = CQ_XP.perLevel;
+    const lvlUp = Math.floor(from / per) < Math.floor(state.xp / per);
+    root.querySelector(".cq-xp-toast")?.remove();
+    const el = document.createElement("div");
+    el.className = "cq-xp-toast";
+    el.innerHTML = `
+      <b>⭐ +${state.xp - from} XP</b>
+      <span class="cq-xpbar"><i style="width:${lvlUp ? 0 : (from % per) / per * 100}%"></i></span>
+      <small>${lvlUp ? "🎉 " : ""}${tx.level} ${level()}${lvlUp ? "!" : ` · ${state.xp % per} / ${per} XP`}</small>`;
+    root.appendChild(el);
+    const bar = el.querySelector("i");
+    setTimeout(() => (bar.style.width = `${(state.xp % per) / per * 100}%`), 400);
+    setTimeout(() => el.classList.add("is-out"), 2800);
+    setTimeout(() => el.remove(), 3300);
   }
 
   root.innerHTML = `
