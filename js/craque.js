@@ -1091,10 +1091,10 @@ function renderCraque() {
        only: tap the rule colour; avoid: tap every colour except it;
        stroop: like only, but the colour name is printed in a different ink and the word is what counts.
        sides splits the screen in two lanes, each with its own rule. */
-  /* Every miss or crash freezes the game for 1.5 s, showing the points just lost and the record.
+  /* Every miss or crash freezes the game for 2 s, showing the points just lost and the record.
      hit() returns how long the game must push its clocks forward (0 if it was already frozen),
      so speed levels and timed events don't move on during the pause. */
-  const CQ_PAUSE = 1500;
+  const CQ_PAUSE = 2000;
   function gamePause(wrap, m, record) {
     const tx = t();
     const el = document.createElement("div");
