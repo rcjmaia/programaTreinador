@@ -1675,6 +1675,9 @@ function renderCraque() {
      The match runs until Stop, and the result is the best score of the match. */
   const CQ_DODGE_CROSS = [2.8, 1.6, 1.35, 1.15];
   const CQ_DODGE_GAP = [1400, 780, 660, 560];
+  // Before the first cone, a hand taps each half twice so the player sees that a tap moves that ball.
+  const CQ_DODGE_DEMO_TAPS = [[0, 200], [1, 1000], [0, 1800], [1, 2600]];
+  const CQ_DODGE_DEMO = 3400;
 
   function startDodge(m, btn, input) {
     if (btn.cqStop) return btn.cqStop();
@@ -1691,13 +1694,14 @@ function renderCraque() {
     const BALL_Y = 44;
     const HIT = 36;
     const record = shownRecord(m) ?? 0;
-    let startAt = Date.now();
+    let startAt = Date.now() + CQ_DODGE_DEMO;
     const pause = gamePause(wrap, m, record);
     let streak = 0;
     let best = 0;
     let speed = gameSpeed(0, CQ_DODGE_CROSS, CQ_DODGE_GAP);
 
     const lanes = [...wrap.querySelectorAll(".cq-dodge")].map((area, i) => {
+      area.querySelectorAll(".cq-dodge-hand").forEach((el) => el.remove());
       area.querySelector(".cq-rain-rule").textContent = "";
       area.classList.remove("is-crash");
       area.classList.add("is-on");
@@ -1712,10 +1716,45 @@ function renderCraque() {
       scoreEl.textContent = `🏆 ${best} · ${tx.record} ${Math.max(record, best)}`;
     };
     showScore();
-    let last = startAt;
+    let last = Date.now();
     sound.go();
 
+    const demo = [];
+    const hands = lanes.map((lane) => {
+      lane.area.querySelector(".cq-rain-rule").textContent = tx.dodgeHint;
+      const hand = document.createElement("span");
+      hand.className = "cq-dodge-hand";
+      hand.textContent = "👆";
+      hand.style.left = lane.col ? "25%" : "75%";
+      lane.area.appendChild(hand);
+      return hand;
+    });
+    CQ_DODGE_DEMO_TAPS.forEach(([i, at]) => {
+      const lane = lanes[i];
+      if (!lane) return;
+      demo.push(setTimeout(() => {
+        hands[i].style.left = lane.col ? "25%" : "75%";
+      }, at));
+      demo.push(setTimeout(() => {
+        hands[i].classList.remove("is-tap");
+        void hands[i].offsetWidth;
+        hands[i].classList.add("is-tap");
+        lane.col = 1 - lane.col;
+        placeBall(lane);
+        sound.tick();
+      }, at + 400));
+    });
+    const endDemo = () => {
+      demo.forEach(clearTimeout);
+      hands.forEach((h) => h.remove());
+      lanes.forEach((lane) => {
+        lane.area.querySelector(".cq-rain-rule").textContent = "";
+      });
+    };
+    demo.push(setTimeout(endDemo, CQ_DODGE_DEMO));
+
     const finish = () => {
+      endDemo();
       btn.cqStop = null;
       btn.textContent = tx.restart;
       btn.closest(".cq-play").classList.remove("is-full");
