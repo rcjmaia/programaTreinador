@@ -119,7 +119,7 @@ CQ_MISSIONS.push(
     animArgs: { mode: "stroop" },
   },
   {
-    id: "chuvadupla", type: "mind", icon: "🌗", subs: ["decision", "reactions", "concentration"], tiers: [25, 50, 90, 135], max: 9999, rain: { sides: ["only", "only"], calm: true },
+    id: "chuvadupla", type: "mind", icon: "🌗", subs: ["decision", "reactions", "concentration"], tiers: [25, 50, 130, 200], max: 9999, rain: { sides: ["only", "only"], calm: true },
     title: ["Chuva dupla", "Double rain", "Lluvia doble"],
     desc: ["A tela vira duas! Cada lado tem a sua cor, e elas trocam em momentos diferentes. Toque só nas bolas certas de cada lado.", "The screen splits in two! Each side has its own colour, and they change at different times. Tap only the right balls on each side.", "¡La pantalla se divide en dos! Cada lado tiene su color, y cambian en momentos distintos. Toca solo los balones correctos de cada lado."],
     steps: [

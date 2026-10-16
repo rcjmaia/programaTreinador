@@ -31,6 +31,81 @@ function cqMeasureMission(id, dist, tiers, subs) {
   };
 }
 
+// One-touch passes against a wall, inside of the foot, switching feet.
+function cqWallMission(id, dist, tiers) {
+  return {
+    id, type: "ball", icon: "🔂", subs: ["short", "reactions"], tiers, timer: { mode: "down", s: 60 },
+    anim: "weak", animArgs: { dist },
+    title: [`Parede de primeira (${dist} passos)`, `One-touch wall passes (${dist} steps)`, `Pared de primera (${dist} pasos)`],
+    desc: [
+      `Em 1 minuto, quantos passes na parede você faz de primeira, a ${dist} passos dela, sem dominar a bola?`,
+      `In 1 minute, how many one-touch wall passes can you make from ${dist} steps, without controlling the ball?`,
+      `En 1 minuto, ¿cuántos pases a la pared haces de primera, a ${dist} pasos de ella, sin controlar el balón?`,
+    ],
+    steps: [
+      [`Fique a ${dist} passos da parede.`, `Stand ${dist} steps from a wall.`, `Ponte a ${dist} pasos de la pared.`],
+      ["Passe com a parte de dentro do pé (a chapa, o lado do dedão): a bola vai reta e volta reta.", "Pass with the inside of your foot (the big-toe side): the ball goes straight and comes back straight.", "Pasa con el interior del pie (el lado del dedo gordo): el balón va recto y vuelve recto."],
+      ["A bola voltou? Devolva na hora, sem parar a bola.", "Ball's back? Pass it straight back, without stopping it.", "¿Volvió el balón? Devuélvelo al momento, sin pararlo."],
+      CQ_STEPS_ALTERNATE,
+      ["Parou a bola ou ela escapou? Continue a contagem de onde estava.", "Stopped the ball or lost it? Carry on counting from where you were.", "¿Paraste el balón o se escapó? Sigue contando desde donde ibas."],
+    ],
+    unit: ["passes", "passes", "pases"],
+  };
+}
+
+// Wall passes in 2 touches: control with one foot, pass with the other.
+function cqTwoFeetMission(id, dist, tiers) {
+  return {
+    id, type: "ball", icon: "👣", subs: ["control", "short"], tiers, timer: { mode: "down", s: 60 },
+    anim: "twofeet", animArgs: { dist },
+    title: [`Domina com um, passa com o outro (${dist} passos)`, `Control with one, pass with the other (${dist} steps)`, `Controla con uno, pasa con el otro (${dist} pasos)`],
+    desc: [
+      `Em 1 minuto, quantas vezes você domina com a parte de dentro de um pé e passa na parede com o outro, a ${dist} passos dela?`,
+      `In 1 minute, how many times can you control with the inside of one foot and pass against the wall with the other, from ${dist} steps?`,
+      `En 1 minuto, ¿cuántas veces controlas con el interior de un pie y pasas a la pared con el otro, a ${dist} pasos de ella?`,
+    ],
+    steps: [
+      [`Fique a ${dist} passos da parede.`, `Stand ${dist} steps from a wall.`, `Ponte a ${dist} pasos de la pared.`],
+      ["A bola voltou? Domine com a parte de dentro de um pé, deixando a bola na frente do outro pé.", "Ball's back? Control it with the inside of one foot, leaving it in front of your other foot.", "¿Volvió el balón? Contrólalo con el interior de un pie, dejándolo delante del otro pie."],
+      ["Passe com a parte de dentro do outro pé. Só 2 toques: um para dominar, um para passar.", "Pass with the inside of your other foot. Just 2 touches: one to control, one to pass.", "Pasa con el interior del otro pie. Solo 2 toques: uno para controlar, uno para pasar."],
+      ["Na volta, troque: dominou com o direito e passou com o esquerdo? Agora domina com o esquerdo e passa com o direito.", "Next time, switch: controlled with the right and passed with the left? Now control with the left and pass with the right.", "A la vuelta, cambia: ¿controlaste con el derecho y pasaste con el izquierdo? Ahora controla con el izquierdo y pasa con el derecho."],
+      ["Dominou e passou com o mesmo pé, ou deu mais de 2 toques? O passe não conta.", "Controlled and passed with the same foot, or took more than 2 touches? That pass doesn't count.", "¿Controlaste y pasaste con el mismo pie, o diste más de 2 toques? Ese pase no cuenta."],
+    ],
+    unit: ["passes", "passes", "pases"],
+  };
+}
+
+// No first touch: as the ball arrives, drag it sideways with the sole (1 or 2 times), then pass with the other foot.
+function cqSoleMission(id, pulls, tiers) {
+  const times = pulls === 1 ? ["1 vez", "once", "1 vez"] : ["2 vezes", "twice", "2 veces"];
+  const wrong = pulls === 1
+    ? ["Dominou antes, puxou mais de 1 vez ou passou com o mesmo pé? O passe não conta.", "Controlled it first, dragged it more than once or passed with the same foot? That pass doesn't count.", "¿Controlaste antes, lo arrastraste más de 1 vez o pasaste con el mismo pie? Ese pase no cuenta."]
+    : ["Dominou antes, puxou menos de 2 vezes ou passou com o mesmo pé? O passe não conta.", "Controlled it first, dragged it fewer than 2 times or passed with the same foot? That pass doesn't count.", "¿Controlaste antes, lo arrastraste menos de 2 veces o pasaste con el mismo pie? Ese pase no cuenta."];
+  return {
+    id, type: "ball", icon: "🦶", subs: ["control", "short"], tiers, timer: { mode: "down", s: 60 },
+    anim: "solepass", animArgs: { pulls },
+    title: [`Puxa com a sola e passa (${times[0]})`, `Sole drag and pass (${times[1]})`, `Arrastra con la suela y pasa (${times[2]})`],
+    desc: [
+      `Em 1 minuto, quantas vezes você puxa a bola para o lado com a sola do pé assim que ela chega (sem dominar), ${times[0]}, e passa na parede com o outro pé, a 5 passos dela?`,
+      `In 1 minute, how many times can you drag the ball sideways with your sole as soon as it arrives (no first touch), ${times[1]}, and pass against the wall with your other foot, from 5 steps?`,
+      `En 1 minuto, ¿cuántas veces arrastras el balón hacia el lado con la suela en cuanto llega (sin controlar), ${times[2]}, y pasas a la pared con el otro pie, a 5 pasos de ella?`,
+    ],
+    steps: [
+      ["Fique a 5 passos da parede.", "Stand 5 steps from a wall.", "Ponte a 5 pasos de la pared."],
+      [
+        `Não domine: quando a bola chegar, já pise nela com a sola do pé e puxe para o lado, ${times[0]}, até ela ficar na frente do outro pé.`,
+        `Don't control it: as the ball arrives, step on it with your sole and drag it sideways, ${times[1]}, until it's in front of your other foot.`,
+        `No la controles: cuando llegue el balón, písalo con la suela y arrástralo hacia el lado, ${times[2]}, hasta que quede delante del otro pie.`,
+      ],
+      ...(pulls > 1 ? [["O corpo vai junto com a bola: a cada puxada, dê um passinho para o lado.", "Your body goes with the ball: with each drag, take a little side-step.", "El cuerpo va con el balón: en cada arrastre, da un pasito hacia el lado."]] : []),
+      ["Passe com a parte de dentro do outro pé.", "Pass with the inside of your other foot.", "Pasa con el interior del otro pie."],
+      ["Na volta, faça o mesmo para o outro lado: puxou com o direito? Agora puxa com o esquerdo e passa com o direito.", "Next time, do the same the other way: dragged it with the right? Now drag with the left and pass with the right.", "A la vuelta, haz lo mismo hacia el otro lado: ¿arrastraste con el derecho? Ahora arrastra con el izquierdo y pasa con el derecho."],
+      wrong,
+    ],
+    unit: ["passes", "passes", "pases"],
+  };
+}
+
 // Bouncing ball passed straight into a bucket/hoop.
 function cqBucketMission(id, dist, tiers, subs) {
   return {
@@ -84,6 +159,82 @@ function cqWalkMission(id, dist, mode, tiers, subs) {
   };
 }
 
+// Volley from the hands: the further away, the smaller the goal looks.
+function cqVolleyMission(id, dist, tiers, subs) {
+  return {
+    id, type: "ball", icon: "🦵", subs, tiers, max: 10,
+    anim: "volley", animArgs: { dist },
+    title: [`Bate-pronto (${dist} passos)`, `Volley (${dist} steps)`, `Volea (${dist} pasos)`],
+    desc: [
+      `Em 10 chutes de bate-pronto de ${dist} passos, quantos acertam o gol?`,
+      `Out of 10 volleys from ${dist} steps, how many are on target?`,
+      `De 10 voleas desde ${dist} pasos, ¿cuántas van al arco?`,
+    ],
+    steps: [
+      [`Marque um gol de 3 passos de largura com dois chinelos, ou use um muro. Fique a ${dist} passos dele.`, `Mark a goal 3 steps wide with two flip-flops, or use a wall. Stand ${dist} steps from it.`, `Marca un arco de 3 pasos de ancho con dos chanclas, o usa un muro. Ponte a ${dist} pasos.`],
+      ["Solte a bola das mãos e chute antes de ela tocar o chão.", "Drop the ball from your hands and kick it before it touches the ground.", "Suelta el balón de las manos y patéalo antes de que toque el suelo."],
+      CQ_STEPS_5_5,
+      ["Em cada pé, alterne: um chute com o peito do pé, o próximo com a parte de dentro.", "With each foot, switch: one shot with your laces, the next with the inside of your foot.", "Con cada pie, alterna: un tiro con el empeine, el siguiente con el interior del pie."],
+      ["Conte os chutes que acertam o gol.", "Count the shots on target.", "Cuenta los tiros al arco."],
+    ],
+    unit: CQ_UNIT_HITS,
+  };
+}
+
+// Toss the ball up, control it (inside of the foot or thigh), then shoot: 2 touches at most.
+function cqControlShotMission(id, dist, part, tiers) {
+  const foot = part === "foot";
+  return {
+    id, type: "ball", icon: "🎯", subs: ["control", "finishing"], tiers, max: 10,
+    anim: "controlshot", animArgs: { dist, part },
+    title: foot
+      ? [`Domina e finaliza (${dist} passos)`, `Control and finish (${dist} steps)`, `Controla y define (${dist} pasos)`]
+      : [`Coxa e finaliza (${dist} passos)`, `Thigh control and finish (${dist} steps)`, `Muslo y define (${dist} pasos)`],
+    desc: [
+      `Em 10 bolas pelo alto (você joga para cima ou alguém joga para você), quantas você domina com ${foot ? "a parte de dentro do pé" : "a coxa"} e chuta no alvo a ${dist} passos, com no máximo 2 toques?`,
+      `Out of 10 high balls (you toss it up or someone throws it to you), how many do you control with ${foot ? "the inside of your foot" : "your thigh"} and hit the target ${dist} steps away in 2 touches or fewer?`,
+      `De 10 balones por alto (lo lanzas tú hacia arriba o alguien te lo lanza), ¿cuántos controlas con ${foot ? "el interior del pie" : "el muslo"} y aciertas el blanco a ${dist} pasos en 2 toques o menos?`,
+    ],
+    steps: [
+      [`Coloque um alvo a ${dist} passos: cadeira, balde ou um canto do muro.`, `Put a target ${dist} steps away: a chair, a bucket or a corner of a wall.`, `Pon un blanco a ${dist} pasos: una silla, un balde o una esquina del muro.`],
+      ["Jogue a bola para cima com as mãos. Tem alguém para ajudar? Ele pode jogar a bola para você.", "Toss the ball up with your hands. Got someone to help? They can throw the ball to you.", "Lanza el balón hacia arriba con las manos. ¿Tienes quien te ayude? Puede lanzarte el balón."],
+      foot
+        ? ["1º toque: domine com a parte de dentro do pé. Toque leve, para a bola cair perto do corpo.", "1st touch: control it with the inside of your foot. A soft touch, so the ball drops close to you.", "1er toque: controla con el interior del pie. Toque suave, para que el balón caiga cerca del cuerpo."]
+        : ["1º toque: domine com a coxa. Amorteça leve, para a bola cair perto do corpo.", "1st touch: control it with your thigh. Cushion it softly, so the ball drops close to you.", "1er toque: controla con el muslo. Amortigua suave, para que el balón caiga cerca del cuerpo."],
+      ["2º toque: chute. Alterne: um chute com o peito do pé, o próximo com a parte de dentro.", "2nd touch: shoot. Switch: one shot with your laces, the next with the inside of your foot.", "2º toque: dispara. Alterna: un tiro con el empeine, el siguiente con el interior del pie."],
+      foot ? CQ_STEPS_5_5 : ["Faça 5 com a coxa e o pé direitos, e 5 com os esquerdos.", "Do 5 with your right thigh and foot, and 5 with your left.", "Haz 5 con el muslo y el pie derechos, y 5 con los izquierdos."],
+      ["Só conta se acertar o alvo com no máximo 2 toques.", "It only counts if you hit the target in 2 touches or fewer.", "Solo cuenta si aciertas el blanco en 2 toques o menos."],
+    ],
+    unit: CQ_UNIT_HITS,
+  };
+}
+
+// Curled shot from 10+ steps at a target in the corner: "in" = inside of the foot, "out" = trivela.
+function cqCurlMission(id, side, tiers, subs) {
+  const out = side === "out";
+  return {
+    id, type: "ball", icon: out ? "🪃" : "🍌", subs, tiers, max: 10,
+    anim: "curva", animArgs: { side },
+    title: out
+      ? ["Chute de trivela", "Outside-foot curler", "Tiro de trivela"]
+      : ["Chute com curva", "Curled shot", "Tiro con rosca"],
+    desc: out
+      ? ["Em 10 chutes de trivela (parte de fora do pé), de 10 passos ou mais, quantos fazem a curva e acertam o alvo no canto do gol?", "Out of 10 outside-foot shots from 10 steps or more, how many curve and hit the target in the corner of the goal?", "De 10 tiros de trivela (exterior del pie), desde 10 pasos o más, ¿cuántos hacen la curva y dan en el blanco en el rincón del arco?"]
+      : ["Em 10 chutes com a parte de dentro do pé, de 10 passos ou mais, quantos fazem a curva e acertam o alvo no canto do gol?", "Out of 10 inside-foot shots from 10 steps or more, how many curve and hit the target in the corner of the goal?", "De 10 tiros con el interior del pie, desde 10 pasos o más, ¿cuántos hacen la curva y dan en el blanco en el rincón del arco?"],
+    steps: [
+      ["Marque um gol com dois chinelos ou use um muro. Coloque um alvo num dos cantos: garrafa, cone ou chinelo.", "Mark a goal with two flip-flops or use a wall. Put a target in one corner: a bottle, a cone or a flip-flop.", "Marca un arco con dos chanclas o usa un muro. Pon un blanco en un rincón: botella, cono o chancla."],
+      ["Fique a pelo menos 10 passos: a bola precisa de espaço para fazer a curva. Se quiser, coloque uma cadeira no meio do gol: é o goleiro.", "Stand at least 10 steps away: the ball needs room to curve. If you like, put a chair in the middle of the goal: that's the keeper.", "Ponte a 10 pasos como mínimo: el balón necesita espacio para hacer la curva. Si quieres, pon una silla en el medio del arco: es el portero."],
+      out
+        ? ["Chute com a parte de fora do pé, perto dos dedos, passando o pé de dentro para fora na bola, para ela girar e fazer a curva.", "Strike with the outside of your foot, near the toes, brushing across the ball from inside to outside so it spins and curves.", "Golpea con el exterior del pie, cerca de los dedos, pasando el pie de adentro hacia afuera para que gire y haga la curva."]
+        : ["Chute com a parte de dentro do pé, perto dos dedos, batendo no lado da bola, para ela girar e fazer a curva.", "Strike with the inside of your foot, near the toes, hitting the side of the ball so it spins and curves.", "Golpea con el interior del pie, cerca de los dedos, dándole al costado del balón para que gire y haga la curva."],
+      ["Mire um pouco para fora e deixe a curva levar a bola ao canto, longe do goleiro. Ela pode subir um pouco, mas o chute é baixo.", "Aim a little wide and let the curve take the ball into the corner, away from the keeper. It can rise a little, but keep the shot low.", "Apunta un poco afuera y deja que la curva lleve el balón al rincón, lejos del portero. Puede subir un poco, pero el tiro es bajo."],
+      CQ_STEPS_5_5,
+      ["Conte as bolas que acertam o alvo.", "Count the balls that hit the target.", "Cuenta los balones que dan en el blanco."],
+    ],
+    unit: CQ_UNIT_HITS,
+  };
+}
+
 // A single trick: 10 tries, count the clean ones.
 function cqTrickMission(id, icon, title, how) {
   return {
@@ -109,7 +260,7 @@ function cqTrickMission(id, icon, title, how) {
 CQ_MISSIONS.push(
   // ---------- Ritmo ----------
   {
-    id: "skipping", type: "move", icon: "🦵", subs: ["acceleration", "stamina"], tiers: [15, 25, 35, 45], timer: { mode: "down", s: 20 }, anim: true,
+    id: "skipping", type: "move", icon: "🦵", subs: ["acceleration", "stamina"], tiers: [10, 15, 20, 35], timer: { mode: "down", s: 20 }, anim: true,
     title: ["Skipping", "High knees", "Skipping"],
     desc: ["Em 20 segundos, quantas vezes você sobe o joelho na altura da cintura, correndo no lugar?", "In 20 seconds, how many times can you lift your knee to waist height, running on the spot?", "En 20 segundos, ¿cuántas veces subes la rodilla a la altura de la cintura, corriendo en el sitio?"],
     steps: [
@@ -154,9 +305,9 @@ CQ_MISSIONS.push(
     unit: ["toques", "touches", "toques"],
   },
   {
-    id: "ladder", type: "move", icon: "🪜", subs: ["agility", "balance", "acceleration"], tiers: [2, 4, 6, 8], timer: { mode: "down", s: 30 }, anim: true,
+    id: "ladder", type: "move", icon: "🪜", subs: ["agility", "balance", "acceleration"], tiers: [2, 4, 6, 8], timer: { mode: "down", s: 60 }, anim: true,
     title: ["Escada no chão", "Floor ladder", "Escalera en el suelo"],
-    desc: ["Em 30 segundos, quantas vezes você passa pela escada pisando com os dois pés em cada espaço?", "In 30 seconds, how many times can you go through the ladder with both feet in every space?", "En 30 segundos, ¿cuántas veces pasas la escalera pisando con los dos pies en cada espacio?"],
+    desc: ["Em 1 minuto, quantas vezes você passa pela escada pisando com os dois pés em cada espaço?", "In 1 minute, how many times can you go through the ladder with both feet in every space?", "En 1 minuto, ¿cuántas veces pasas la escalera pisando con los dos pies en cada espacio?"],
     steps: [
       ["Faça uma escada com 7 chinelos ou risque no chão: 6 espaços.", "Make a ladder with 7 flip-flops or draw it on the floor: 6 spaces.", "Haz una escalera con 7 chanclas o dibújala en el suelo: 6 espacios."],
       ["Os dois pés entram em cada espaço, rapidinho, sem pisar nas marcas.", "Both feet go into every space, quickly, without stepping on the markers.", "Los dos pies entran en cada espacio, rápido, sin pisar las marcas."],
@@ -181,7 +332,7 @@ CQ_MISSIONS.push(
     id: "weakshot", type: "ball", icon: "👟", subs: ["finishing", "composure"], tiers: [2, 3, 5, 7], max: 10,
     anim: "target", animArgs: { note: ["chapa e peito do pé", "side-foot and laces", "interior y empeine"] },
     title: ["Chapa e peito do pé", "Side-foot and laces", "Interior y empeine"],
-    desc: ["Em 10 chutes no alvo, 5 de chapa e 5 de peito do pé, quantos acertam?", "Out of 10 shots at the target, 5 side-foot and 5 with your laces, how many hit it?", "De 10 tiros al blanco, 5 con el interior y 5 con el empeine, ¿cuántos aciertan?"],
+    desc: ["Em 10 chutes de 5 passos, 5 de chapa e 5 de peito do pé, quantos acertam o alvo?", "Out of 10 shots from 5 steps, 5 side-foot and 5 with your laces, how many hit the target?", "De 10 tiros desde 5 pasos, 5 con el interior y 5 con el empeine, ¿cuántos dan en el blanco?"],
     steps: [
       ["Use o mesmo alvo do Chute no alvo, a 5 passos.", "Use the same target as Target shooting, 5 steps away.", "Usa el mismo blanco del Tiro al blanco, a 5 pasos."],
       ["Chapa é a parte de dentro do pé: mais precisão. Peito do pé é onde fica o cadarço: mais força.", "Side-foot is the inside of your foot: more accuracy. Laces are where your shoelaces are: more power.", "El interior es la parte de adentro del pie: más precisión. El empeine es donde están los cordones: más fuerza."],
@@ -193,7 +344,7 @@ CQ_MISSIONS.push(
   {
     id: "placed", type: "ball", icon: "📐", subs: ["finishing", "composure"], tiers: [2, 3, 5, 7], max: 10, anim: true,
     title: ["Chute colocado", "Placed finish", "Tiro colocado"],
-    desc: ["Em 10 chutes de chapa (parte de dentro do pé), quantos entram entre o chinelo e a trave?", "Out of 10 side-foot shots, how many go in between the flip-flop and the post?", "De 10 tiros con el interior del pie, ¿cuántos entran entre la chancla y el palo?"],
+    desc: ["Em 10 chutes de 7 passos, de chapa (parte de dentro do pé), quantos entram entre o chinelo e a trave?", "Out of 10 side-foot shots from 7 steps, how many go in between the flip-flop and the post?", "De 10 tiros desde 7 pasos con el interior del pie, ¿cuántos entran entre la chancla y el palo?"],
     steps: [
       ["Coloque um chinelo dentro do gol, a 1 passo de cada trave.", "Put a flip-flop inside the goal, 1 step from each post.", "Pon una chancla dentro del arco, a 1 paso de cada palo."],
       ["Chute de 7 passos com a parte de dentro do pé: precisão, não força.", "Shoot from 7 steps with the inside of your foot: accuracy, not power.", "Dispara desde 7 pasos con el interior del pie: precisión, no fuerza."],
@@ -205,7 +356,7 @@ CQ_MISSIONS.push(
   {
     id: "stepshot", type: "ball", icon: "🌪️", subs: ["dribble", "finishing"], tiers: [2, 3, 4, 6], max: 10, anim: true,
     title: ["Pedalada e chute", "Step-over and shoot", "Bicicleta y tiro"],
-    desc: ["Em 10 tentativas, quantas vezes você engana o oponente com a pedalada, sai para o outro lado e acerta o alvo?", "Out of 10 tries, how many times do you fool the defender with a step-over, go the other way and hit the target?", "De 10 intentos, ¿cuántas veces engañas al rival con la bicicleta, sales hacia el otro lado y aciertas el blanco?"],
+    desc: ["Em 10 tentativas, quantas vezes você engana o oponente com a pedalada, sai para o outro lado e acerta o alvo, 4 passos depois dele?", "Out of 10 tries, how many times do you fool the defender with a step-over, go the other way and hit the target 4 steps behind them?", "De 10 intentos, ¿cuántas veces engañas al rival con la bicicleta, sales hacia el otro lado y aciertas el blanco, 4 pasos detrás de él?"],
     steps: [
       ["Coloque um cone ou uma cadeira no caminho: é o oponente. O alvo fica uns 4 passos depois dele. Se tiver alguém da família, ele pode ser o oponente.", "Put a cone or a chair in your path: that's the defender. The target is about 4 steps behind it. If someone at home can join, they can be the defender.", "Pon un cono o una silla en el camino: es el rival. El blanco queda unos 4 pasos detrás. Si alguien de tu familia puede, que haga de rival."],
       ["Conduza até perto do oponente e faça a pedalada: passe a perna por cima da bola, sem tocar nela, levando o corpo junto, como se fosse sair para aquele lado.", "Dribble up close to the defender and do the step-over: swing your leg over the ball without touching it, moving your body too, as if you were going that way.", "Conduce hasta cerca del rival y haz la bicicleta: pasa la pierna por encima del balón sin tocarlo, llevando el cuerpo, como si fueras a salir hacia ese lado."],
@@ -219,8 +370,9 @@ CQ_MISSIONS.push(
   {
     id: "firsttime", type: "ball", icon: "⚡", subs: ["finishing", "reactions"], tiers: [2, 3, 5, 7], max: 10, anim: true,
     title: ["Chute de primeira", "First-time shot", "Tiro de primera"],
-    desc: ["Em 10 bolas que chegam rolando até você, quantas você chuta de primeira, sem dominar, e acerta o gol?", "Out of 10 balls rolling to you, how many do you hit first time, without a touch, on target?", "De 10 balones que te llegan rodando, ¿cuántos disparas de primera, sin controlar, y van al arco?"],
+    desc: ["Em 10 bolas que chegam rolando até você, a 8 passos do gol, quantas você chuta de primeira, sem dominar, e acerta o gol?", "Out of 10 balls rolling to you, 8 steps from goal, how many do you hit first time, without a touch, on target?", "De 10 balones que te llegan rodando, a 8 pasos del arco, ¿cuántos disparas de primera, sin controlar, y van al arco?"],
     steps: [
+      ["Marque um gol de 3 passos de largura com dois chinelos, ou use um muro. Fique a 8 passos dele.", "Mark a goal 3 steps wide with two flip-flops, or use a wall. Stand 8 steps from it.", "Marca un arco de 3 pasos de ancho con dos chanclas, o usa un muro. Ponte a 8 pasos."],
       ["Alguém da família rola a bola para você, do lado.", "A family member rolls the ball to you from the side.", "Alguien de tu familia te rueda el balón desde un lado."],
       ["Sozinho? Passe a bola numa parede e chute de primeira quando ela voltar.", "On your own? Pass the ball against a wall and shoot first time when it comes back.", "¿Solo? Pasa el balón contra una pared y tira de primera cuando vuelva."],
       ["5 bolas vêm pela direita e você chuta com o pé direito. As outras 5 vêm pela esquerda, para o pé esquerdo.", "5 balls come from the right and you hit them with your right foot. The other 5 come from the left, for your left foot.", "5 balones llegan por la derecha y tiras con el pie derecho. Los otros 5 llegan por la izquierda, para el pie izquierdo."],
@@ -229,59 +381,52 @@ CQ_MISSIONS.push(
     ],
     unit: CQ_UNIT_HITS,
   },
-  {
-    id: "controlshot", type: "ball", icon: "🎯", subs: ["control", "finishing"], tiers: [2, 3, 5, 7], max: 10, anim: true,
-    title: ["Domina e finaliza", "Control and finish", "Controla y define"],
-    desc: ["Em 10 tentativas, quantas vezes você joga a bola para cima, domina e chuta no alvo com no máximo 2 toques?", "Out of 10 tries, how many times can you toss the ball up, control it and hit the target in 2 touches or fewer?", "De 10 intentos, ¿cuántas veces lanzas el balón arriba, lo controlas y aciertas el blanco en 2 toques o menos?"],
-    steps: [
-      ["Jogue a bola para cima com as mãos.", "Toss the ball up with your hands.", "Lanza el balón hacia arriba con las manos."],
-      ["Primeiro toque: domine. Segundo toque: chute.", "First touch: control. Second touch: shoot.", "Primer toque: controla. Segundo toque: dispara."],
-      CQ_STEPS_5_5,
-      ["Conte os acertos no alvo, a 6 passos.", "Count the hits on the target, 6 steps away.", "Cuenta los aciertos en el blanco, a 6 pasos."],
-    ],
-    unit: CQ_UNIT_HITS,
-  },
+  cqControlShotMission("controlshot", 5, "foot", [2, 3, 5, 7]),
+  cqControlShotMission("controlshot10", 10, "foot", [1, 2, 4, 6]),
+  cqControlShotMission("thighshot5", 5, "thigh", [1, 2, 4, 6]),
+  cqControlShotMission("thighshot10", 10, "thigh", [1, 2, 3, 5]),
   {
     id: "chip", type: "ball", icon: "🥄", subs: ["finishing", "composure"], tiers: [1, 2, 4, 6], max: 10, anim: true,
     title: ["Cavadinha", "Chip shot", "Vaselina"],
-    desc: ["Em 10 tentativas, quantas cavadinhas passam por cima da cadeira (o goleiro) e caem no gol?", "Out of 10 tries, how many chips go over the chair (the keeper) and drop into the goal?", "De 10 intentos, ¿cuántas vaselinas pasan sobre la silla (el portero) y caen en el arco?"],
+    desc: ["Em 10 tentativas de 6 passos, quantas cavadinhas passam por cima da cadeira (o goleiro) e caem no gol?", "Out of 10 tries from 6 steps, how many chips go over the chair (the keeper) and drop into the goal?", "De 10 intentos desde 6 pasos, ¿cuántas vaselinas pasan sobre la silla (el portero) y caen en el arco?"],
     steps: [
-      ["Coloque uma cadeira na frente do gol, como se fosse o goleiro.", "Put a chair in front of the goal, as if it were the keeper.", "Pon una silla delante del arco, como si fuera el portero."],
+      ["Coloque uma cadeira 2 passos na frente do gol, como se fosse o goleiro. Chute de 6 passos do gol.", "Put a chair 2 steps in front of the goal, as if it were the keeper. Shoot from 6 steps out.", "Pon una silla 2 pasos delante del arco, como si fuera el portero. Dispara desde 6 pasos."],
       ["Chute por baixo da bola, com a ponta do pé, só levantando.", "Strike under the ball with the tip of your foot, just lifting it.", "Golpea por debajo del balón con la punta del pie, solo levantándolo."],
       CQ_STEPS_5_5,
       ["Conte as bolas que caem no gol.", "Count the balls that drop into the goal.", "Cuenta los balones que caen en el arco."],
     ],
     unit: ["gols", "goals", "goles"],
   },
+  cqCurlMission("curlshot", "in", [1, 2, 4, 6], ["curve", "longshots"]),
+  cqCurlMission("trivela", "out", [1, 2, 3, 5], ["curve", "finishing"]),
+  cqVolleyMission("volley", 5, [2, 3, 5, 7], ["volleys", "finishing"]),
+  cqVolleyMission("volley8", 8, [2, 3, 4, 6], ["volleys", "finishing"]),
+  cqVolleyMission("volley12", 12, [1, 2, 4, 5], ["volleys", "power"]),
+  cqVolleyMission("volley16", 16, [1, 2, 3, 4], ["volleys", "longshots"]),
 
   // ---------- Passes ----------
-  cqMeasureMission("measure10", 10, [18, 14, 8, 4], ["short", "vision"]),
-  {
-    id: "twofeet", type: "ball", icon: "👣", subs: ["short", "reactions"], tiers: [10, 20, 30, 40], timer: { mode: "down", s: 60 }, anim: true,
-    title: ["Parede com os dois pés", "Two-footed wall passes", "Pared con los dos pies"],
-    desc: ["Em 1 minuto, quantos passes na parede você faz alternando o pé direito e o esquerdo?", "In 1 minute, how many wall passes can you make alternating right and left foot?", "En 1 minuto, ¿cuántos pases a la pared haces alternando pie derecho e izquierdo?"],
-    steps: [
-      ["Fique a uns 2 passos da parede.", "Stand about 2 steps from a wall.", "Ponte a unos 2 pasos de la pared."],
-      ["Um passe com o direito, o próximo com o esquerdo.", "One pass with the right, the next with the left.", "Un pase con el derecho, el siguiente con el izquierdo."],
-      ["Errou a ordem? O passe não conta.", "Wrong foot? That pass doesn't count.", "¿Pie equivocado? Ese pase no cuenta."],
-    ],
-    unit: ["passes", "passes", "pases"],
-  },
-  cqBucketMission("bucket3", 3, [1, 3, 4, 7], ["short", "control"]),
+  cqWallMission("weak", 4, [10, 16, 22, 28]),
+  cqWallMission("wall6", 6, [8, 13, 18, 24]),
+  cqWallMission("wall8", 8, [6, 10, 15, 20]),
+  cqSoleMission("solepass1", 1, [6, 10, 14, 18]),
+  cqSoleMission("solepass", 2, [5, 8, 11, 14]),
+  cqMeasureMission("measure10", 10, [18, 14, 8, 4], ["short", "control"]),
+  cqTwoFeetMission("twofeet", 5, [6, 10, 14, 18]),
+  cqBucketMission("bucket3", 3, [2, 4, 6, 9], ["short", "control"]),
   {
     id: "orient", type: "ball", icon: "↪️", subs: ["control", "short"], tiers: [5, 9, 13, 17], timer: { mode: "down", s: 60 }, anim: true,
     title: ["Domínio orientado", "Directional first touch", "Control orientado"],
-    desc: ["Em 1 minuto, quantas vezes você passa na parede, domina já levando a bola para o lado e passa de novo?", "In 1 minute, how many times can you pass against the wall, take your first touch out to the side and pass again?", "En 1 minuto, ¿cuántas veces pasas a la pared, controlas llevando el balón hacia un lado y vuelves a pasar?"],
+    desc: ["Em 1 minuto, quantas vezes você passa na parede, domina com a parte de dentro do pé já levando a bola para o lado e passa de novo?", "In 1 minute, how many times can you pass against the wall, take your first touch with the inside of your foot out to the side and pass again?", "En 1 minuto, ¿cuántas veces pasas a la pared, controlas con el interior del pie llevando el balón hacia un lado y vuelves a pasar?"],
     steps: [
       ["Marque dois chinelos a 2 passos um do outro, de frente para a parede.", "Mark two flip-flops 2 steps apart, facing the wall.", "Marca dos chanclas a 2 pasos una de otra, frente a la pared."],
-      ["Domine levando a bola até o outro chinelo e passe dali.", "Control the ball across to the other flip-flop and pass from there.", "Controla llevando el balón hasta la otra chancla y pasa desde allí."],
+      ["Domine com a parte de dentro do pé, levando a bola até o outro chinelo, e passe dali.", "Control it with the inside of your foot, taking the ball across to the other flip-flop, and pass from there.", "Controla con el interior del pie, llevando el balón hasta la otra chancla, y pasa desde allí."],
       ["Indo para a direita, domine e passe com o pé direito. Indo para a esquerda, com o esquerdo.", "Going right, control and pass with your right foot. Going left, with your left.", "Hacia la derecha, controla y pasa con el pie derecho. Hacia la izquierda, con el izquierdo."],
       ["Cada passe depois de um domínio para o lado vale 1.", "Each pass after a first touch to the side counts as 1.", "Cada pase tras un control hacia el lado cuenta 1."],
     ],
     unit: ["passes", "passes", "pases"],
   },
-  cqMeasureMission("measure15", 15, [24, 19, 12, 7], ["short", "vision"]),
-  cqBucketMission("bucket5", 5, [1, 2, 3, 5], ["short", "control"]),
+  cqMeasureMission("measure15", 15, [24, 19, 12, 7], ["short", "control"]),
+  cqBucketMission("bucket5", 5, [2, 3, 5, 7], ["short", "control"]),
   {
     id: "altinha", type: "ball", icon: "🏐", subs: ["control", "teamplay"], tiers: [5, 15, 30, 50], timer: { mode: "down", s: 60 }, anim: true,
     title: ["Altinha", "Keep it up together", "Pelotita en el aire"],
@@ -294,9 +439,10 @@ CQ_MISSIONS.push(
     ],
     unit: ["toques", "touches", "toques"],
   },
-  cqMeasureMission("measure20", 20, [30, 25, 17, 8], ["long", "vision"]),
-  cqBucketMission("bucket8", 8, [1, 2, 3, 4], ["long", "control"]),
-  cqMeasureMission("measure25", 25, [36, 30, 21, 11], ["long", "vision"]),
+  cqMeasureMission("measure20", 20, [30, 25, 17, 8], ["long", "control"]),
+  cqBucketMission("bucket8", 8, [1, 2, 4, 5], ["long", "control"]),
+  cqTwoFeetMission("twofeet10", 10, [4, 7, 10, 13]),
+  cqMeasureMission("measure25", 25, [36, 30, 21, 11], ["long", "control"]),
 
   // ---------- Técnica ----------
   {

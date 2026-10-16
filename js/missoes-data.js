@@ -17,8 +17,8 @@
 // One mission per phase: each phase is one link of the chain.
 const CQ_CHAIN = {
   rit: ["shuttle", "flipflops", "skipping", "sprintball", "conemove", "treasure", "star", "ladder", "sprint20"],
-  fin: ["target", "weakshot", "penalty", "placed", "stepshot", "volley", "firsttime", "header", "controlshot", "longshot", "chip", "freekick"],
-  pas: ["weak", "measure10", "twofeet", "bucket3", "orient", "measure15", "longpass", "bucket5", "altinha", "measure20", "cross", "bucket8", "measure25"],
+  fin: ["target", "weakshot", "penalty", "placed", "stepshot", "volley", "firsttime", "header", "volley8", "controlshot", "longshot", "thighshot5", "volley12", "chip", "controlshot10", "curlshot", "freekick", "volley16", "thighshot10", "trivela"],
+  pas: ["weak", "measure10", "twofeet", "bucket3", "orient", "wall6", "solepass1", "measure15", "longpass", "bucket5", "altinha", "solepass", "wall8", "measure20", "cross", "twofeet10", "bucket8", "measure25"],
   con: ["keepy", "trap", "slalom", "keepyalt", "chest", "zigzag", "walk5", "dribble", "trapweak", "slalomweak", "skills", "elastico", "walk10", "walkalt", "roleta", "headkeepy", "chapeu", "walkhead"],
   def: ["bote", "sidestep", "steal", "backrun", "heading", "intercept", "sliding", "shadow", "clearance"],
   fis: ["hops", "jacks", "squats", "jump", "plank", "shield", "rope", "stepup", "onefoot", "situps", "lunges"],
@@ -47,7 +47,7 @@ const CQ_STEPS_BOTH_FEET = ["Use os dois pés, o direito e o esquerdo.", "Use bo
 const CQ_MISSIONS = [
   // Ritmo
   {
-    id: "shuttle", type: "move", icon: "🏃", subs: ["acceleration", "sprint"], tiers: [6, 9, 12, 15], timer: { mode: "down", s: 30 }, anim: true,
+    id: "shuttle", type: "move", icon: "🏃", subs: ["acceleration", "sprint"], tiers: [4, 6, 8, 10], timer: { mode: "down", s: 30 }, anim: true,
     title: ["Vai e volta", "Shuttle run", "Ida y vuelta"],
     desc: ["Em 30 segundos, quantas vezes você toca as marcas correndo de uma para a outra?", "In 30 seconds, how many times can you touch the markers running from one to the other?", "En 30 segundos, ¿cuántas veces tocas las marcas corriendo de una a la otra?"],
     steps: [
@@ -58,7 +58,7 @@ const CQ_MISSIONS = [
     unit: ["toques", "touches", "toques"],
   },
   {
-    id: "flipflops", type: "move", icon: "👟", subs: ["acceleration", "agility"], tiers: [4, 6, 8, 10], timer: { mode: "down", s: 30 }, anim: true,
+    id: "flipflops", type: "move", icon: "👟", subs: ["acceleration", "agility"], tiers: [2, 4, 6, 8], timer: { mode: "down", s: 30 }, anim: true,
     title: ["Busca-chinelos", "Flip-flop fetch", "Busca chanclas"],
     desc: ["Em 30 segundos, quantos chinelos ou qualquer objeto você busca e traz de volta, um por vez?", "In 30 seconds, how many flip-flops or any other objects can you fetch and bring back, one at a time?", "En 30 segundos, ¿cuántas chanclas u otros objetos buscas y traes, uno por vez?"],
     steps: [
@@ -69,7 +69,7 @@ const CQ_MISSIONS = [
     unit: ["objetos", "objects", "objetos"],
   },
   {
-    id: "sprintball", type: "ball", icon: "💨", subs: ["sprint", "carry"], tiers: [3, 4, 6, 8], timer: { mode: "down", s: 30 }, anim: true,
+    id: "sprintball", type: "ball", icon: "💨", subs: ["sprint", "carry"], tiers: [1, 2, 3, 4], timer: { mode: "down", s: 30 }, anim: true,
     title: ["Pique com bola", "Sprint with the ball", "Pique con balón"],
     desc: ["Em 30 segundos, quantas idas e voltas conduzindo a bola entre duas marcas a 10 passos?", "In 30 seconds, how many round trips dribbling between two markers 10 steps apart?", "En 30 segundos, ¿cuántas idas y vueltas conduciendo entre dos marcas a 10 pasos?"],
     steps: [
@@ -85,7 +85,7 @@ const CQ_MISSIONS = [
   {
     id: "target", type: "ball", icon: "🎯", subs: ["finishing", "composure"], tiers: [3, 5, 7, 9], max: 10, anim: true,
     title: ["Chute no alvo", "Target shooting", "Tiro al blanco"],
-    desc: ["Em 10 chutes, quantos acertam o alvo?", "Out of 10 shots, how many hit the target?", "De 10 tiros, ¿cuántos dan en el blanco?"],
+    desc: ["Em 10 chutes de 5 passos, quantos acertam o alvo?", "Out of 10 shots from 5 steps, how many hit the target?", "De 10 tiros desde 5 pasos, ¿cuántos dan en el blanco?"],
     steps: [
       ["Escolha um alvo: uma cadeira, um balde ou um canto do muro.", "Pick a target: a chair, a bucket or a corner of a wall.", "Elige un blanco: una silla, un balde o una esquina del muro."],
       ["Chute de uns 5 passos.", "Shoot from about 5 steps.", "Dispara desde unos 5 pasos."],
@@ -97,7 +97,7 @@ const CQ_MISSIONS = [
   {
     id: "penalty", type: "ball", icon: "🥅", subs: ["penalties", "composure"], tiers: [3, 5, 7, 9], max: 10, anim: true,
     title: ["Pênalti no cantinho", "Corner penalty", "Penalti al rincón"],
-    desc: ["Em 10 cobranças, quantas entram no canto marcado?", "Out of 10 penalties, how many go into the marked corner?", "De 10 penaltis, ¿cuántos entran en el rincón marcado?"],
+    desc: ["Em 10 cobranças de 7 passos, quantas entram no canto marcado?", "Out of 10 penalties from 7 steps, how many go into the marked corner?", "De 10 penaltis desde 7 pasos, ¿cuántos entran en el rincón marcado?"],
     steps: [
       ["Marque um canto do gol com um chinelo.", "Mark a corner of the goal with a flip-flop.", "Marca un rincón del arco con una chancla."],
       ["Chute de 7 passos, com calma.", "Shoot from 7 steps, nice and calm.", "Dispara desde 7 pasos, con calma."],
@@ -108,10 +108,11 @@ const CQ_MISSIONS = [
   {
     id: "header", type: "ball", icon: "💫", subs: ["headfin", "attpos"], tiers: [2, 4, 6, 8], max: 10, anim: true,
     title: ["Cabeçada no gol", "Header on goal", "Cabezazo al arco"],
-    desc: ["Em 10 tentativas, quantas cabeçadas para baixo acertam o canto do gol?", "Out of 10 tries, how many downward headers hit the corner of the goal?", "De 10 intentos, ¿cuántos cabezazos hacia abajo van al rincón del arco?"],
+    desc: ["Em 10 tentativas, a 5 passos do gol, quantas cabeçadas para baixo acertam o canto?", "Out of 10 tries, 5 steps from goal, how many downward headers hit the corner?", "De 10 intentos, a 5 pasos del arco, ¿cuántos cabezazos hacia abajo van al rincón?"],
     steps: [
       ["Use só bola leve: de plástico ou bexiga.", "Only use a light ball: plastic or a balloon.", "Usa solo balón liviano: de plástico o un globo."],
-      ["Alguém joga a bola para você, ou jogue para cima.", "Someone tosses you the ball, or toss it up yourself.", "Alguien te lanza el balón, o lánzalo tú hacia arriba."],
+      ["Fique a 5 passos do gol.", "Stand 5 steps from the goal.", "Ponte a 5 pasos del arco."],
+      ["Tem alguém para ajudar? Ele joga a bola de lado, como num cruzamento: é o melhor treino. Sozinho? Jogue a bola para cima.", "Got someone to help? They toss the ball from the side, like a cross: that's the best practice. On your own? Toss it up yourself.", "¿Tienes quien te ayude? Que lance el balón desde un lado, como un centro: es el mejor entrenamiento. ¿Solo? Lánzalo tú hacia arriba."],
       ["Cabeceie com a testa, de olhos abertos, para baixo e no canto: assim o goleiro não pega.", "Head it with your forehead, eyes open, down into the corner: that's how you beat the keeper.", "Cabecea con la frente, con los ojos abiertos, hacia abajo y al rincón: así el portero no llega."],
     ],
     unit: ["gols", "goals", "goles"],
@@ -128,32 +129,7 @@ const CQ_MISSIONS = [
     ],
     unit: CQ_UNIT_HITS,
   },
-  {
-    id: "volley", type: "ball", icon: "🦵", subs: ["volleys", "finishing"], tiers: [2, 3, 5, 7], max: 10, anim: true,
-    title: ["Bate-pronto", "Volley", "Volea"],
-    desc: ["Em 10 tentativas, quantos chutes de bate-pronto acertam o alvo?", "Out of 10 tries, how many volleys hit the target?", "De 10 intentos, ¿cuántas voleas dan en el blanco?"],
-    steps: [
-      ["Solte a bola das mãos.", "Drop the ball from your hands.", "Suelta el balón de las manos."],
-      ["Chute antes de ela tocar o chão.", "Kick it before it touches the ground.", "Patéalo antes de que toque el suelo."],
-      CQ_STEPS_5_5,
-      ["Conte os acertos na parede ou no alvo.", "Count the hits on the wall or target.", "Cuenta los aciertos en la pared o el blanco."],
-    ],
-    unit: CQ_UNIT_HITS,
-  },
-
   // Passes
-  {
-    id: "weak", type: "ball", icon: "🔂", subs: ["short", "reactions"], tiers: [10, 18, 26, 34], timer: { mode: "down", s: 60 }, anim: true,
-    title: ["Parede de primeira", "One-touch wall passes", "Pared de primera"],
-    desc: ["Em 1 minuto, quantos passes na parede você faz de primeira, sem dominar a bola?", "In 1 minute, how many one-touch wall passes can you make, without controlling the ball?", "En 1 minuto, ¿cuántos pases a la pared haces de primera, sin controlar el balón?"],
-    steps: [
-      ["Fique a uns 2 passos da parede.", "Stand about 2 steps from a wall.", "Ponte a unos 2 pasos de la pared."],
-      ["A bola voltou? Devolva na hora, sem parar a bola.", "Ball's back? Pass it straight back, without stopping it.", "¿Volvió el balón? Devuélvelo al momento, sin pararlo."],
-      CQ_STEPS_ALTERNATE,
-      ["Parou a bola ou ela escapou? Continue a contagem de onde estava.", "Stopped the ball or lost it? Carry on counting from where you were.", "¿Paraste el balón o se escapó? Sigue contando desde donde ibas."],
-    ],
-    unit: ["passes", "passes", "pases"],
-  },
   {
     id: "longpass", type: "ball", icon: "🪣", subs: ["long"], tiers: [2, 3, 5, 7], max: 10, anim: true,
     title: ["Lançamento no balde", "Bucket long pass", "Pase largo al balde"],
@@ -181,9 +157,10 @@ const CQ_MISSIONS = [
   {
     id: "freekick", type: "ball", icon: "🌀", subs: ["freekick", "curve"], tiers: [1, 3, 5, 7], max: 10, anim: true,
     title: ["Falta com efeito", "Curled free kick", "Tiro libre con efecto"],
-    desc: ["Em 10 cobranças, quantas passam pela barreira e acertam o gol?", "Out of 10 free kicks, how many get past the wall and hit the goal?", "De 10 tiros libres, ¿cuántos pasan la barrera y van al arco?"],
+    desc: ["Em 10 cobranças de 10 passos, quantas passam pela barreira e acertam o gol?", "Out of 10 free kicks from 10 steps, how many get past the wall and hit the goal?", "De 10 tiros libres desde 10 pasos, ¿cuántos pasan la barrera y van al arco?"],
     steps: [
-      ["Use uma cadeira como barreira, a 4 passos da bola.", "Use a chair as the wall, 4 steps from the ball.", "Usa una silla como barrera, a 4 pasos del balón."],
+      ["Coloque a bola a 10 passos do gol.", "Put the ball 10 steps from the goal.", "Pon el balón a 10 pasos del arco."],
+      ["Use uma cadeira como barreira, a 6 passos da bola.", "Use a chair as the wall, 6 steps from the ball.", "Usa una silla como barrera, a 6 pasos del balón."],
       ["Chute com a parte de dentro do pé para fazer a curva.", "Strike with the inside of your foot to curl it.", "Golpea con el interior del pie para darle efecto."],
       ["Conte os gols.", "Count the goals.", "Cuenta los goles."],
     ],

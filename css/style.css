@@ -3849,6 +3849,17 @@ body.cq-lock {
   text-transform: uppercase;
 }
 
+.cq-done .cq-clear-record {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.cq-done .cq-clear-record.is-sure {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
 .cq-gains {
   list-style: none;
   margin: 0 0 12px;

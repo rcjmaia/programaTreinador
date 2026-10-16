@@ -1,15 +1,20 @@
-/* Domina e finaliza: joga a bola para cima, amortece na coxa (1º toque) e chuta no alvo (2º toque). */
+/* Domina e finaliza: joga a bola para cima, amortece (1º toque) e chuta no alvo (2º toque).
+   args: { dist, part: "foot" (parte de dentro do pé) | "thigh" (coxa) }. */
 
 cqRegisterAnim("controlshot", (box, opts) => {
+  const dist = opts.args?.dist || 5;
+  const foot = opts.args?.part === "foot";
   const hipX = 130;
   const hipY = CQ_GROUND - 35;
   const chairX = 270;
   const y = CQ_GROUND - 6;
   const hand = { x: hipX + 12, y: 52 };
-  const thighSpot = { x: hipX + 12, y: hipY - 9 };
+  const thighSpot = foot ? { x: hipX + 24, y: CQ_GROUND - 16 } : { x: hipX + 12, y: hipY - 9 };
   const groundX = hipX + 20;
   const toss = { ...CQ_POSE.stand, armF: [-150, -10], armB: [-20, -20] };
-  const thigh = { ...CQ_POSE.stand, legF: [-90, 90], armF: [-45, -30], armB: [40, -30] };
+  const thigh = foot
+    ? { ...CQ_POSE.stand, legF: [-50, 20], armF: [-45, -30], armB: [40, -30] }
+    : { ...CQ_POSE.stand, legF: [-90, 90], armF: [-45, -30], armB: [40, -30] };
   const line = cqTimeline([
     { kind: "toss", dur: 0.35 },
     { kind: "air", dur: 0.8 },
@@ -22,7 +27,7 @@ cqRegisterAnim("controlshot", (box, opts) => {
   box.innerHTML = cqSceneSvg(opts.label, `
     <g class="a-hit">${cqChairSvg(chairX)}</g>
     <text x="${hipX}" y="40" text-anchor="middle" class="a-note a-say"></text>
-    ${cqNoteSvg(205, 160, `← 6 ${opts.steps} →`)}
+    ${cqNoteSvg(205, 160, `← ${dist} ${opts.steps} →`)}
     ${cqPlayerSvg()}
     <g class="a-ball-pos">${cqBallSvg(6)}</g>
     ${cqCountSvg(opts.unit)}`);
@@ -33,7 +38,9 @@ cqRegisterAnim("controlshot", (box, opts) => {
   const count = cqCounter(svg, opts.unit);
   const target = svg.querySelector(".a-hit");
   const say = svg.querySelector(".a-say");
-  const touches = [opts.pick(["1º toque: domina", "1st touch: control", "1er toque: controla"]), opts.pick(["2º toque: chuta", "2nd touch: shoot", "2º toque: tira"])];
+  const touches = [opts.pick(foot
+    ? ["1º toque: domina com o pé", "1st touch: control with the foot", "1er toque: controla con el pie"]
+    : ["1º toque: domina na coxa", "1st touch: control on the thigh", "1er toque: controla con el muslo"]), opts.pick(["2º toque: chuta", "2nd touch: shoot", "2º toque: tira"])];
 
   return cqLoop((seconds) => {
     const { seg, u, round } = line.at(seconds);

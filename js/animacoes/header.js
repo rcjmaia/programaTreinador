@@ -21,6 +21,7 @@ cqRegisterAnim("header", (box, opts) => {
 
   box.innerHTML = cqSceneSvg(opts.label, `
     <g class="a-hit">${cqGoalSvg(goalX)}</g>
+    ${cqNoteSvg((hipX + goalX) / 2, 160, `← 5 ${opts.steps} →`)}
     ${cqPlayerSvg()}
     <g class="a-ball-pos">${cqBallSvg(6)}</g>
     ${cqCountSvg(opts.unit)}`);

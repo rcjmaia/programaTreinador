@@ -10,7 +10,7 @@ cqRegisterAnim("firsttime", (box, opts) => {
   return cqKickScene(box, opts, {
     ballX,
     runUp: false,
-    scenery: `<g class="a-hit">${cqGoalSvg(goalX)}</g>`,
+    scenery: `<g class="a-hit">${cqGoalSvg(goalX)}</g>${cqNoteSvg((ballX + goalX) / 2, 160, `← 8 ${opts.steps} →`)}`,
     helper: cqPlayerSvg(CQ_KIT_HELPER),
     onFrame: (svg, t) => {
       helperRig ??= cqPlayerRig(svg.querySelector(".a-player"));

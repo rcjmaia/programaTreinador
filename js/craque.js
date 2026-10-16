@@ -273,6 +273,9 @@ const CQ_TEXT = {
     time: "Tempo!",
     newRecord: "Novo recorde!",
     keepGoing: "Seu recorde é {n}. Você consegue bater!",
+    clearRecord: "🗑️ Apagar recorde",
+    clearSure: "Apagar mesmo? Toque de novo",
+    recordCleared: "Recorde apagado. Faça a missão de novo e marque o número certo.",
     gains: "Você ganhou",
     back: "Voltar para a carta",
     question: "Pergunta {i} de {n}",
@@ -368,6 +371,9 @@ const CQ_TEXT = {
     time: "Time!",
     newRecord: "New record!",
     keepGoing: "Your best is {n}. You can beat it!",
+    clearRecord: "🗑️ Delete record",
+    clearSure: "Delete it? Tap again",
+    recordCleared: "Record deleted. Do the mission again and enter the right number.",
     gains: "You earned",
     back: "Back to my card",
     question: "Question {i} of {n}",
@@ -463,6 +469,9 @@ const CQ_TEXT = {
     time: "¡Tiempo!",
     newRecord: "¡Nuevo récord!",
     keepGoing: "Tu récord es {n}. ¡Puedes superarlo!",
+    clearRecord: "🗑️ Borrar récord",
+    clearSure: "¿Borrarlo? Toca otra vez",
+    recordCleared: "Récord borrado. Haz la misión otra vez y pon el número correcto.",
     gains: "Ganaste",
     back: "Volver a mi carta",
     question: "Pregunta {i} de {n}",
@@ -2381,6 +2390,7 @@ function renderCraque() {
     if (xp) gains.push(`<li><b>+${xp}</b> XP</li>`);
 
     const idx = medalIndex(m, state.records[m.id]);
+    const typed = m.type !== "quiz" && !isGame(m);
     openModal(`
       <div class="cq-done">
         <span class="cq-medal is-big m-${idx}"></span>
@@ -2391,9 +2401,30 @@ function renderCraque() {
         ${openPhaseCount() > phasesBefore ? `<p class="cq-unlocked">🔓 ${tx.unlocked}</p>` : ""}
         ${logged && pushed ? "" : `<p class="cq-auth-msg">${tx.saveError}</p>`}
         <button type="button" class="cq-btn" data-back>${tx.back}</button>
+        ${typed && state.records[m.id] != null ? `<button type="button" class="cq-btn is-ghost cq-clear-record" data-clear>${tx.clearRecord}</button>` : ""}
       </div>`);
+    // A typed result can be a typo, so the record of those missions can be deleted right here.
+    let cleared = false;
+    const clearBtn = dialog.querySelector("[data-clear]");
+    clearBtn?.addEventListener("click", () => {
+      if (!clearBtn.classList.contains("is-sure")) {
+        clearBtn.classList.add("is-sure");
+        clearBtn.textContent = tx.clearSure;
+        return;
+      }
+      cleared = true;
+      delete state.records[m.id];
+      save();
+      const box = dialog.querySelector(".cq-done");
+      box.querySelector(".cq-medal").className = "cq-medal is-big m--1";
+      box.querySelector(":scope > strong").textContent = tx.noMedal;
+      box.querySelector("h3").textContent = tx.recordCleared;
+      box.querySelectorAll(".cq-gains, :scope > small").forEach((el) => el.remove());
+      clearBtn.remove();
+    });
     dialog.querySelector("[data-back]").addEventListener("click", () => {
       closeModal();
+      if (cleared) return draw();
       draw(up);
       animateXp(state.xp - xp);
       gainsToast(state.xp - xp, before, up);

@@ -1,6 +1,7 @@
-/* Bate-pronto: solta a bola das mãos e chuta antes de ela tocar o chão. */
+/* Bate-pronto (args.dist passos): solta a bola das mãos e chuta antes de ela tocar o chão. */
 
 cqRegisterAnim("volley", (box, opts) => {
+  const dist = opts.args?.dist || 5;
   const hipX = 120;
   const wallX = 274;
   const handY = 80;
@@ -26,6 +27,7 @@ cqRegisterAnim("volley", (box, opts) => {
       <circle cx="${wallX + 4}" cy="78" r="13" fill="none" stroke="#facc15" stroke-width="3" />
       <circle cx="${wallX + 4}" cy="78" r="4" fill="#facc15" />
     </g>
+    ${cqNoteSvg((hipX + wallX) / 2, 160, `← ${dist} ${opts.steps} →`)}
     ${cqPlayerSvg()}
     <g class="a-ball-pos">${cqBallSvg(6)}</g>
     ${cqCountSvg(opts.unit)}`);

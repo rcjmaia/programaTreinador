@@ -1,8 +1,9 @@
 /* Parede de primeira: a bola volta da parede e ele devolve sem dominar, trocando de pé a cada passe. */
 
 cqRegisterAnim("weak", (box, opts) => {
-  const hipX = 196;
+  const dist = opts.args?.dist || 4;
   const wallX = 262;
+  const hipX = wallX - 50 - dist * 8;
   const restX = hipX + 18;
   const hitAt = 0.2;
   const wallAt = 0.48;
@@ -17,8 +18,9 @@ cqRegisterAnim("weak", (box, opts) => {
 
   box.innerHTML = cqSceneSvg(opts.label, `
     <g class="a-hit">${cqWallSvg(wallX)}</g>
-    <text x="${hipX - 46}" y="78" text-anchor="middle" class="a-note a-say"></text>
-    ${cqNoteSvg(150, 160, `${opts.pick(["de primeira", "one touch", "de primera"])} · 2 ${opts.steps}`)}
+    <text x="${hipX - 66}" y="78" text-anchor="middle" class="a-note a-say"></text>
+    ${cqNoteSvg(hipX - 66, 92, opts.pick(["parte de dentro do pé", "inside of the foot", "interior del pie"]))}
+    ${cqNoteSvg((hipX + wallX) / 2, 160, `${opts.pick(["de primeira", "one touch", "de primera"])} · ← ${dist} ${opts.steps} →`)}
     ${cqPlayerSvg()}
     <g class="a-ball-pos">${cqBallSvg(6)}</g>
     ${cqCountSvg(opts.unit)}`);

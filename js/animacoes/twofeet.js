@@ -1,8 +1,9 @@
-/* Parede com os dois pés: um passe com o direito, o próximo com o esquerdo. */
+/* Domina com um, passa com o outro: o pé que domina a bola na volta é o oposto do que passa. */
 
 cqRegisterAnim("twofeet", (box, opts) => {
-  const hipX = 196;
+  const dist = opts.args?.dist || 5;
   const wallX = 262;
+  const hipX = wallX - 50 - dist * 8;
   const restX = hipX + 18;
   const hitAt = 0.32;
   const wallAt = 0.62;
@@ -16,11 +17,14 @@ cqRegisterAnim("twofeet", (box, opts) => {
   });
   const feet = [mk("legF", [22, 30], [-35, -5], [-22, 26]), mk("legB", [22, 30], [-35, -5], [-22, 26])];
   const names = [opts.pick(["direito", "right", "derecho"]), opts.pick(["esquerdo", "left", "izquierdo"])];
+  const passWord = opts.pick(["passa com o", "pass with the", "pasa con el"]);
+  const trapWord = opts.pick(["domina com o", "control with the", "controla con el"]);
 
   box.innerHTML = cqSceneSvg(opts.label, `
     <g class="a-hit">${cqWallSvg(wallX)}</g>
-    <text x="${hipX - 46}" y="78" text-anchor="middle" class="a-note a-say"></text>
-    ${cqNoteSvg(150, 160, `2 ${opts.steps}`)}
+    <text x="${hipX - 66}" y="78" text-anchor="middle" class="a-note a-say"></text>
+    ${cqNoteSvg(hipX - 66, 92, opts.pick(["parte de dentro do pé", "inside of the foot", "interior del pie"]))}
+    ${cqNoteSvg((hipX + wallX) / 2, 160, `← ${dist} ${opts.steps} →`)}
     ${cqPlayerSvg()}
     <g class="a-ball-pos">${cqBallSvg(6)}</g>
     ${cqCountSvg(opts.unit)}`);
@@ -51,7 +55,8 @@ cqRegisterAnim("twofeet", (box, opts) => {
     else if (t < wallAt) ball(cqLerp(restX, wallX - 6, (t - hitAt) / (wallAt - hitAt)), y);
     else if (t < backAt) ball(cqLerp(wallX - 6, restX, (t - wallAt) / (backAt - wallAt)), y);
     else ball(restX, y);
-    const name = names[round % 2];
+    // The foot that traps on the way back is the one that just passed, so the next pass uses the other foot.
+    const name = `${t < 0.6 ? passWord : trapWord} ${names[round % 2]}`;
     if (say.textContent !== name) say.textContent = name;
     count(round % 40 + (t >= backAt ? 1 : 0), wall);
   });
