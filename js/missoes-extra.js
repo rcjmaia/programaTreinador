@@ -413,6 +413,25 @@ CQ_MISSIONS.push(
   // ---------- Passes ----------
   cqWallMission("weak", 4, [10, 16, 22, 28]),
   cqWallMission("wall6", 6, [8, 13, 18, 24]),
+  {
+    id: "balloonwall", type: "ball", icon: "🎈", subs: ["short", "reactions", "concentration"], tiers: [3, 6, 10, 15], timer: { mode: "down", s: 60 },
+    anim: "balloonwall", animArgs: { dist: 5 },
+    title: ["Parede com bexiga (5 passos)", "Wall passes with a balloon (5 steps)", "Pared con globo (5 pasos)"],
+    desc: [
+      "Em 1 minuto, quantos passes de primeira na parede você faz, a 5 passos dela, mantendo uma bexiga no ar com as mãos?",
+      "In 1 minute, how many one-touch wall passes can you make from 5 steps while keeping a balloon in the air with your hands?",
+      "En 1 minuto, ¿cuántos pases de primera a la pared haces, a 5 pasos de ella, manteniendo un globo en el aire con las manos?",
+    ],
+    steps: [
+      ["Encha uma bexiga e fique a 5 passos da parede.", "Blow up a balloon and stand 5 steps from a wall.", "Infla un globo y ponte a 5 pasos de la pared."],
+      ["Bata na bexiga para cima com uma mão de cada vez: direita, esquerda, direita...", "Tap the balloon up with one hand at a time: right, left, right...", "Golpea el globo hacia arriba con una mano cada vez: derecha, izquierda, derecha..."],
+      ["Ao mesmo tempo, passe a bola na parede com a parte de dentro do pé.", "At the same time, pass the ball against the wall with the inside of your foot.", "Al mismo tiempo, pasa el balón a la pared con el interior del pie."],
+      ["Não pare a bola: quando ela voltar, devolva de primeira.", "Don't stop the ball: when it comes back, pass it first time.", "No pares el balón: cuando vuelva, devuélvelo de primera."],
+      CQ_STEPS_ALTERNATE,
+      ["A bexiga caiu ou você parou a bola? Recomece e continue a contagem de onde estava. Só conta o passe de primeira com a bexiga no ar.", "Balloon dropped or you stopped the ball? Restart and carry on counting from where you were. Only first-time passes with the balloon in the air count.", "¿Se cayó el globo o paraste el balón? Vuelve a empezar y sigue contando desde donde ibas. Solo cuenta el pase de primera con el globo en el aire."],
+    ],
+    unit: ["passes", "passes", "pases"],
+  },
   cqWallMission("wall8", 8, [6, 10, 15, 20]),
   cqSoleMission("solepass1", 1, [6, 10, 14, 18]),
   cqSoleMission("solepass", 2, [5, 8, 11, 14]),

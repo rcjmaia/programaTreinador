@@ -53,7 +53,7 @@ CQ_MISSIONS.push(
 
   // Práticas
   {
-    id: "grade", type: "mind", icon: "🧩", subs: ["concentration"], tiers: [90, 60, 45, 35], lower: true, max: 600, grid: { n: 25, cols: 5 },
+    id: "grade", type: "mind", icon: "🧩", subs: ["concentration", "vision"], tiers: [90, 60, 45, 35], lower: true, max: 600, grid: { n: 25, cols: 5 },
     title: ["Grade de concentração", "Concentration grid", "Cuadrícula de concentración"],
     desc: ["Toque os números de 1 a 25, em ordem, o mais rápido que conseguir. Quanto menos segundos, melhor!", "Tap the numbers from 1 to 25, in order, as fast as you can. The fewer seconds, the better!", "Toca los números del 1 al 25, en orden, lo más rápido que puedas. ¡Cuantos menos segundos, mejor!"],
     steps: [
@@ -66,7 +66,7 @@ CQ_MISSIONS.push(
     animArgs: { to: 25 },
   },
   {
-    id: "grade40", type: "mind", icon: "🔢", subs: ["concentration"], tiers: [150, 105, 80, 65], lower: true, max: 900, grid: { n: 40, cols: 5 },
+    id: "grade40", type: "mind", icon: "🔢", subs: ["concentration", "vision"], tiers: [150, 105, 80, 65], lower: true, max: 900, grid: { n: 40, cols: 5 },
     title: ["Grade 40", "Grid 40", "Cuadrícula 40"],
     desc: ["Agora são 40 números! Toque de 1 a 40, em ordem, o mais rápido que conseguir.", "Now there are 40 numbers! Tap from 1 to 40, in order, as fast as you can.", "¡Ahora son 40 números! Toca del 1 al 40, en orden, lo más rápido que puedas."],
     steps: [
@@ -119,7 +119,7 @@ CQ_MISSIONS.push(
     animArgs: { mode: "stroop" },
   },
   {
-    id: "chuvadupla", type: "mind", icon: "🌗", subs: ["decision", "reactions", "concentration"], tiers: [25, 50, 130, 200], max: 9999, rain: { sides: ["only", "only"], calm: true },
+    id: "chuvadupla", type: "mind", icon: "🌗", subs: ["decision", "reactions", "concentration", "vision"], tiers: [25, 50, 130, 200], max: 9999, rain: { sides: ["only", "only"], calm: true },
     title: ["Chuva dupla", "Double rain", "Lluvia doble"],
     desc: ["A tela vira duas! Cada lado tem a sua cor, e elas trocam em momentos diferentes. Toque só nas bolas certas de cada lado.", "The screen splits in two! Each side has its own colour, and they change at different times. Tap only the right balls on each side.", "¡La pantalla se divide en dos! Cada lado tiene su color, y cambian en momentos distintos. Toca solo los balones correctos de cada lado."],
     steps: [
@@ -132,7 +132,7 @@ CQ_MISSIONS.push(
     animArgs: { sides: ["only", "only"] },
   },
   {
-    id: "chuvamaluca", type: "mind", icon: "🌀", subs: ["decision", "reactions", "concentration"], tiers: [30, 70, 125, 185], max: 9999, rain: { sides: ["only", "avoid"], calm: true },
+    id: "chuvamaluca", type: "mind", icon: "🌀", subs: ["decision", "reactions", "concentration", "vision"], tiers: [30, 70, 125, 185], max: 9999, rain: { sides: ["only", "avoid"], calm: true },
     title: ["Chuva dupla maluca", "Crazy double rain", "Lluvia doble loca"],
     desc: ["Dois lados, duas regras opostas! Na esquerda, toque SÓ na cor pedida. Na direita, toque em TODAS, MENOS na cor proibida.", "Two sides, two opposite rules! On the left, tap ONLY the given colour. On the right, tap ALL balls EXCEPT the forbidden colour.", "¡Dos lados, dos reglas opuestas! A la izquierda, toca SOLO el color pedido. A la derecha, toca TODOS, MENOS el color prohibido."],
     steps: [
@@ -145,7 +145,7 @@ CQ_MISSIONS.push(
     animArgs: { sides: ["only", "avoid"] },
   },
   {
-    id: "desvio", type: "mind", icon: "↕️", subs: ["decision", "reactions", "concentration"], tiers: [90, 200, 380, 580], max: 9999, dodge: {},
+    id: "desvio", type: "mind", icon: "↕️", subs: ["decision", "reactions", "concentration", "vision"], tiers: [90, 200, 380, 580], max: 9999, dodge: {},
     title: ["Desvio duplo", "Double dodge", "Esquive doble"],
     desc: ["Uma bola em cada lado da tela, e os obstáculos sobem. Desvie dos dois lados ao mesmo tempo! Vale a sua maior pontuação sem bater.", "One ball on each side of the screen, and the obstacles rise. Dodge on both sides at once! Your best score without crashing counts.", "Un balón en cada lado de la pantalla, y los obstáculos suben. ¡Esquiva en los dos lados a la vez! Vale tu mejor puntuación sin chocar."],
     steps: [
@@ -158,7 +158,7 @@ CQ_MISSIONS.push(
     anim: true,
   },
   {
-    id: "blokolor", type: "mind", icon: "🟨", subs: ["decision", "reactions", "concentration"], tiers: [25, 80, 180, 350], max: 9999, blok: {},
+    id: "blokolor", type: "mind", icon: "🟨", subs: ["decision", "reactions", "concentration", "vision"], tiers: [25, 80, 180, 350], max: 9999, blok: {},
     title: ["Blokolor", "Blokolor", "Blokolor"],
     desc: ["Bolas coloridas caem e cada bloco só come a bola da sua cor. Tire os blocos errados da frente e coloque o certo embaixo da bola!", "Coloured balls fall and each block only eats balls of its own colour. Move the wrong blocks away and put the right one under the ball!", "Caen balones de colores y cada bloque solo come el balón de su color. ¡Saca los bloques equivocados y pon el correcto debajo del balón!"],
     steps: [

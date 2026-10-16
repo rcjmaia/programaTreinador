@@ -18,7 +18,7 @@
 const CQ_CHAIN = {
   rit: ["shuttle", "flipflops", "skipping", "sprintball", "conemove", "treasure", "star", "ladder", "sprint20"],
   fin: ["target", "weakshot", "penalty", "placed", "stepshot", "volley", "firsttime", "header", "volley8", "controlshot", "longshot", "thighshot5", "volley12", "chip", "controlshot10", "curlshot", "freekick", "volley16", "thighshot10", "trivela"],
-  pas: ["weak", "measure10", "twofeet", "bucket3", "orient", "wall6", "solepass1", "measure15", "longpass", "bucket5", "altinha", "solepass", "wall8", "measure20", "cross", "twofeet10", "bucket8", "measure25"],
+  pas: ["weak", "measure10", "twofeet", "bucket3", "orient", "wall6", "balloonwall", "solepass1", "measure15", "longpass", "bucket5", "altinha", "solepass", "wall8", "measure20", "cross", "twofeet10", "bucket8", "measure25"],
   con: ["keepy", "trap", "slalom", "keepyalt", "chest", "zigzag", "walk5", "dribble", "trapweak", "slalomweak", "skills", "elastico", "walk10", "walkalt", "roleta", "headkeepy", "chapeu", "walkhead"],
   def: ["bote", "sidestep", "steal", "backrun", "heading", "intercept", "sliding", "shadow", "clearance"],
   fis: ["hops", "jacks", "squats", "jump", "plank", "shield", "rope", "stepup", "onefoot", "situps", "lunges"],
