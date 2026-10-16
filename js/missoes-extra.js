@@ -144,7 +144,7 @@ function cqWalkMission(id, dist, mode, tiers, subs) {
     anim: "keepywalk", animArgs: { dist, mode },
     title,
     desc: [
-      `Em 2 minutos, quantas vezes você vai ${how[0]} até perto do alvo (${dist} passos) e acerta com um passe, sem deixar a bola cair?`,
+      `Em 2 minutos, quantas vezes você consegue ir até perto do alvo (${dist} passos) ${how[0]} e acertar com um passe, sem deixar a bola cair?`,
       `In 2 minutes, how many times can you walk ${dist} steps ${how[1]} and hit the target with a pass, without letting the ball drop?`,
       `En 2 minutos, ¿cuántas veces caminas ${dist} pasos ${how[2]} y aciertas el blanco con un pase, sin que caiga el balón?`,
     ],
@@ -152,7 +152,11 @@ function cqWalkMission(id, dist, mode, tiers, subs) {
       ...(mode === "head" ? [CQ_STEPS_LIGHT_BALL] : []),
       CQ_STEPS_TARGET,
       [`Comece a ${dist} passos do alvo e vá andando sem deixar a bola cair.`, `Start ${dist} steps from the target and walk without letting the ball drop.`, `Empieza a ${dist} pasos del blanco y camina sin que caiga el balón.`],
-      ...(mode === "foot" ? [CQ_STEPS_BOTH_FEET] : []),
+      ...(mode === "foot" ? [["Pode usar o pé que quiser.", "Use whichever foot you like.", "Usa el pie que quieras."]] : []),
+      ...(mode === "alt" ? [
+        ["Um toque com cada pé, sempre trocando: direito, esquerdo, direito...", "One touch with each foot, always switching: right, left, right...", "Un toque con cada pie, siempre cambiando: derecho, izquierdo, derecho..."],
+        ["Tocou duas vezes seguidas com o mesmo pé? Volte ao início.", "Two touches in a row with the same foot? Back to the start.", "¿Dos toques seguidos con el mismo pie? Vuelve al inicio."],
+      ] : []),
       ["Perto do alvo, passe com a bola no ar. Caiu antes? Volte ao início.", "Near the target, pass with the ball in the air. Dropped it? Back to the start.", "Cerca del blanco, pasa con el balón en el aire. ¿Se cayó? Vuelve al inicio."],
     ],
     unit: CQ_UNIT_HITS,
@@ -236,7 +240,7 @@ function cqCurlMission(id, side, tiers, subs) {
 }
 
 // A single trick: 10 tries, count the clean ones.
-function cqTrickMission(id, icon, title, how) {
+function cqTrickMission(id, icon, title, how, strongFoot = false) {
   return {
     id, type: "ball", icon, subs: ["dribble", "agility"], tiers: [2, 3, 5, 7], max: 10,
     anim: "trick", animArgs: { trick: id },
@@ -249,7 +253,9 @@ function cqTrickMission(id, icon, title, how) {
     steps: [
       // "how" is one step [pt, en, es] or a list of steps.
       ...(Array.isArray(how[0]) ? how : [how]),
-      CQ_STEPS_5_5,
+      strongFoot
+        ? ["Faça só com o seu pé dominante, o que você tem mais confiança.", "Only use your strong foot, the one you trust most.", "Hazlo solo con tu pie dominante, el que te da más confianza."]
+        : CQ_STEPS_5_5,
       ["Comece devagar. A velocidade vem depois.", "Start slowly. Speed comes later.", "Empieza despacio. La velocidad viene después."],
       ["Conte só as que terminam com a bola no seu pé.", "Only count the ones that end with the ball at your feet.", "Cuenta solo las que terminan con el balón en tu pie."],
     ],
@@ -500,17 +506,22 @@ CQ_MISSIONS.push(
     steps: [
       ["Mesmos 5 chinelos do Slalom, um passo entre eles.", "Same 5 flip-flops as the Slalom, one step apart.", "Las mismas 5 chanclas del Slalom, a un paso entre ellas."],
       ["Só a parte de fora do pé toca a bola: o lado do dedinho.", "Only the outside of your foot touches the ball: the little-toe side.", "Solo el exterior del pie toca el balón: el lado del dedo chico."],
-      CQ_STEPS_CARRY_FEET,
+      ["Pode usar os dois pés, desde que seja sempre com a parte de fora.", "You can use both feet, as long as it's always the outside.", "Puedes usar los dos pies, siempre que sea con el exterior."],
       CQ_STEPS_ROUND_TRIP,
     ],
     unit: CQ_UNIT_TRIPS,
   },
   cqTrickMission("elastico", "🪢", ["Elástico", "Elastico", "Elástica"],
-    ["Toque a bola para fora com a parte de fora do pé e puxe de volta com a parte de dentro, rapidinho.", "Push the ball out with the outside of your foot and snap it back with the inside, quickly.", "Empuja el balón hacia afuera con el exterior del pie y tráelo de vuelta con el interior, rápido."]),
+    ["Toque a bola para fora com a parte de fora do pé e puxe de volta com a parte de dentro, rapidinho.", "Push the ball out with the outside of your foot and snap it back with the inside, quickly.", "Empuja el balón hacia afuera con el exterior del pie y tráelo de vuelta con el interior, rápido."], true),
   cqWalkMission("walk10", 10, "foot", [1, 2, 3, 5], ["control", "long"]),
   cqWalkMission("walkalt", 5, "alt", [1, 2, 3, 5], ["control", "balance"]),
-  cqTrickMission("roleta", "🎡", ["Roleta", "Roulette", "Ruleta"],
-    ["Pise na bola com um pé, gire o corpo e puxe a bola com o outro pé, de costas para o adversário.", "Step on the ball with one foot, spin and drag it with the other foot, turning your back to the defender.", "Pisa el balón con un pie, gira y arrástralo con el otro pie, de espaldas al rival."]),
+  {
+    ...cqTrickMission("roleta", "🎡", ["Roleta", "Roulette", "Ruleta"], [
+      ["Coloque um cone à frente: ele é o adversário.", "Put a cone in front of you: it's the defender.", "Pon un cono delante: es el rival."],
+      ["Conduza até o cone, pise na bola com um pé, gire o corpo de costas para o cone e puxe a bola com o outro pé, saindo pelo lado dele.", "Dribble up to the cone, step on the ball with one foot, spin with your back to the cone and drag the ball with the other foot, going past it.", "Conduce hasta el cono, pisa el balón con un pie, gira de espaldas al cono y arrástralo con el otro pie, saliendo por su lado."],
+    ]),
+    anim: "roleta",
+  },
   {
     id: "headkeepy", type: "ball", icon: "🙆", subs: ["control", "concentration"], tiers: [2, 5, 10, 20], anim: true,
     title: ["Embaixadinha de cabeça", "Header keep-ups", "Toques de cabeza"],

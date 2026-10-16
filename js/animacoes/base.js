@@ -83,9 +83,10 @@ function cqLoadAnim(id) {
 function cqLoop(draw) {
   const start = performance.now();
   let frame = 0;
+  // The first rAF timestamp can be earlier than `start`, and scenes index arrays by the elapsed time.
   const tick = (now) => {
-    draw((now - start) / 1000);
     frame = requestAnimationFrame(tick);
+    draw(Math.max(0, (now - start) / 1000));
   };
   frame = requestAnimationFrame(tick);
   return () => cancelAnimationFrame(frame);

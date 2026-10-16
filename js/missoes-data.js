@@ -185,7 +185,7 @@ const CQ_MISSIONS = [
     steps: [
       ["Coloque 5 chinelos em fila, um passo entre eles.", "Line up 5 flip-flops, one step apart.", "Pon 5 chanclas en fila, a un paso entre ellas."],
       ["Passe entre todos com a bola colada no pé.", "Weave through them with the ball close to your feet.", "Pasa entre todas con el balón pegado al pie."],
-      CQ_STEPS_CARRY_FEET,
+      ["Pode usar qualquer pé e qualquer parte do pé.", "Use either foot and any part of it.", "Puedes usar cualquier pie y cualquier parte del pie."],
       CQ_STEPS_ROUND_TRIP,
     ],
     unit: CQ_UNIT_TRIPS,

@@ -70,6 +70,8 @@ const CQ_CUP_TEXT = {
     create: "➕ Criar campeonato",
     trophies: "🏆 Sala de troféus",
     team: "👥 Minha turma",
+    ongoing: "📋 Em andamento ({n})",
+    ongoingTitle: "Campeonatos em andamento",
     none: "Nenhum campeonato rolando. Crie um e chame a turma!",
     name: "Nome do campeonato",
     defaultName: "Copa da Rua",
@@ -117,6 +119,8 @@ const CQ_CUP_TEXT = {
     cups: "Championships",
     create: "➕ Create championship",
     trophies: "🏆 Trophy room",
+    ongoing: "📋 In progress ({n})",
+    ongoingTitle: "Championships in progress",
     team: "👥 My crew",
     none: "No championship going on. Create one and call your crew!",
     name: "Championship name",
@@ -165,6 +169,8 @@ const CQ_CUP_TEXT = {
     cups: "Campeonatos",
     create: "➕ Crear campeonato",
     trophies: "🏆 Sala de trofeos",
+    ongoing: "📋 En juego ({n})",
+    ongoingTitle: "Campeonatos en juego",
     team: "👥 Mi grupo",
     none: "No hay ningún campeonato en juego. ¡Crea uno y llama a tu grupo!",
     name: "Nombre del campeonato",
@@ -2596,23 +2602,28 @@ function renderCraque() {
     dialog.querySelector("[data-back]").addEventListener("click", closeModal);
   }
 
+  function cupCard(cup) {
+    const cx = ct();
+    const lead = cupDone(cup) ? cupStandings(cup)[0] : null;
+    return `
+      <button type="button" class="cq-cup-card" data-cup-open="${cup.id}">
+        <b>🏆 ${esc(cup.name)}</b>
+        <small>${fill(cx.progress, { done: cupDone(cup), total: cup.players.length * cupMissions(cup).length })}${lead ? ` · ${cx.leader}: ${esc(cupWho(cup, lead.pid).name)} (${lead.pts} ${cx.pts})` : ""}</small>
+      </button>`;
+  }
+
+  // The home shows only the newest running cup so the page stays short; the rest open from the list button.
   function cupHomeSection() {
     const cx = ct();
     const active = state.cups.filter((c) => !c.podium);
-    const cards = active.map((cup) => {
-      const lead = cupDone(cup) ? cupStandings(cup)[0] : null;
-      return `
-        <button type="button" class="cq-cup-card" data-cup-open="${cup.id}">
-          <b>🏆 ${esc(cup.name)}</b>
-          <small>${fill(cx.progress, { done: cupDone(cup), total: cup.players.length * cupMissions(cup).length })}${lead ? ` · ${cx.leader}: ${esc(cupWho(cup, lead.pid).name)} (${lead.pts} ${cx.pts})` : ""}</small>
-        </button>`;
-    }).join("");
+    const latest = active[active.length - 1];
     return `
       <h2 class="cq-h is-group" data-sec="cups"><span aria-hidden="true">🏆</span> ${cx.cups}</h2>
       <div class="cq-cups">
-        ${cards || `<p class="cq-hint">${cx.none}</p>`}
+        ${latest ? cupCard(latest) : `<p class="cq-hint">${cx.none}</p>`}
         <div class="cq-cup-actions">
           <button type="button" class="cq-btn" data-cup-new>${cx.create}</button>
+          ${active.length > 1 ? `<button type="button" class="cq-btn is-ghost" data-cup-list>${fill(cx.ongoing, { n: active.length })}</button>` : ""}
           <button type="button" class="cq-btn is-ghost" data-cup-trophies>${cx.trophies}</button>
           <button type="button" class="cq-btn is-ghost" data-cup-team>${cx.team}</button>
         </div>
@@ -2630,6 +2641,7 @@ function renderCraque() {
     const hit = (sel) => e.target.closest(sel);
     let el;
     if ((el = hit("[data-cup-open]"))) return openCupView({ cup: el.dataset.cupOpen });
+    if (hit("[data-cup-list]")) return openCupView({ screen: "list" });
     if (hit("[data-cup-new]")) return openCupView({ screen: "new" });
     if (hit("[data-cup-trophies]")) return openCupView({ screen: "trophies" });
     if (hit("[data-cup-team]")) return openCupView({ screen: "team" });
@@ -2675,6 +2687,15 @@ function renderCraque() {
     }
     if (view.screen === "new") return renderCupNew();
     if (view.screen === "trophies") return renderTrophies();
+    if (view.screen === "list") {
+      const active = state.cups.filter((c) => !c.podium).reverse();
+      if (!active.length) {
+        view = null;
+        return renderHome();
+      }
+      app.innerHTML = cupShell(`🏆 ${ct().ongoingTitle}`, `<div class="cq-cups">${active.map(cupCard).join("")}</div>`);
+      return;
+    }
     return renderTeam();
   }
 
@@ -2704,7 +2725,13 @@ function renderCraque() {
     return friend;
   }
 
-  function renderCupNew(draft = { name: ct().defaultName, players: new Set(["me"]), tries: 2, missions: new Set() }) {
+  // A new championship starts with the games and tries of the last one created.
+  function cupDraft() {
+    const last = state.cups.reduce((a, c) => (!a || (c.created || 0) > (a.created || 0) ? c : a), null);
+    return { name: ct().defaultName, players: new Set(["me"]), tries: last?.tries || 2, missions: new Set(last?.missions || []) };
+  }
+
+  function renderCupNew(draft = cupDraft()) {
     const cx = ct();
     const pick = (pid, w) => `<label class="cq-cup-pick"><input type="checkbox" name="p" value="${pid}" ${draft.players.has(pid) ? "checked" : ""}><span>${whoTag(w)}${w.me ? ` <small>(${cx.me})</small>` : ""}</span></label>`;
     const groups = ["games", "ball", "move", "mind"].map((g) => {
