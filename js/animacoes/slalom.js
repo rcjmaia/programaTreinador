@@ -18,7 +18,7 @@ cqRegisterAnim("slalom", (box, opts) => {
 
   box.innerHTML = cqTopSceneSvg(opts.label, `
     ${marks.map((x) => flip(x, midY)).join("")}
-    ${cqNoteSvg(160, 160, `↔ 1 ${opts.steps}${opts.args?.note ? ` · ${opts.pick(opts.args.note)}` : ""}`)}
+    ${cqNoteSvg(160, 160, `↔ ${opts.pick(["1 passo", "1 step", "1 paso"])}${opts.args?.note ? ` · ${opts.pick(opts.args.note)}` : ""}`)}
     <g class="a-ball-pos">${cqBallSvg(5)}</g>
     ${cqTopPlayerSvg()}
     ${cqCountSvg(opts.unit)}`);
