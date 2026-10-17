@@ -12,6 +12,9 @@ const CQ_STEPS_TRAP_HARDER = ["Ficou fácil? Jogue a bola cada vez mais alto, ou
 
 const CQ_STEPS_TARGET = ["Alvo: balde, arco, caixa, camisa ou qualquer objeto.", "Target: a bucket, hoop, box, shirt or any object.", "Blanco: un balde, aro, caja, camiseta o cualquier objeto."];
 const CQ_STEPS_LIGHT_BALL = ["Use só bola leve: de plástico ou bexiga.", "Only use a light ball: plastic or a balloon.", "Usa solo balón liviano: de plástico o un globo."];
+const CQ_STEPS_PINS = ["Monte 10 garrafas PET (ou cones) em triângulo, como no boliche: 1 na frente, depois uma fila de 2, uma de 3 e uma de 4, com um palmo entre elas. Coloque um pouco de água no fundo para elas aguentarem o chute.", "Set up 10 plastic bottles (or cones) in a triangle, like bowling pins: 1 at the front, then a row of 2, a row of 3 and a row of 4, a hand's width apart. Put a little water in the bottom so they can take the shot.", "Monta 10 botellas de plástico (o conos) en triángulo, como en los bolos: 1 delante, luego una fila de 2, una de 3 y una de 4, a un palmo entre ellas. Pon un poco de agua en el fondo para que aguanten el tiro."];
+const CQ_STEPS_TRIVELA_BODY = ["O jeito do corpo ajuda a curva: dobre a perna de chute, com o joelho formando uns 120°, e vire o pé para dentro, bem esticado, para bater com a parte de fora. Incline o corpo para o lado do pé de apoio e abra os braços para se equilibrar.", "Your body shape helps the bend: bend your kicking leg, with the knee at about 120°, and turn your foot in, toes pointed, to strike with the outside. Lean your body over your standing foot and open your arms for balance.", "La postura del cuerpo ayuda a la curva: dobla la pierna de golpeo, con la rodilla en unos 120°, y gira el pie hacia dentro, bien estirado, para golpear con el exterior. Inclina el cuerpo hacia el lado del pie de apoyo y abre los brazos para equilibrarte."];
+const CQ_STEPS_STRIKE = ["Derrubou todas de uma vez? É strike!", "Knocked them all down at once? That's a strike!", "¿Las tiraste todas de una vez? ¡Es strike!"];
 
 // Pass that must stop as close as possible to a target. Lower is better.
 function cqMeasureMission(id, dist, tiers, subs) {
@@ -290,6 +293,7 @@ function cqCurlMission(id, side, tiers, subs) {
       out
         ? ["Chute com a parte de fora do pé, perto dos dedos, passando o pé de dentro para fora na bola, para ela girar e fazer a curva.", "Strike with the outside of your foot, near the toes, brushing across the ball from inside to outside so it spins and curves.", "Golpea con el exterior del pie, cerca de los dedos, pasando el pie de adentro hacia afuera para que gire y haga la curva."]
         : ["Chute com a parte de dentro do pé, perto dos dedos, batendo no lado da bola, para ela girar e fazer a curva.", "Strike with the inside of your foot, near the toes, hitting the side of the ball so it spins and curves.", "Golpea con el interior del pie, cerca de los dedos, dándole al costado del balón para que gire y haga la curva."],
+      ...(out ? [CQ_STEPS_TRIVELA_BODY] : []),
       ["Mire um pouco para fora e deixe a curva levar a bola ao canto, longe do goleiro. Ela pode subir um pouco, mas o chute é baixo.", "Aim a little wide and let the curve take the ball into the corner, away from the keeper. It can rise a little, but keep the shot low.", "Apunta un poco afuera y deja que la curva lleve el balón al rincón, lejos del portero. Puede subir un poco, pero el tiro es bajo."],
       CQ_STEPS_5_5,
       ["Conte as bolas que acertam o alvo.", "Count the balls that hit the target.", "Cuenta los balones que dan en el blanco."],
@@ -689,13 +693,74 @@ CQ_MISSIONS.push(
   {
     id: "bowling", type: "ball", icon: "🎳", subs: ["short", "composure", "concentration"], tiers: [3, 5, 7, 9], max: 10, anim: "bowling",
     title: ["Boliche com passe", "Passing bowling", "Bolos con pase"],
-    desc: ["Em 10 passes rasteiros de 7 passos, quantos derrubam pelo menos uma garrafa?", "Out of 10 ground passes from 7 steps, how many knock down at least one bottle?", "De 10 pases rasantes desde 7 pasos, ¿cuántos tiran al menos una botella?"],
+    desc: ["Em 10 passes rasteiros de 10 passos, numas 10 garrafas montadas como no boliche, quantos derrubam pelo menos uma?", "Out of 10 ground passes from 10 steps, at 10 bottles set up like bowling pins, how many knock down at least one?", "De 10 pases rasantes desde 10 pasos, a 10 botellas puestas como en los bolos, ¿cuántos tiran al menos una?"],
     steps: [
-      ["Coloque 3 garrafas PET vazias, lado a lado, a 7 passos. Ventou? Um pouco de água no fundo deixa elas em pé.", "Stand 3 empty plastic bottles side by side, 7 steps away. Windy? A little water in the bottom keeps them up.", "Pon 3 botellas de plástico vacías, una al lado de otra, a 7 pasos. ¿Hay viento? Un poco de agua en el fondo las mantiene de pie."],
+      ["Monte 10 garrafas PET vazias (ou cones) em triângulo, como no boliche: 1 na frente, depois uma fila de 2, uma de 3 e uma de 4, com um palmo entre elas. Ventou? Um pouco de água no fundo deixa elas em pé.", "Set up 10 empty plastic bottles (or cones) in a triangle, like bowling pins: 1 at the front, then a row of 2, a row of 3 and a row of 4, a hand's width apart. Windy? A little water in the bottom keeps them up.", "Monta 10 botellas de plástico vacías (o conos) en triángulo, como en los bolos: 1 delante, luego una fila de 2, una de 3 y una de 4, a un palmo entre ellas. ¿Hay viento? Un poco de agua en el fondo las mantiene de pie."],
+      ["Fique a 10 passos da garrafa da frente.", "Stand 10 steps from the front bottle.", "Ponte a 10 pasos de la botella de delante."],
       ["Passe com a parte de dentro do pé, rasteiro: a bola não sai do chão.", "Pass with the inside of your foot, along the ground: the ball never leaves the floor.", "Pasa con el interior del pie, rasante: el balón no se levanta del suelo."],
       CQ_STEPS_5_5,
       ["Derrubou pelo menos uma garrafa? Vale 1. Arrume as garrafas antes do próximo passe.", "Knocked down at least one bottle? That's 1. Stand them back up before the next pass.", "¿Tiraste al menos una botella? Cuenta 1. Vuelve a ponerlas antes del próximo pase."],
-      ["Ficou fácil? Afaste as garrafas para 10 passos ou deixe só uma.", "Too easy? Move the bottles to 10 steps or leave just one.", "¿Muy fácil? Aleja las botellas a 10 pasos o deja solo una."],
+      ["Derrubou todas de uma vez? É strike! Ficou fácil? Passe a contar só os passes que derrubam 5 ou mais.", "Knocked them all down at once? That's a strike! Too easy? Only count passes that knock down 5 or more.", "¿Las tiraste todas de una vez? ¡Es strike! ¿Muy fácil? Cuenta solo los pases que tiran 5 o más."],
+    ],
+    unit: CQ_UNIT_HITS,
+  },
+  {
+    id: "bowlingshot", type: "ball", icon: "💥", subs: ["finishing", "power", "concentration"], tiers: [2, 3, 5, 7], max: 10, anim: "bowlingshot",
+    title: ["Boliche com chute", "Shooting bowling", "Bolos con tiro"],
+    desc: ["Em 10 chutes a meia altura, de 10 passos, numas 10 garrafas montadas como no boliche, quantos chegam pelo ar, sem quicar, e derrubam pelo menos uma?", "Out of 10 mid-height shots from 10 steps, at 10 bottles set up like bowling pins, how many get there through the air, without bouncing, and knock down at least one?", "De 10 tiros a media altura desde 10 pasos, a 10 botellas puestas como en los bolos, ¿cuántos llegan por el aire, sin botar, y tiran al menos una?"],
+    steps: [
+      CQ_STEPS_PINS,
+      ["Fique a 10 passos da garrafa da frente.", "Stand 10 steps from the front bottle.", "Ponte a 10 pasos de la botella de delante."],
+      ["Chute com a parte de dentro do pé. A bola vai a meia altura: pelo ar, baixinha, na altura das garrafas, sem quicar no chão antes.", "Shoot with the inside of your foot. The ball goes at mid-height: through the air, low, at the height of the bottles, without bouncing first.", "Dispara con el interior del pie. El balón va a media altura: por el aire, bajito, a la altura de las botellas, sin botar antes."],
+      ["Para ela subir só um pouquinho: o pé de apoio ao lado da bola, o corpo levemente para trás e a parte de dentro do pé acertando a bola um pouco abaixo do meio.", "To lift it just a little: standing foot beside the ball, body leaning slightly back, and the inside of your foot striking the ball a little below the middle.", "Para que suba solo un poquito: el pie de apoyo al lado del balón, el cuerpo un poco hacia atrás y el interior del pie golpeando el balón un poco por debajo del centro."],
+      CQ_STEPS_5_5,
+      ["Só vale se a bola chegar nas garrafas pelo ar, sem quicar, e derrubar pelo menos uma. Arrume as garrafas antes do próximo chute.", "It only counts if the ball reaches the bottles through the air, without bouncing, and knocks down at least one. Stand them back up before the next shot.", "Solo cuenta si el balón llega a las botellas por el aire, sin botar, y tira al menos una. Vuelve a ponerlas antes del próximo tiro."],
+      CQ_STEPS_STRIKE,
+    ],
+    unit: CQ_UNIT_HITS,
+  },
+  {
+    id: "bowlingtrivela", type: "ball", icon: "🌀", subs: ["curve", "finishing", "composure"], tiers: [2, 3, 5, 7], max: 10, anim: "bowlingtrivela",
+    title: ["Boliche de trivela", "Outside-foot bowling", "Bolos de trivela"],
+    desc: ["Em 10 chutes de trivela, de 10 passos, numas 10 garrafas montadas como no boliche, quantos derrubam pelo menos uma?", "Out of 10 outside-foot shots from 10 steps, at 10 bottles set up like bowling pins, how many knock down at least one?", "De 10 tiros de trivela desde 10 pasos, a 10 botellas puestas como en los bolos, ¿cuántos tiran al menos una?"],
+    steps: [
+      CQ_STEPS_PINS,
+      ["Fique a 10 passos da garrafa da frente.", "Stand 10 steps from the front bottle.", "Ponte a 10 pasos de la botella de delante."],
+      ["Chute de trivela: com a parte de fora do pé, o lado do dedinho. O pé passa de dentro para fora e a bola sai girando, fazendo uma curva.", "Outside-foot shot: strike with the outside of your foot, the little-toe side. Your foot moves from inside to outside and the ball spins off, bending.", "Tiro de trivela: con el exterior del pie, el lado del dedo meñique. El pie pasa de dentro hacia fuera y el balón sale girando, haciendo una curva."],
+      CQ_STEPS_TRIVELA_BODY,
+      ["Pode ir rasteiro ou a meia altura. Mire um pouco para o lado e deixe a curva levar a bola até as garrafas.", "It can go along the ground or at mid-height. Aim a little to the side and let the bend carry the ball into the bottles.", "Puede ir rasante o a media altura. Apunta un poco hacia el lado y deja que la curva lleve el balón hasta las botellas."],
+      CQ_STEPS_5_5,
+      ["Só vale se for de trivela e derrubar pelo menos uma garrafa. Arrume as garrafas antes do próximo chute.", "It only counts if it's with the outside of your foot and knocks down at least one bottle. Stand them back up before the next shot.", "Solo cuenta si es de trivela y tira al menos una botella. Vuelve a ponerlas antes del próximo tiro."],
+      CQ_STEPS_STRIKE,
+    ],
+    unit: CQ_UNIT_HITS,
+  },
+  {
+    id: "bowlingheel", type: "ball", icon: "🦶", subs: ["finishing", "control", "balance"], tiers: [1, 2, 4, 6], max: 10, anim: "bowlingheel",
+    title: ["Boliche de calcanhar", "Back-heel bowling", "Bolos de taco"],
+    desc: ["Em 10 chutes de calcanhar, de costas, a 7 passos, numas 10 garrafas montadas como no boliche, quantos derrubam pelo menos uma?", "Out of 10 back-heels, with your back turned, from 7 steps, at 10 bottles set up like bowling pins, how many knock down at least one?", "De 10 taconazos, de espaldas, desde 7 pasos, a 10 botellas puestas como en los bolos, ¿cuántos tiran al menos una?"],
+    steps: [
+      CQ_STEPS_PINS,
+      ["Fique de costas para as garrafas, a 7 passos da garrafa da frente. Deixe a bola um pouco atrás e ao lado do seu pé de apoio.", "Stand with your back to the bottles, 7 steps from the front one. Leave the ball a little behind and beside your standing foot.", "Ponte de espaldas a las botellas, a 7 pasos de la de delante. Deja el balón un poco detrás y al lado de tu pie de apoyo."],
+      ["Olhe por cima do ombro para mirar. Leve o pé de chute um pouco para a frente e chute para trás com o calcanhar, firme, no meio da bola.", "Look over your shoulder to aim. Bring your kicking foot slightly forward, then strike backwards with your heel, firmly, through the middle of the ball.", "Mira por encima del hombro para apuntar. Lleva el pie de golpeo un poco hacia adelante y golpea hacia atrás con el talón, firme, en el centro del balón."],
+      CQ_STEPS_5_5,
+      ["Só vale se for de calcanhar e derrubar pelo menos uma garrafa. Arrume as garrafas antes do próximo chute.", "It only counts if it's a back-heel and knocks down at least one bottle. Stand them back up before the next one.", "Solo cuenta si es de taco y tira al menos una botella. Vuelve a ponerlas antes del próximo."],
+      CQ_STEPS_STRIKE,
+    ],
+    unit: CQ_UNIT_HITS,
+  },
+  {
+    id: "bowlingrabona", type: "ball", icon: "✍️", subs: ["curve", "finishing", "balance"], tiers: [1, 2, 4, 6], max: 10, anim: "bowlingrabona",
+    title: ["Boliche de letra", "Rabona bowling", "Bolos de rabona"],
+    desc: ["Em 10 chutes de letra, a 7 passos, numas 10 garrafas montadas como no boliche, quantos derrubam pelo menos uma?", "Out of 10 rabonas from 7 steps, at 10 bottles set up like bowling pins, how many knock down at least one?", "De 10 rabonas desde 7 pasos, a 10 botellas puestas como en los bolos, ¿cuántas tiran al menos una?"],
+    steps: [
+      CQ_STEPS_PINS,
+      ["Fique a 7 passos da garrafa da frente.", "Stand 7 steps from the front bottle.", "Ponte a 7 pasos de la botella de delante."],
+      ["Chute de letra: o pé de apoio fica ao lado da bola, um pouco à frente dela, e a perna de chute cruza por trás da perna de apoio para bater na bola.", "Rabona: your standing foot goes beside the ball, slightly ahead of it, and your kicking leg wraps behind the standing leg to strike the ball.", "Rabona: el pie de apoyo va al lado del balón, un poco por delante, y la pierna de golpeo cruza por detrás de la de apoyo para golpear el balón."],
+      ["Comece devagar, com a bola parada, só acertando a bola. A força vem depois.", "Start slowly, with the ball still, just making clean contact. Power comes later.", "Empieza despacio, con el balón quieto, solo acertando el balón. La fuerza viene después."],
+      CQ_STEPS_5_5,
+      ["Só vale se for de letra e derrubar pelo menos uma garrafa. Arrume as garrafas antes do próximo chute.", "It only counts if it's a rabona and knocks down at least one bottle. Stand them back up before the next shot.", "Solo cuenta si es de rabona y tira al menos una botella. Vuelve a ponerlas antes del próximo tiro."],
+      CQ_STEPS_STRIKE,
     ],
     unit: CQ_UNIT_HITS,
   },
@@ -824,6 +889,19 @@ CQ_MISSIONS.push(
       ["Cada toque vale 1. A bola fugiu? Arrume e continue a contagem.", "Each tap counts as 1. Ball got away? Put it back and keep counting.", "Cada toque cuenta 1. ¿Se escapó el balón? Acomódalo y sigue contando."],
     ],
     unit: ["toques", "touches", "toques"],
+  },
+  {
+    id: "solereturn", type: "ball", icon: "🔙", subs: ["control", "carry", "balance"], tiers: [1, 2, 3, 4], timer: { mode: "down", s: 30 }, anim: "solereturn",
+    title: ["Vai conduzindo, volta puxando", "Dribble out, drag back", "Ida conduciendo, vuelta arrastrando"],
+    desc: ["Em 30 segundos, quantas idas e voltas você faz entre dois chinelos a 5 passos, indo conduzindo a bola e voltando de costas, puxando ela com a sola?", "In 30 seconds, how many round trips can you make between two flip-flops 5 steps apart, dribbling out and coming back walking backwards, dragging the ball with your sole?", "En 30 segundos, ¿cuántas idas y vueltas haces entre dos chanclas a 5 pasos, yendo conduciendo y volviendo de espaldas, arrastrando el balón con la suela?"],
+    steps: [
+      ["Coloque dois chinelos a 5 passos um do outro.", "Put two flip-flops 5 steps apart.", "Pon dos chanclas a 5 pasos una de otra."],
+      ["Vá conduzindo a bola com o peito do pé, a parte de cima, onde fica o cadarço, até o outro chinelo, e pare ela com a sola.", "Dribble the ball with your laces, the top of your foot, up to the other flip-flop, and stop it with your sole.", "Ve conduciendo el balón con el empeine, la parte de arriba del pie, donde van los cordones, hasta la otra chancla, y páralo con la suela."],
+      ["Volte andando de costas, sem virar, puxando a bola com a sola: pise em cima, role ela para trás, dê um passinho para trás e repita até o primeiro chinelo.", "Come back walking backwards, without turning, dragging the ball with your sole: step on it, roll it back, take a little step back and repeat until the first flip-flop.", "Vuelve caminando de espaldas, sin girar, arrastrando el balón con la suela: písalo, ruédalo hacia atrás, da un pasito atrás y repite hasta la primera chancla."],
+      ["Olhe para a frente, não só para a bola. Uma volta puxando com o pé direito, a próxima com o esquerdo.", "Look ahead, not just at the ball. One trip dragging with your right foot, the next with your left.", "Mira al frente, no solo al balón. Una vuelta arrastrando con el pie derecho, la siguiente con el izquierdo."],
+      ["Ida e volta vale 1. Só conta se a bola não escapar da sola na volta.", "There and back counts as 1. It only counts if the ball doesn't get away from your sole on the way back.", "Ida y vuelta cuenta 1. Solo cuenta si el balón no se escapa de la suela en la vuelta."],
+    ],
+    unit: CQ_UNIT_TRIPS,
   },
   {
     id: "tiktak", type: "ball", icon: "🕰️", subs: ["control", "agility"], tiers: [20, 35, 50, 65], timer: { mode: "down", s: 30 }, anim: "tiktak",

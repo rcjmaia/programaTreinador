@@ -644,3 +644,201 @@ function cqTopConeSvg(x, y, r = 6) {
       <circle cx="${x}" cy="${y}" r="${r * 0.2}" fill="#fb923c" />
     </g>`;
 }
+
+/* ---------- Zoom no chute ---------- */
+
+// Moves the camera: z = 0 shows the whole scene, z = 1 a close-up 3.3x bigger centred on (x, y).
+function cqZoomView(svg, x, y, z) {
+  const w = cqLerp(CQ_W, 96, z);
+  const h = cqLerp(170, 51, z);
+  svg.setAttribute("viewBox", `${cqLerp(0, x - 48, z).toFixed(2)} ${cqLerp(0, y - 25.5, z).toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)}`);
+}
+
+// Caption that only shows in the close-up; "|" breaks the line (the close-up is only 96 wide).
+function cqZoomNoteSvg(x, y, text) {
+  const lines = text.split("|");
+  return `<text class="a-zoom" x="${x}" y="${y + 18}" text-anchor="middle" font-size="4" font-weight="800" fill="#facc15"
+    stroke="#0f172a" stroke-width="0.8" paint-order="stroke" opacity="0">${lines.map((l, i) => `<tspan x="${x}" dy="${i ? 4.6 : 0}">${l}</tspan>`).join("")}</text>`;
+}
+
+// Outlines the kicking (right) foot while the camera is close.
+function cqZoomFoot(player, z) {
+  const foot = player.querySelector(".a-foot-r");
+  foot.setAttribute("stroke", z > 0.5 ? "#facc15" : "none");
+  foot.setAttribute("stroke-width", 0.8);
+}
+
+// Top view trivela with the right foot: the standing foot beside the ball, the kicking foot turned in, striking
+// with its outside edge. u goes from 0 (foot back) to 1 (contact).
+function cqTrivelaFoot(player, u) {
+  const path = [[-8, 3, 0], [-2, 5, -25], [6, 6, -38]];
+  const i = Math.min(path.length - 2, Math.floor(u * (path.length - 1)));
+  const k = cqEase(u * (path.length - 1) - i);
+  const [x, y, a] = path[i].map((v, n) => cqLerp(v, path[i + 1][n], k));
+  const foot = player.querySelector(".a-foot-r");
+  player.querySelector(".a-foot-l").setAttribute("cx", 4);
+  foot.setAttribute("cx", x);
+  foot.setAttribute("cy", y);
+  foot.setAttribute("transform", `rotate(${a} ${x} ${y})`);
+}
+
+/* ---------- Dica da trivela ---------- */
+
+// Small panel, seen from behind, with the trivela body shape: kicking knee bent at about 120° with the foot
+// turned in, body leaning over the standing leg and arms open. Its top-left corner goes at (x, y).
+function cqTrivelaTip(svg, x, y) {
+  const rad = Math.PI / 180;
+  const thigh = 25;
+  const shin = thigh - 60;
+  const knee = [5 + 18 * Math.sin(thigh * rad), 18 * Math.cos(thigh * rad)];
+  const toHip = [-Math.sin(thigh * rad), -Math.cos(thigh * rad)];
+  const toAnkle = [Math.sin(shin * rad), Math.cos(shin * rad)];
+  const at = (dir, r) => `${(knee[0] + dir[0] * r).toFixed(1)} ${(knee[1] + dir[1] * r).toFixed(1)}`;
+  svg.insertAdjacentHTML("beforeend", `
+    <g class="a-tip" transform="translate(${x},${y})">
+      <rect width="62" height="58" rx="6" fill="rgba(15,23,42,0.55)" stroke="rgba(248,250,252,0.25)" stroke-width="0.8" />
+      <g transform="translate(29,32) scale(0.5) rotate(-10)">
+        ${cqFrontPlayerSvg()}
+        <circle cx="0" cy="-43" r="8.8" fill="${CQ_KIT.hair}" />
+        <path d="M${at(toHip, 7)} A7 7 0 0 0 ${at(toAnkle, 7)}" stroke="#facc15" stroke-width="2.2" fill="none" />
+        <text x="${(knee[0] + 5).toFixed(1)}" y="${(knee[1] + 5).toFixed(1)}" font-size="15" font-weight="800" fill="#facc15">120°</text>
+      </g>
+    </g>`);
+  cqFrontRig(svg.querySelector(".a-tip")).pose(0, { hipY: 0, armL: [105, 10], armR: [65, 15], legL: [4, 0], legR: [thigh, -60] });
+}
+
+/* ---------- Boliche ---------- */
+
+// Side view of 10 bottles set up like bowling pins (rows of 1, 2, 3 and 4, the front one at frontX).
+// update(root, ballX, rows) knocks down the bottles of the given rows (0 = front) the ball has reached.
+function cqSidePins(frontX) {
+  const pins = [];
+  for (let r = 3; r >= 0; r--) for (let j = r; j >= 0; j--) pins.push({ x: frontX + r * 11 + j * 2.5, y: CQ_GROUND - j * 1.2, row: r, back: j });
+  const svg = `<g class="a-hit">${pins.map((p, i) => `
+    <g class="a-bottle" data-i="${i}" opacity="${1 - p.back * 0.12}">
+      <rect x="${p.x - 3.5}" y="${p.y - 20}" width="7" height="20" rx="2" fill="rgba(186,230,253,0.9)" stroke="#0ea5e9" stroke-width="0.8" />
+      <rect x="${p.x - 2}" y="${p.y - 25}" width="4" height="5" fill="rgba(186,230,253,0.9)" stroke="#0ea5e9" stroke-width="0.8" />
+      <rect x="${p.x - 2.2}" y="${p.y - 27}" width="4.4" height="2.5" fill="#2563eb" />
+    </g>`).join("")}</g>`;
+  const update = (root, ballX, rows) => {
+    root.querySelectorAll(".a-bottle").forEach((el) => {
+      const p = pins[Number(el.dataset.i)];
+      const f = rows.includes(p.row) ? cqEase(cqClamp01((ballX - p.x + 6) / 16)) : 0;
+      el.setAttribute("transform", `rotate(${f * (82 - p.back * 9)} ${p.x + 3.5} ${p.y})`);
+    });
+  };
+  return { svg, update };
+}
+
+/* Bird's-eye bowling: runs up, strikes the ball along the lane into 10 bottles set up in a triangle.
+     steps   distance shown under the lane (the pins sit closer for 7 than for 10)
+     bend    how far the ball curves off the lane on its way (trivela), 0 = straight
+     kickT   duration of the strike
+     playerY player lane (the ball rolls on y 86)
+     kick(player, u)  optional: moves the feet during the strike (the feet start from their usual spots)
+     zoom    optional caption: the camera zooms in on the strike, played in slow motion, and shows it
+     texts   { run } caption while running up and striking */
+function cqTopBowlingScene(box, opts, cfg) {
+  const laneY = 86;
+  const ballX = 66;
+  const headX = ballX + cfg.steps * 17;
+  const endX = headX + 66;
+  const playerY = cfg.playerY ?? laneY - 4;
+  const kickT = cfg.kickT || 0.15;
+  const pins = [];
+  for (let r = 0; r < 4; r++) for (let j = 0; j <= r; j++) pins.push({ x: headX + r * 13, y: laneY + (j - r / 2) * 12 });
+  const rounds = [
+    { aim: laneY, down: pins.map((_, i) => i) },
+    { aim: laneY + 3, down: [0, 1, 2, 4, 5, 7, 8, 9] },
+    { aim: laneY + 9, down: [2, 5, 9] },
+    { aim: laneY - 4, down: [0, 1, 3, 4, 6, 7] },
+  ];
+  const line = cqTimeline([
+    { kind: "run", dur: 0.7 },
+    ...(cfg.zoom ? [{ kind: "zin", dur: 0.5 }] : []),
+    { kind: "kick", dur: kickT },
+    ...(cfg.zoom ? [{ kind: "zout", dur: 0.6 }] : []),
+    { kind: "roll", dur: 1.2 },
+    { kind: "rest", dur: 1.0 },
+  ], 0.3);
+  const zoomAt = { x: ballX - 4, y: (laneY + playerY) / 2 };
+  const reachHead = (headX - ballX) / (endX - ballX);
+  const pin = (p, i) => `
+    <g class="a-pin" data-i="${i}" transform="translate(${p.x},${p.y})">
+      <g class="a-up">
+        <circle r="3.8" fill="rgba(186,230,253,0.9)" stroke="#0ea5e9" stroke-width="0.8" />
+        <circle r="1.6" fill="#2563eb" />
+      </g>
+      <g class="a-down" opacity="0">
+        <rect x="-2" y="-3.6" width="14" height="7.2" rx="3" fill="rgba(186,230,253,0.9)" stroke="#0ea5e9" stroke-width="0.8" />
+        <rect x="12" y="-1.6" width="3" height="3.2" fill="#2563eb" />
+      </g>
+    </g>`;
+
+  box.innerHTML = cqTopSceneSvg(opts.label, `
+    <g class="a-hit">${pins.map(pin).join("")}</g>
+    ${cqNoteSvg((ballX + headX) / 2, 126, `← ${cfg.steps} ${opts.steps} →`)}
+    <text x="160" y="160" text-anchor="middle" class="a-note a-say"></text>
+    <g class="a-ball-pos">${cqBallSvg(5)}</g>
+    ${cqTopPlayerSvg()}
+    ${cfg.zoom ? cqZoomNoteSvg(zoomAt.x, zoomAt.y, cfg.zoom) : ""}
+    ${cqCountSvg(opts.unit)}`);
+
+  const svg = box.querySelector("svg");
+  const player = svg.querySelector(".a-top");
+  const feet = [player.querySelector(".a-foot-l"), player.querySelector(".a-foot-r")];
+  const zoomNote = svg.querySelector(".a-zoom");
+  const ball = cqMovableBall(svg);
+  const count = cqCounter(svg, opts.unit);
+  const hitEl = svg.querySelector(".a-hit");
+  const say = svg.querySelector(".a-say");
+  const pinEls = [...svg.querySelectorAll(".a-pin")];
+  const texts = {
+    strike: opts.pick(["STRIKE! Todas no chão", "STRIKE! All down", "¡STRIKE! Todas al suelo"]),
+    some: opts.pick(["no chão: vale 1!", "down: that's 1!", "al suelo: ¡cuenta 1!"]),
+  };
+
+  return cqLoop((seconds) => {
+    const { seg, u, round } = line.at(seconds);
+    const shot = rounds[round % rounds.length];
+    const kickU = { zin: 0, kick: u, zout: 1 }[seg.kind];
+    const px = seg.kind === "run" ? cqLerp(20, ballX - 12, u) : ballX - 12 + 4 * (kickU ?? 1);
+    const kicking = seg.kind === "kick" ? Math.sin(Math.PI * u) : 0;
+    feet.forEach((foot, i) => {
+      foot.setAttribute("cy", i ? 4 : -4);
+      foot.removeAttribute("transform");
+    });
+    if (cfg.kick && kickU !== undefined) {
+      cqTopPlace(player, px, playerY, 0, 0);
+      cfg.kick(player, kickU);
+    } else cqTopPlace(player, px, playerY, -6 * kicking, seg.kind === "run" ? px / 4 : (-Math.PI / 2) * kicking);
+    if (cfg.zoom) {
+      const z = seg.kind === "zin" ? cqEase(u) : seg.kind === "kick" ? 1 : seg.kind === "zout" ? 1 - cqEase(u) : 0;
+      cqZoomView(svg, zoomAt.x, zoomAt.y, z);
+      cqZoomFoot(player, z);
+      zoomNote.setAttribute("opacity", z);
+    }
+
+    let b = { x: ballX, y: laneY };
+    if (seg.kind === "roll" || seg.kind === "rest") {
+      const k = seg.kind === "rest" ? 1 : 1 - (1 - u) ** 2;
+      const off = cfg.bend ? -cfg.bend * Math.sin(Math.PI * Math.min(1, k / reachHead)) : 0;
+      b = { x: cqLerp(ballX, endX, k), y: cqLerp(laneY, shot.aim, k) + off };
+    }
+    ball(b.x, b.y, b.x * 9);
+
+    pinEls.forEach((el, i) => {
+      const p = pins[i];
+      const f = shot.down.includes(i) ? cqClamp01((b.x - p.x + 6) / 14) : 0;
+      const side = p.y < shot.aim ? -1 : 1;
+      el.querySelector(".a-up").setAttribute("opacity", f > 0 ? 0 : 1);
+      el.querySelector(".a-down").setAttribute("opacity", f > 0 ? 1 : 0);
+      el.setAttribute("transform", `translate(${p.x + 6 * f},${p.y + side * 5 * f}) rotate(${side * (20 + 30 * f)})`);
+    });
+
+    let text = cfg.texts.run;
+    if (seg.kind === "rest") text = shot.down.length === pins.length ? texts.strike : `${shot.down.length} ${texts.some}`;
+    if (say.textContent !== text) say.textContent = text;
+    count((round % 9) + (b.x >= headX - 6 ? 1 : 0), hitEl);
+  });
+}
