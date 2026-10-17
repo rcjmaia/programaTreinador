@@ -7,6 +7,9 @@
 const CQ_UNIT_STEPS_AWAY = ["passos de distância", "steps away", "pasos de distancia"];
 const CQ_UNIT_SECONDS = ["segundos", "seconds", "segundos"];
 const CQ_UNIT_REPS = ["repetições", "reps", "repeticiones"];
+// Ways to make a control-from-the-air drill harder as the kid improves.
+const CQ_STEPS_TRAP_HARDER = ["Ficou fácil? Jogue a bola cada vez mais alto, ou jogue na parede para ela voltar pelo alto. Se tiver alguém, peça para jogar de frente e vá aumentando a distância.", "Too easy? Toss the ball higher each time, or throw it against a wall so it comes back high. If someone's around, have them toss it from in front of you and keep moving further back.", "¿Muy fácil? Lanza el balón cada vez más alto, o contra una pared para que vuelva por arriba. Si hay alguien, pide que te lo lance de frente y vayan aumentando la distancia."];
+
 const CQ_STEPS_TARGET = ["Alvo: balde, arco, caixa, camisa ou qualquer objeto.", "Target: a bucket, hoop, box, shirt or any object.", "Blanco: un balde, aro, caja, camiseta o cualquier objeto."];
 const CQ_STEPS_LIGHT_BALL = ["Use só bola leve: de plástico ou bexiga.", "Only use a light ball: plastic or a balloon.", "Usa solo balón liviano: de plástico o un globo."];
 
@@ -158,6 +161,62 @@ function cqWalkMission(id, dist, mode, tiers, subs) {
         ["Tocou duas vezes seguidas com o mesmo pé? Volte ao início.", "Two touches in a row with the same foot? Back to the start.", "¿Dos toques seguidos con el mismo pie? Vuelve al inicio."],
       ] : []),
       ["Perto do alvo, passe com a bola no ar. Caiu antes? Volte ao início.", "Near the target, pass with the ball in the air. Dropped it? Back to the start.", "Cerca del blanco, pasa con el balón en el aire. ¿Se cayó? Vuelve al inicio."],
+    ],
+    unit: CQ_UNIT_HITS,
+  };
+}
+
+// Back to the target: toss the ball over your head, turn and strike it before it lands.
+// kind "pass" = inside of the foot into a target, "shot" = laces into a goal.
+function cqTurnMission(id, dist, kind, tiers, subs) {
+  const pass = kind === "pass";
+  const aim = pass ? ["o alvo", "the target", "el blanco"] : ["o gol", "the goal", "el arco"];
+  return {
+    id, type: "ball", icon: pass ? "🔃" : "💥", subs, tiers, max: 10,
+    anim: "turnvolley", animArgs: { dist, kind },
+    title: pass
+      ? [`Vira e passa no ar (${dist} passos)`, `Turn and pass in the air (${dist} steps)`, `Gira y pasa en el aire (${dist} pasos)`]
+      : [`Vira e chuta no ar (${dist} passos)`, `Turn and shoot in the air (${dist} steps)`, `Gira y remata en el aire (${dist} pasos)`],
+    desc: [
+      `Em 10 tentativas, quantas vezes você joga a bola por cima da cabeça, vira e acerta ${aim[0]} com a bola ainda no ar, a ${dist} passos?`,
+      `Out of 10 tries, how many times can you toss the ball over your head, turn and hit ${aim[1]} before the ball lands, from ${dist} steps?`,
+      `De 10 intentos, ¿cuántas veces lanzas el balón por encima de la cabeza, giras y aciertas ${aim[2]} con el balón todavía en el aire, a ${dist} pasos?`,
+    ],
+    steps: [
+      pass
+        ? ["Marque um alvo na parede, na altura da sua cintura: um círculo de giz, fita ou uma camisa pendurada. Sem parede? Use algo no chão: balde, caixa ou camisa.", "Mark a target on a wall at waist height: a chalk circle, tape or a hanging shirt. No wall? Use something on the ground: a bucket, box or shirt.", "Marca un blanco en la pared a la altura de tu cintura: un círculo de tiza, cinta o una camiseta colgada. ¿Sin pared? Usa algo en el suelo: un balde, caja o camiseta."]
+        : ["Use um gol, ou marque um de 3 passos de largura com dois chinelos ou num muro. Sem gol nem muro? Mire em algo no chão: balde, caixa ou camisa.", "Use a goal, or mark one 3 steps wide with two flip-flops or on a wall. No goal or wall? Aim at something on the ground: a bucket, box or shirt.", "Usa un arco, o marca uno de 3 pasos de ancho con dos chanclas o en un muro. ¿Sin arco ni muro? Apunta a algo en el suelo: un balde, caja o camiseta."],
+      [`Fique de costas para ${aim[0]}, a ${dist} passos.`, `Stand with your back to ${aim[1]}, ${dist} steps away.`, `Ponte de espaldas a ${aim[2]}, a ${dist} pasos.`],
+      ["Jogue a bola para cima, por cima da cabeça, para ela cair um pouco atrás de você.", "Toss the ball up over your head so it lands a little behind you.", "Lanza el balón hacia arriba, por encima de la cabeza, para que caiga un poco detrás de ti."],
+      ["Vire rápido de frente para a bola e acerte antes de ela tocar o chão.", "Turn quickly to face the ball and strike it before it touches the ground.", "Gira rápido hacia el balón y golpéalo antes de que toque el suelo."],
+      pass
+        ? ["Passe com a parte de dentro do pé, com a bola no alto, até o alvo.", "Pass with the inside of your foot, keeping the ball up, onto the target.", "Pasa con el interior del pie, con el balón por arriba, hasta el blanco."]
+        : ["Chute com o peito do pé (o cadarço), firme no gol.", "Shoot with your laces, firmly at goal.", "Remata con el empeine (los cordones), firme al arco."],
+      CQ_STEPS_5_5,
+      ["A bola quicou antes do toque? Não vale.", "Ball bounced before you hit it? Doesn't count.", "¿El balón botó antes del golpe? No cuenta."],
+      ["Se tiver alguém, a pessoa pode jogar a bola por cima de você, de trás.", "If someone's around, they can toss the ball over you from behind.", "Si hay alguien, puede lanzarte el balón por encima, desde atrás."],
+    ],
+    unit: CQ_UNIT_HITS,
+  };
+}
+
+function cqStepoversMission(id, n, tiers, subs) {
+  return {
+    id, type: "ball", icon: "🌪️", subs, tiers, max: 10,
+    anim: "stepovers", animArgs: { n },
+    title: [`${n} pedaladas e chute`, `${n} step-overs and shoot`, `${n} bicicletas y tiro`],
+    desc: [
+      `Em 10 tentativas, quantas vezes você faz ${n} pedaladas seguidas, intercalando as pernas, passa pelo adversário e acerta o gol, 7 passos depois dele?`,
+      `Out of 10 tries, how many times do you do ${n} step-overs in a row, switching legs, get past the defender and hit the goal 7 steps behind them?`,
+      `De 10 intentos, ¿cuántas veces haces ${n} bicicletas seguidas, alternando las piernas, pasas al rival y aciertas el arco, 7 pasos detrás de él?`,
+    ],
+    steps: [
+      ["Coloque um cone ou uma cadeira no caminho: é o adversário. O gol ou o alvo fica 7 passos depois dele. Sem gol nem muro? Mire em algo no chão: balde, caixa ou camisa.", "Put a cone or a chair in your path: that's the defender. The goal or target is 7 steps behind it. No goal or wall? Aim at something on the ground: a bucket, box or shirt.", "Pon un cono o una silla en el camino: es el rival. El arco o el blanco queda 7 pasos detrás. ¿Sin arco ni muro? Apunta a algo en el suelo: un balde, caja o camiseta."],
+      ["Conduza até perto do adversário e faça a primeira pedalada: passe a perna por cima da bola, sem tocar nela, levando o corpo junto, como se fosse sair para aquele lado.", "Dribble up close to the defender and do the first step-over: swing your leg over the ball without touching it, moving your body too, as if you were going that way.", "Conduce hasta cerca del rival y haz la primera bicicleta: pasa la pierna por encima del balón sin tocarlo, llevando el cuerpo, como si fueras a salir hacia ese lado."],
+      [`Logo em seguida, pedalada com a outra perna, para o outro lado. Continue intercalando as pernas até completar ${n} pedaladas, deixando o adversário perdido.`, `Straight after, a step-over with the other leg, the other way. Keep switching legs until you've done ${n}, leaving the defender lost.`, `Enseguida, bicicleta con la otra pierna, hacia el otro lado. Sigue alternando las piernas hasta hacer ${n}, dejando al rival perdido.`],
+      ["Depois da última, puxe a bola com a outra perna para o lado contrário, passe pelo adversário e chute com o peito do pé (o cadarço), sem parar a bola.", "After the last one, take the ball the opposite way with your other leg, get past the defender and shoot with your laces, without stopping the ball.", "Después de la última, saca el balón hacia el lado contrario con la otra pierna, pasa al rival y remata con el empeine (los cordones), sin parar el balón."],
+      ["Faça 5 começando pela perna direita e 5 começando pela esquerda.", "Do 5 starting with your right leg and 5 starting with your left.", "Haz 5 empezando con la pierna derecha y 5 empezando con la izquierda."],
+      [`Só conta se fizer as ${n} pedaladas sem perder a bola e acertar o gol.`, `It only counts if you do all ${n} step-overs without losing the ball and hit the goal.`, `Solo cuenta si haces las ${n} bicicletas sin perder el balón y aciertas el arco.`],
     ],
     unit: CQ_UNIT_HITS,
   };
@@ -373,6 +432,8 @@ CQ_MISSIONS.push(
     ],
     unit: CQ_UNIT_HITS,
   },
+  cqStepoversMission("stepshot3", 3, [2, 3, 4, 6], ["dribble", "agility", "balance", "finishing"]),
+  cqStepoversMission("stepshot5", 5, [1, 2, 3, 5], ["dribble", "agility", "balance", "finishing", "power"]),
   {
     id: "firsttime", type: "ball", icon: "⚡", subs: ["finishing", "reactions"], tiers: [2, 3, 5, 7], max: 10, anim: true,
     title: ["Chute de primeira", "First-time shot", "Tiro de primera"],
@@ -409,6 +470,8 @@ CQ_MISSIONS.push(
   cqVolleyMission("volley8", 8, [2, 3, 4, 6], ["volleys", "finishing"]),
   cqVolleyMission("volley12", 12, [1, 2, 4, 5], ["volleys", "power"]),
   cqVolleyMission("volley16", 16, [1, 2, 3, 4], ["volleys", "longshots"]),
+  cqTurnMission("turnshot5", 5, "shot", [2, 3, 5, 7], ["volleys", "finishing", "reactions", "decision"]),
+  cqTurnMission("turnshot10", 10, "shot", [1, 2, 4, 6], ["volleys", "power", "reactions", "decision"]),
 
   // ---------- Passes ----------
   cqWallMission("weak", 4, [10, 16, 22, 28]),
@@ -433,22 +496,25 @@ CQ_MISSIONS.push(
     unit: ["passes", "passes", "pases"],
   },
   cqWallMission("wall8", 8, [6, 10, 15, 20]),
+  cqTurnMission("turnpass5", 5, "pass", [2, 3, 5, 7], ["volleys", "short", "reactions", "decision"]),
+  cqTurnMission("turnpass10", 10, "pass", [1, 2, 4, 5], ["volleys", "long", "reactions", "decision"]),
   cqSoleMission("solepass1", 1, [6, 10, 14, 18]),
   cqSoleMission("solepass", 2, [5, 8, 11, 14]),
   cqMeasureMission("measure10", 10, [18, 14, 8, 4], ["short", "control"]),
   cqTwoFeetMission("twofeet", 5, [6, 10, 14, 18]),
   cqBucketMission("bucket3", 3, [2, 4, 6, 9], ["short", "control"]),
   {
-    id: "orient", type: "ball", icon: "↪️", subs: ["control", "short"], tiers: [5, 9, 13, 17], timer: { mode: "down", s: 60 }, anim: true,
+    id: "orient", type: "ball", icon: "↪️", subs: ["control", "short"], tiers: [4, 7, 10, 14], timer: { mode: "down", s: 60 }, anim: true,
     title: ["Domínio orientado", "Directional first touch", "Control orientado"],
-    desc: ["Em 1 minuto, quantas vezes você passa na parede, domina com a parte de dentro do pé já levando a bola para o lado e passa de novo?", "In 1 minute, how many times can you pass against the wall, take your first touch with the inside of your foot out to the side and pass again?", "En 1 minuto, ¿cuántas veces pasas a la pared, controlas con el interior del pie llevando el balón hacia un lado y vuelves a pasar?"],
+    desc: ["Em 1 minuto, quantas vezes você acerta o alvo na parede, a 5 passos dela, dominando com a parte de dentro do pé já levando a bola para o lado antes de cada passe?", "In 1 minute, how many times can you hit the target on the wall from 5 steps, taking your first touch with the inside of your foot out to the side before each pass?", "En 1 minuto, ¿cuántas veces aciertas el blanco en la pared, a 5 pasos de ella, controlando con el interior del pie hacia un lado antes de cada pase?"],
     steps: [
-      ["Marque dois chinelos a 2 passos um do outro, de frente para a parede.", "Mark two flip-flops 2 steps apart, facing the wall.", "Marca dos chanclas a 2 pasos una de otra, frente a la pared."],
+      ["Marque um alvo na parede, de uns 2 palmos de largura: um quadrado de giz, fita ou uma camisa pendurada.", "Mark a target on the wall about 2 hand-spans wide: a chalk square, tape or a hanging shirt.", "Marca un blanco en la pared de unos 2 palmos de ancho: un cuadrado de tiza, cinta o una camiseta colgada."],
+      ["Marque dois chinelos a 2 passos um do outro, a 5 passos da parede, com o alvo bem no meio deles.", "Mark two flip-flops 2 steps apart, 5 steps from the wall, with the target right between them.", "Marca dos chanclas a 2 pasos una de otra, a 5 pasos de la pared, con el blanco justo en medio."],
       ["Domine com a parte de dentro do pé, levando a bola até o outro chinelo, e passe dali.", "Control it with the inside of your foot, taking the ball across to the other flip-flop, and pass from there.", "Controla con el interior del pie, llevando el balón hasta la otra chancla, y pasa desde allí."],
       ["Indo para a direita, domine e passe com o pé direito. Indo para a esquerda, com o esquerdo.", "Going right, control and pass with your right foot. Going left, with your left.", "Hacia la derecha, controla y pasa con el pie derecho. Hacia la izquierda, con el izquierdo."],
-      ["Cada passe depois de um domínio para o lado vale 1.", "Each pass after a first touch to the side counts as 1.", "Cada pase tras un control hacia el lado cuenta 1."],
+      ["Só conta o passe que acerta o alvo, depois de um domínio para o lado.", "Only passes that hit the target, after a first touch to the side, count.", "Solo cuenta el pase que da en el blanco, después de un control hacia el lado."],
     ],
-    unit: ["passes", "passes", "pases"],
+    unit: CQ_UNIT_HITS,
   },
   cqMeasureMission("measure15", 15, [24, 19, 12, 7], ["short", "control"]),
   cqBucketMission("bucket5", 5, [2, 3, 5, 7], ["short", "control"]),
@@ -478,6 +544,7 @@ CQ_MISSIONS.push(
       ["Jogue a bola para cima com as mãos.", "Toss the ball up with your hands.", "Lanza el balón hacia arriba con las manos."],
       ["Domine 5 com o pé direito e 5 com o esquerdo, com a parte de dentro do pé.", "Control 5 with your right foot and 5 with your left, using the inside of your foot.", "Controla 5 con el pie derecho y 5 con el izquierdo, con el interior del pie."],
       ["Amorteça: o pé ou a coxa \"desce\" junto com a bola.", "Cushion it: your foot or thigh \"gives\" with the ball.", "Amortigua: el pie o el muslo \"bajan\" con el balón."],
+      CQ_STEPS_TRAP_HARDER,
     ],
     unit: ["domínios", "controls", "controles"],
   },
@@ -500,6 +567,7 @@ CQ_MISSIONS.push(
       ["Jogue a bola alta, por cima da cabeça.", "Toss the ball high, above your head.", "Lanza el balón alto, por encima de la cabeza."],
       ["Abra os braços e arqueie o peito para trás quando a bola chegar.", "Open your arms and lean your chest back as the ball arrives.", "Abre los brazos e inclina el pecho hacia atrás cuando llegue el balón."],
       ["Vale se a bola cair a até 1 passo de você.", "It counts if the ball lands within 1 step of you.", "Vale si el balón cae a 1 paso o menos de ti."],
+      CQ_STEPS_TRAP_HARDER,
     ],
     unit: ["domínios", "controls", "controles"],
   },
@@ -514,6 +582,7 @@ CQ_MISSIONS.push(
       ["Faça 5 com a parte de fora do pé e 5 com a coxa.", "Do 5 with the outside of your foot and 5 with your thigh.", "Haz 5 con el exterior del pie y 5 con el muslo."],
       CQ_STEPS_ALTERNATE,
       ["Conte os domínios que ficam a até 1 passo.", "Count the controls that stay within 1 step.", "Cuenta los controles que quedan a 1 paso o menos."],
+      CQ_STEPS_TRAP_HARDER,
     ],
     unit: ["domínios", "controls", "controles"],
   },
@@ -530,8 +599,13 @@ CQ_MISSIONS.push(
     ],
     unit: CQ_UNIT_TRIPS,
   },
-  cqTrickMission("elastico", "🪢", ["Elástico", "Elastico", "Elástica"],
-    ["Toque a bola para fora com a parte de fora do pé e puxe de volta com a parte de dentro, rapidinho.", "Push the ball out with the outside of your foot and snap it back with the inside, quickly.", "Empuja el balón hacia afuera con el exterior del pie y tráelo de vuelta con el interior, rápido."], true),
+  {
+    ...cqTrickMission("elastico", "🪢", ["Elástico", "Elastico", "Elástica"], [
+      ["Coloque um adversário à frente: um cone, uma cadeira ou alguém da família.", "Put a defender in front of you: a cone, a chair or someone from your family.", "Pon un rival delante: un cono, una silla o alguien de tu familia."],
+      ["Conduza até ele, toque a bola para fora com a parte de fora do pé, como se fosse passar por um lado, e puxe de volta com a parte de dentro, rapidinho, saindo pelo outro lado.", "Dribble up to it, push the ball out with the outside of your foot as if going one way, then snap it back with the inside, quickly, going past on the other side.", "Conduce hasta él, empuja el balón hacia afuera con el exterior del pie como si fueras a pasar por un lado, y tráelo de vuelta con el interior, rápido, saliendo por el otro lado."],
+    ], true),
+    anim: "elastico",
+  },
   cqWalkMission("walk10", 10, "foot", [1, 2, 3, 5], ["control", "long"]),
   cqWalkMission("walkalt", 5, "alt", [1, 2, 3, 5], ["control", "balance"]),
   {

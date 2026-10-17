@@ -1,5 +1,5 @@
-/* Domínio orientado (vista de cima): passa na parede, o primeiro toque já leva a bola
-   até o outro chinelo e o próximo passe sai de lá. */
+/* Domínio orientado (vista de cima): passa no alvo da parede, a 5 passos, o primeiro toque já leva
+   a bola até o outro chinelo e o próximo passe sai de lá. */
 
 cqRegisterAnim("orient", (box, opts) => {
   const wallY = 26;
@@ -15,9 +15,11 @@ cqRegisterAnim("orient", (box, opts) => {
 
   box.innerHTML = cqTopSceneSvg(opts.label, `
     <rect x="0" y="0" width="${CQ_W}" height="${wallY}" fill="#b45309" />
-    <rect class="a-hit" x="0" y="${wallY - 3}" width="${CQ_W}" height="3" fill="#7c2d12" />
+    <rect x="0" y="${wallY - 3}" width="${CQ_W}" height="3" fill="#7c2d12" />
+    <rect class="a-hit" x="142" y="5" width="36" height="${wallY - 9}" fill="none" stroke="#facc15" stroke-width="3" />
     ${spots.map((s) => flip(s.x, s.y)).join("")}
     ${cqNoteSvg(160, 160, `↔ 2 ${opts.steps}`)}
+    ${cqNoteSvg(62, 80, `↕ 5 ${opts.steps}`)}
     <g class="a-ball-pos">${cqBallSvg(5)}</g>
     ${cqTopPlayerSvg()}
     ${cqCountSvg(opts.unit)}`);
@@ -27,6 +29,8 @@ cqRegisterAnim("orient", (box, opts) => {
   const ball = cqMovableBall(svg);
   const count = cqCounter(svg, opts.unit);
   const wall = svg.querySelector(".a-hit");
+  // The default counter spot is on the wall, over the target.
+  svg.querySelector(".a-count").setAttribute("y", 64);
 
   return cqLoop((seconds) => {
     const n = Math.floor(seconds / leg);
