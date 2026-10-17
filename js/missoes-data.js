@@ -17,7 +17,7 @@
 // One mission per phase: each phase is one link of the chain.
 const CQ_CHAIN = {
   rit: ["shuttle", "flipflops", "skipping", "sprintball", "conemove", "treasure", "star", "ladder", "sprint20"],
-  fin: ["target", "weakshot", "penalty", "placed", "stepshot", "volley", "firsttime", "header", "volley8", "turnshot5", "controlshot", "stepshot3", "longshot", "thighshot5", "volley12", "turnshot10", "chip", "controlshot10", "stepshot5", "curlshot", "freekick", "volley16", "thighshot10", "trivela"],
+  fin: ["target", "weakshot", "penalty", "placed", "stepshot", "volley", "firsttime", "header", "volley8", "turnshot5", "controlshot", "stepshot3", "longshot", "thighshot5", "stepdrag", "volley12", "turnshot10", "chip", "controlshot10", "stepshot5", "curlshot", "freekick", "volley16", "thighshot10", "trivela"],
   pas: ["weak", "measure10", "twofeet", "bucket3", "orient", "wall6", "balloonwall", "turnpass5", "solepass1", "measure15", "longpass", "bucket5", "altinha", "solepass", "wall8", "turnpass10", "measure20", "cross", "twofeet10", "bucket8", "measure25"],
   con: ["keepy", "trap", "slalom", "keepyalt", "chest", "zigzag", "walk5", "dribble", "trapweak", "slalomweak", "skills", "elastico", "walk10", "walkalt", "roleta", "headkeepy", "chapeu", "walkhead"],
   def: ["bote", "sidestep", "steal", "backrun", "heading", "intercept", "sliding", "shadow", "clearance"],
