@@ -384,6 +384,16 @@ function cqKeys(frames, t) {
   };
 }
 
+// Leg angles [thigh, shin] that put the foot at (dx, dy) from the hip; dx is towards where the player faces.
+// The foot point is the bottom of the shin, where the boot meets the ground when standing.
+function cqLegIK(dx, dy, thigh = 18, shin = 17) {
+  const d = Math.max(Math.abs(thigh - shin) + 0.5, Math.min(thigh + shin - 0.05, Math.hypot(dx, dy)));
+  const phi = Math.atan2(dx, dy);
+  const knee = phi + Math.acos((thigh * thigh + d * d - shin * shin) / (2 * thigh * d));
+  const psi = Math.atan2(dx - thigh * Math.sin(knee), dy - thigh * Math.cos(knee));
+  return [(-knee * 180) / Math.PI, ((knee - psi) * 180) / Math.PI];
+}
+
 /* ---------- Cena de chute ----------
    Run-up, kick and ball flight, repeated. cfg:
      ballX       where the ball rests before the kick
@@ -445,6 +455,93 @@ function cqKickScene(box, opts, cfg) {
       ball(p.x, p.y, u * 720);
     }
     count((round % 9) + (t >= hitAt + cfg.flightT ? 1 : 0), flashEl);
+  });
+}
+
+/* Side-view shuttle: carries the ball with the laces, stops it with the sole on a mark while throwing the body
+   forward (a feint to shake off the marker) and drags it back with the sole to turn around.
+     marks   x of the flip-flops on the ground
+     start   ball x when the loop starts (the player faces right)
+     route   mark x values to stop on, or "turn"; it must bring the ball back to start, facing right
+     count   "stop" or "turn": what adds 1 to the counter
+     texts   { run, stop, turn } captions
+     note    optional text in the top right corner */
+function cqShuttleScene(box, opts, cfg) {
+  const ahead = 20;
+  const braced = { hipY: CQ_GROUND - 34, lean: -6, legF: cqLegIK(ahead - 2, 22), legB: [14, 12], armF: [-40, -30], armB: [45, -30] };
+  const feint = { ...braced, lean: 26, legB: [24, 18], armF: [-75, -30], armB: [60, -30] };
+  const segs = [];
+  let bx = cfg.start;
+  let d = 1;
+  let n = 0;
+  for (const step of cfg.route) {
+    if (step === "turn") {
+      if (cfg.count === "turn") n++;
+      segs.push({ kind: "turn", dur: 0.55, hip: bx - d * ahead, b0: bx, b1: bx - 2 * d * ahead, d, n });
+      bx -= 2 * d * ahead;
+      d = -d;
+    } else {
+      segs.push({ kind: "run", dur: 0.3 + Math.abs(step - bx) / 120, from: bx, to: step, d, n });
+      segs.push({ kind: "stop", dur: 0.2, to: step, d, n });
+      if (cfg.count === "stop") n++;
+      segs.push({ kind: "hold", dur: 0.5, to: step, d, n });
+      bx = step;
+    }
+  }
+  const line = cqTimeline(segs);
+
+  box.innerHTML = cqSceneSvg(opts.label, `
+    ${cfg.marks.map((x) => cqFlipflopSvg(x)).join("")}
+    ${cfg.note ? cqNoteSvg(284, 30, cfg.note) : ""}
+    <text x="160" y="160" text-anchor="middle" class="a-note a-say"></text>
+    <g class="a-ball-pos">${cqBallSvg(6)}</g>
+    <g class="a-me">${cqPlayerSvg()}</g>
+    ${cqCountSvg(opts.unit)}`);
+
+  const svg = box.querySelector("svg");
+  const rig = cqPlayerRig(svg.querySelector(".a-me"));
+  const ball = cqMovableBall(svg);
+  const count = cqCounter(svg, opts.unit);
+  const say = svg.querySelector(".a-say");
+
+  return cqLoop((seconds) => {
+    const { seg, u, round } = line.at(seconds);
+    const touch = (x) => x + seg.d * (ahead + 4 * Math.abs(Math.sin(x / 6)));
+    const runEnd = seg.to - seg.d * (ahead + 6);
+    let x;
+    let b;
+    let dir = seg.d;
+    let pose = braced;
+    let lift = 0;
+    if (seg.kind === "run") {
+      const k = cqClamp01(u * 4);
+      x = cqLerp(seg.from - seg.d * ahead, runEnd, u ** 1.4);
+      pose = cqMixPose(braced, cqRunPose(x / 8), k);
+      b = cqLerp(seg.from, touch(x), k);
+    } else if (seg.kind === "stop") {
+      const e = cqEase(u);
+      x = cqLerp(runEnd, seg.to - seg.d * ahead, e);
+      pose = cqMixPose(cqRunPose(runEnd / 8), feint, e);
+      b = cqLerp(touch(runEnd), seg.to, e);
+    } else if (seg.kind === "hold") {
+      x = seg.to - seg.d * ahead;
+      pose = cqMixPose(feint, braced, cqEase(cqClamp01((u - 0.3) / 0.7)));
+      b = seg.to;
+    } else {
+      const e = cqEase(u);
+      const c = Math.cos(Math.PI * e);
+      x = seg.hip;
+      b = cqLerp(seg.b0, seg.b1, e);
+      dir = seg.d * Math.sign(c || 1) * Math.max(0.15, Math.abs(c));
+      pose = { ...braced, legF: cqLegIK((b - x) * Math.sign(dir) - 2, 22) };
+      lift = 3 * Math.sin(Math.PI * u);
+    }
+    rig.pose(x, dir, pose, lift);
+    ball(b, CQ_GROUND - 6, b * 9.5);
+    const text = seg.kind === "run" ? cfg.texts.run : seg.kind === "turn" ? cfg.texts.turn : cfg.texts.stop;
+    if (say.textContent !== text) say.textContent = text;
+    const pending = seg.kind === "turn" && cfg.count === "turn" && u < 1 ? 1 : 0;
+    count((round % 4) * n + seg.n - pending, svg.querySelector(".a-ball"));
   });
 }
 
